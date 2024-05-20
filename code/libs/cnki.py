@@ -11,17 +11,18 @@ import Levenshtein
 from libs.cache import DiskCache
 from urllib.parse import urlparse, parse_qs
 
-
 NONE = ['', None]
 
 # SEARCH_CITATIONS_URL = "https://oversea.cnki.net/kcms/detail/search.aspx?sfield=cite&code=<CODE>&dbcode=<DBCODE>&sKey=<SKEY>" # ENGLISH
 SEARCH_CITATIONS_URL = "https://chn.oversea.cnki.net/kcms/detail/search.aspx?sfield=cite&code=<CODE>&dbcode=<DBCODE>&sKey=<SKEY>" # CHINESE
+SEARCH_REFERENCES_URL = "https://chn.oversea.cnki.net/KCMS/detail/detail.aspx?dbcode=<DBCODE>&dbname=<DBNAME>&filename=<CODE>&uniplatform=OVERSEA&v=7jVNZ-kapPX_pS5sanKaNUIJ-aB3D-xvhlMkXrHszWncXE1phNdikrZ8rwbTNuJJ"
 NPAPERS_PER_BOX = 10
 ENGLISH = {'题名':'Title', '作者':'Author', '来源':'Source', '发表时间':'Publication Date', '数据库':'Database', '被引':'Cites',
            '下载':'Downloads', '操作':'Options', '编号':'Result Rank',
-           '期刊':'Journal', '博士':'Thesis', '硕士':'Dissertation',
-           '中国会议':'ChineseConf', '中外文题录':'OtherLang', '国际会议':'InternationalConf'}
-CHINESE = {'Title':'篇名', 'Journal':'期刊', 'Cites':'被引', 'Options':'操作', 'Find':'共', 'NEXT':'下一页', 'OtherLang':'中外文题录'}
+           '期刊':'Journal', '博士':'Thesis', '硕士':'Dissertation', '图书':'Books',
+           '中国会议':'ChineseConf', '中外文题录':'OtherLang', '国际会议':'InternationalConf', '国际期刊':'InternationalJournal'}
+CHINESE = {'Title':'篇名', 'Title2':'题名', 'Journal':'期刊',
+           'Cites':'被引', 'Options':'操作', 'Find':'共', 'NEXT':'下一页', 'OtherLang':'中外文题录'}
 
 class CNKI(DiskCache):
 
@@ -44,6 +45,168 @@ class CNKI(DiskCache):
 
         # Specify the path to chromedriver executable if not in PATH
         self.service = Service(chromedriver_path)  # Update with your ChromeDriver path
+
+    def get_references(self, obj_paper):
+        self.search_query = obj_paper['Title']
+        self.reference_count = 0
+        self.search_url = SEARCH_REFERENCES_URL.replace("<CODE>",obj_paper['scode']).replace("<DBCODE>",obj_paper['sdb']).replace('<DBNAME>',obj_paper['dbname'])
+        id_request = CNKI.generate_cache_key(self.search_url)
+        result = self.get_or_generate(id_request, self._do_reference_search)
+        return result
+
+    def _do_reference_search(self):
+        # Initialize the WebDriver with the specified options
+        driver = webdriver.Chrome(service=self.service, options=self.chrome_options)
+        # driver.set_page_load_timeout(max(60, self.citations_count*5))
+        # driver.set_script_timeout(max(60, self.citations_count*5))
+        driver.set_page_load_timeout(60)
+        driver.set_script_timeout(60)
+
+        # Step 1: Open the website
+        driver.get(self.search_url)
+
+        seq_id = 1
+        kinds = set()
+        results = []
+
+        ######################################
+        # Main crawler
+        def extract_references(kind_pagination=None):
+            nonlocal seq_id
+            try:
+                iframe = driver.find_element(By.ID, "frame1")
+                driver.switch_to.frame(iframe)
+            except Exception as ex:
+                # print(ex)
+                pass
+            # div_result = driver.find_element(By.ID, "frame1")
+
+            essay_boxes = driver.find_elements(By.CLASS_NAME, "essayBox")
+
+            for box in essay_boxes:
+                kind, npapers = box.find_element(By.TAG_NAME, "div").text.split(CHINESE["Find"])
+                kind = kind.strip()
+                npapers = int(npapers.replace('条','').strip())
+
+                if kind_pagination is None:
+                    self.reference_count += npapers # actual counts
+
+                if npapers > NPAPERS_PER_BOX and kind_pagination is None:
+                    kinds.add(kind)
+
+                if kind_pagination is None or kind_pagination==kind:
+                    papers = box.find_elements(By.TAG_NAME, "li")
+
+                    for paper in papers:
+                        tmp = paper.text.split('\n')[-1]
+                        filename, dbcode, dbname = None, None, None
+
+                        if len(tmp.split('.')) == 2:
+                            title = CNKI.cleanupstr(tmp.split('.')[0])
+                            year = CNKI.cleanupstr(tmp.split(',')[-1])
+                            authors = CNKI.cleanupstr(tmp.split(',')[-2])
+                            journal = CNKI.cleanupstr(tmp.split(',')[-3])
+
+                        elif kind != CHINESE['OtherLang']:
+                            if len(tmp.split('.')) > 4:
+                                title = CNKI.cleanupstr(tmp.split('.')[0])
+                                year = CNKI.cleanupstr(tmp.split('.')[-1])
+                                journal = CNKI.cleanupstr(tmp.split('.')[-2])
+                                authors = CNKI.cleanupstr(tmp.replace(title,'').replace(year,'').replace(journal,''))
+                            else:
+                                title = CNKI.cleanupstr(tmp.split('.')[0])
+                                authors = CNKI.cleanupstr(tmp.split('.')[1])
+                                journal = CNKI.cleanupstr(tmp.split('.')[2]) if kind==CHINESE['Journal'] else CNKI.cleanupstr(tmp.split('.')[2][:-5])
+                                year = CNKI.cleanupstr(tmp.split('.')[3]) if kind==CHINESE['Journal'] else CNKI.cleanupstr(tmp.split('.')[2][-4:])
+
+                            # Parse the URL
+                            try:
+                                url = paper.find_element(By.TAG_NAME, 'a').get_attribute('href')
+                                parsed_url = urlparse(url)
+                                query_params = parse_qs(parsed_url.query)
+                                filename = query_params.get('filename', [None])[0]
+                                dbcode = query_params.get('dbcode', [None])[0]
+                                dbname = query_params.get('dbname', [None])[0]
+                            except Exception as ex:
+                                # print(ex)
+                                pass
+
+                        else:
+                            title = None
+                            authors = CNKI.cleanupstr(tmp.split('.')[0])
+                            year = CNKI.cleanupstr(tmp.split('.')[-1])
+                            journal = CNKI.cleanupstr(tmp.replace(authors,'').replace(year,''))
+
+                        # main: https://oversea.cnki.net/kns/Detail?sfield=fn&QueryID=0&CurRec=1&recid=&FileName=WLZZ407.001&DbName=CJFD9495&DbCode=CJFD&yx=&pr=&URLID=
+                        # main cites: https://oversea.cnki.net/kns/Detail?sdb=CJFD&sfield=cite&skey=%e4%ba%9a%e7%9a%ae%e7%a7%92%e5%85%89%e6%95%b4%e6%b5%81%e6%95%88%e5%ba%94&scode=WLZZ407.001
+                        # cite: https://oversea.cnki.net/kcms/detail/detail.aspx?filename=GXXB202215002&dbcode=CJFQ&dbname=DKFXTEMP&v=
+
+                        results.append({
+                            "order": seq_id,
+                            "title": title,
+                            "authors": authors,
+                            "journal": journal,
+                            "year": year,
+                            "kind": ENGLISH[kind],
+                            "filename": filename,
+                            "dbcode": dbcode,
+                            "dbname": dbname,
+                        })
+                        seq_id += 1
+                time.sleep(1)
+        ######################################
+
+        # Click on references (to reload)
+        try:
+            time.sleep(30)
+            ref_button = driver.find_element(By.ID, "rl1")
+            ref_button.click()
+        except Exception as ex:
+            print('ERROR 1:', ex)
+            return None
+
+        try:
+            self.reference_count = int(driver.find_element(By.ID, 'rc1').text.strip(')').strip('('))
+        except Exception as ex:
+            print('ERROR 2:', ex)
+            self.reference_count = 0
+
+        if self.reference_count > 0:
+            # waiting times based on # of papers to load
+            wait = max(30, int(self.reference_count / 10))
+            minwait = 5
+
+            # get citations current page
+            try:
+                time.sleep(wait)
+                self.reference_count = 0 # the reference count from "rc1" sometimes does not show what it actually has.
+                extract_references()
+                flag = True
+            except Exception as ex:
+                print(ex)
+                flag = False
+
+            # get citations with pagination
+            if flag:
+                for kind in kinds:
+                    while True:
+                        try:
+                            xpath = f"//div[@class='essayBox'][.//div[@class='dbTitle' and text()='{kind}']]//div[@class='pageBar']//a[text()='{CHINESE['NEXT']}']"
+                            next_button = driver.find_element(By.XPATH, xpath)
+                            next_button.click()
+                            time.sleep(minwait)
+                            # WebDriverWait(driver, wait).until(EC.staleness_of(next_button))
+                            WebDriverWait(driver, wait).until(EC.visibility_of_all_elements_located((By.CLASS_NAME, "essayBox")))
+                            time.sleep(minwait)
+                            extract_references(kind_pagination=kind)
+                        except Exception as ex:
+                            #print(ex)
+                            break
+
+            driver.quit()
+
+        print(f"reference results ({self.search_query}): {len(results)} (out of {self.reference_count})")
+        return None if len(results) < self.reference_count else results
 
     def get_citations(self, obj_paper):
         self.search_query = obj_paper['Title']
@@ -70,7 +233,7 @@ class CNKI(DiskCache):
 
         ######################################
         # Main crawler
-        def extract_papers(kind_pagination=None):
+        def extract_citations(kind_pagination=None):
             nonlocal seq_id
             div_result = driver.find_element(By.ID, "divResult")
             essay_boxes = div_result.find_elements(By.CLASS_NAME, "essayBox")
@@ -87,13 +250,12 @@ class CNKI(DiskCache):
                     papers = box.find_elements(By.TAG_NAME, "li")
 
                     for paper in papers:
-                        print(paper.text)
                         tmp = paper.text.split('\n')[-1]
                         if kind != CHINESE['OtherLang']:
-                            title = tmp.split('. ')[0].replace('[J]','').replace('[D]','').replace('[T]','')
-                            authors = tmp.split('. ')[1]
-                            journal = tmp.split('. ')[2] if kind==CHINESE['Journal'] else tmp.split('.')[2][:-5].strip()
-                            year = tmp.split('. ')[3] if kind==CHINESE['Journal'] else tmp.split('.')[2][-4:].strip()
+                            title = CNKI.cleanupstr(tmp.split('.')[0])
+                            authors = CNKI.cleanupstr(tmp.split('.')[1])
+                            journal = CNKI.cleanupstr(tmp.split('.')[2]) if kind==CHINESE['Journal'] else CNKI.cleanupstr(tmp.split('.')[2][:-5])
+                            year = CNKI.cleanupstr(tmp.split('.')[3]) if kind==CHINESE['Journal'] else CNKI.cleanupstr(tmp.split('.')[2][-4:])
 
                             # Parse the URL
                             try:
@@ -107,9 +269,14 @@ class CNKI(DiskCache):
                                 filename, dbcode, dbname = None, None, None
                         else:
                             title, filename, dbcode, dbname = None, None, None, None
-                            authors = tmp.split('.')[0].strip()
-                            year = tmp.split('.')[-1].strip()
-                            journal = tmp.replace(authors,'').replace(year,'').strip('.').strip()
+                            if len(tmp.split('.')) > 3:
+                                authors = CNKI.cleanupstr(tmp.split('.')[-3])
+                                year = CNKI.cleanupstr(tmp.split('.')[-1])
+                                journal = CNKI.cleanupstr(tmp.split('.')[-2])
+                            else:
+                                authors = CNKI.cleanupstr(tmp.split('.')[0])
+                                year = CNKI.cleanupstr(tmp.split('.')[-1])
+                                journal = CNKI.cleanupstr(tmp.replace(authors,'').replace(year,''))
 
                         # main: https://oversea.cnki.net/kns/Detail?sfield=fn&QueryID=0&CurRec=1&recid=&FileName=WLZZ407.001&DbName=CJFD9495&DbCode=CJFD&yx=&pr=&URLID=
                         # main cites: https://oversea.cnki.net/kns/Detail?sdb=CJFD&sfield=cite&skey=%e4%ba%9a%e7%9a%ae%e7%a7%92%e5%85%89%e6%95%b4%e6%b5%81%e6%95%88%e5%ba%94&scode=WLZZ407.001
@@ -137,7 +304,7 @@ class CNKI(DiskCache):
         # get citations current page
         try:
             time.sleep(wait)
-            extract_papers()
+            extract_citations()
             flag = True
         except Exception as ex:
             print(ex)
@@ -155,14 +322,14 @@ class CNKI(DiskCache):
                         # WebDriverWait(driver, wait).until(EC.staleness_of(next_button))
                         WebDriverWait(driver, wait).until(EC.visibility_of_all_elements_located((By.CLASS_NAME, "essayBox")))
                         time.sleep(minwait)
-                        extract_papers(kind_pagination=kind)
+                        extract_citations(kind_pagination=kind)
                     except Exception as ex:
-                        print(ex)
+                        #print(ex)
                         break
 
         driver.quit()
 
-        print(f"results ({self.search_query}): {len(results)} (out of {self.citations_count})")
+        print(f"citation results ({self.search_query}): {len(results)} (out of {self.citations_count})")
         return None if len(results) < self.citations_count else results
 
 
@@ -216,8 +383,33 @@ class CNKI(DiskCache):
                     header = '编号' if header in NONE else header
                     data[ENGLISH[header]] = cell.text
 
+                    # DBNAME for references
+                    if header in ['Title', CHINESE['Title'], CHINESE['Title2']]:
+                        # get dbanme from URL in Tile
+                        data['dbname'] = None
+                        try:
+                            link = cell.find_element(By.TAG_NAME, "a")
+                            url_details = link.get_attribute("href") if link else None
+                            if url_details not in NONE:
+                                # Parse the URL
+                                parsed_url = urlparse(url_details)
+
+                                # Parse the query parameters
+                                query_params = parse_qs(parsed_url.query)
+
+                                # Extract the values for scode and sdb
+                                dbname = query_params.get('DbName', [None])[0]
+                                data['dbname'] = dbname
+
+                        except Exception as ex:
+                            # print(ex)
+                            pass
+
+                    # SCODE and SDB for Citations
                     if header in ['Cites', CHINESE['Cites']]:
                         # Check if the cell contains an <a> tag
+                        # Get scode, sdb from URL in Cites
+
                         # data['url_citations'] = None
                         data['Cites'] = 0 if data['Cites'] in NONE else data['Cites']
                         data['scode'] = None
@@ -244,6 +436,7 @@ class CNKI(DiskCache):
                                     data['sdb'] = sdb
 
                         except Exception as ex:
+                            # print(ex)
                             pass
 
                 if Levenshtein.distance(data['Title'].lower(), self.search_query.lower()) < 5 and \
@@ -269,3 +462,7 @@ class CNKI(DiskCache):
             user_agents = [line.strip().replace('\n', '') for line in f.readlines()]
         user_agents = itertools.cycle(user_agents)
         return user_agents
+
+    @staticmethod
+    def cleanupstr(s):
+        return s.replace('[J]', '').replace('[D]', '').replace('[T]', '').strip('.').strip().strip('.').strip()
