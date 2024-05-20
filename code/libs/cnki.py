@@ -465,4 +465,4 @@ class CNKI(DiskCache):
 
     @staticmethod
     def cleanupstr(s):
-        return s.replace('[J]', '').replace('[D]', '').replace('[T]', '').strip('.').strip().strip('.').strip()
+        return s.replace('[J]', '').replace('[D]', '').replace('[T]', '').replace('[M]', '').replace('[A]', '').replace('[C]', '').strip('.').strip().strip('.').strip()
