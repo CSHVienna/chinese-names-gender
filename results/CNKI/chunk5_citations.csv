@@ -1,0 +1,122 @@
+chunk_id,main_paper_id,order,title,authors,journal,year,kind,filename,dbcode,dbname
+5,1,1,大范围频差可调谐Y型腔双波长激光器实验研究,"周慧敏,胡淼,夏梦莹,胡喜明,许蒙蒙,钱正丰,毕美华,卢旸",激光与光电子学进展,2021(07),Journal,JGDJ202107028,DKFX,DKFXTEMP
+5,1,2,,H,Applied Physics,2006,OtherLang,,,
+5,1,3,,"Pablo G,Rick T",Journal of the Optical Society of America B Optical Physics,2008,OtherLang,,,
+5,1,4,,P,Optics Letters,2007,OtherLang,,,
+5,1,5,,"Jiang Z P,Zhang X C",Applied Physics Letters,1998,OtherLang,,,
+5,1,6,,"Li L J,Wang X L,Zhai H C",Optics Letters,2011,OtherLang,,,
+5,1,7,,"Gabolde Pablo,Trebino Rick",Optics Express,2006,OtherLang,,,
+5,1,8,,‐C,Applied Physics,1995,OtherLang,,,
+5,1,9,,J,Applied Physics,2005,OtherLang,,,
+5,1,10,,"Yoichi K,Takashi Y,Hironori T,Shinichiro A",Optics Letters,2008,OtherLang,,,
+5,1,11,,-C,Optics Letters,1998,OtherLang,,,
+5,1,12,,"Chen Tang,Hai Qing Yan,Hao Zhang,Ming Liu,Gui Min Zhang",Acta Physiologica Sinica,2004,OtherLang,,,
+5,1,13,,"Bass M,van Stryland E,Williams D,Wolfe W",the Optical Society of America,2009,OtherLang,,,
+5,1,14,,"Yang, Jin,Gao, Deli",Guofang Keji Daxue Xuebao/Journal of National University of Defense Technology,1998,OtherLang,,,
+5,1,15,,-C,Optics Letters,1999,OtherLang,,,
+5,1,16,,"O’Shea, Patrick,Kimmel, Mark,Gu, Xun,Trebino, Rick",Optics Letters,2001,OtherLang,,,
+5,1,17,,"Yang Y P,Shi Y L,Wang L et al",Acta Physica Sinica,2005,OtherLang,,,
+5,2,1,双合成波长数字全息低噪声分级解包裹方法,"刘磊,徐志博,钱文硕,李文杰,谢芳,钟志,单明广",物理学报,2021(22),Journal,WLXB202122010,CJFD,CJFDTEMP
+5,2,2,基于双色LED芯片的双波长像面数字全息显微术,"邓丽军,黄星艳,曾吕明,黄振,刘国栋",光学学报,2018(01),Journal,GXXB201801017,CJFD,CJFD2018
+5,2,3,非正交相位成像下的血细胞相位恢复及三维形态重建技术研究,韩豪,江苏大学,2021,Thesis,1021682333.nh,CDFD,CDFDTEMP
+5,2,4,水下目标高帧率长基线/超短基线组合精确定位关键技术研究,李晴,哈尔滨工程大学,2018,Thesis,1018285650.nh,CDFD,CDFDTEMP
+5,2,5,基于双波长数字全息显微的动态目标重建技术研究,胡琳,重庆理工大学,2019,Dissertation,1019071285.nh,CMFD,CMFDTEMP
+5,2,6,,"Kühn Jonas,Colomb Tristan,Montfort Frédéric,Charrière Florian,Emery Yves,Cuche Etienne,Marquet Pierre,Depeursinge Christian",Optics Express,2007,OtherLang,,,
+5,2,7,,"Goodman J W,Lawrence R W",Applied Physics Letters,1967,OtherLang,,,
+5,2,8,,"Daniel P,Myung K",Applied Optics,2006,OtherLang,,,
+5,2,9,,"Wang H Y,Liu F F,Song X F,Liao W,Zhao B Q,Yu M J,Liu Z Q",Acta Physica Sinica,2013,OtherLang,,,
+5,2,10,,"G,Leitgeb, Rainer A,Javidi, Bahram,Anand, Arun",Optics Letters,2012,OtherLang,,,
+5,2,11,,"Wang H Y,Zhang Z H,Liao W,Song X F,Guo Z J,Liu F F",Acta Physica Sinica,2012,OtherLang,,,
+5,2,12,,李世扬,西北工业大学,2005,OtherLang,,,
+5,2,13,,"Wang H Y,Liu F F,Liao W,Song X F,Yu M J,Liu Z Q",Acta Physica Sinica,2013,OtherLang,,,
+5,2,14,,"Khmaladze Alexander,Kim Myung,Lo Chun-Min",Optics Express,2008,OtherLang,,,
+5,3,1,共轭涡旋光干涉位移测量拓扑荷优化实验研究,"赵秉义,赵冬娥,马亚云,褚文博",光电子技术,2023(01),Journal,GDJS202301002,CJFD,CJFDTEMP
+5,3,2,基于涡旋光与球面波干涉的微位移测量研究,"赵冬娥,王思育,马亚云,张斌,李诺伦,李沅,褚文博",红外与激光工程,2020(04),Journal,HWYJ202004025,DKFX,DKFXTEMP
+5,3,3,涡旋光束的波前校正方法及其在光通信中的应用研究,罗子淇,电子制作,2018(21),Journal,DZZZ201821014,CJFD,CJFDTEMP
+5,3,4,Perfect digital holographic imaging with high resolution using a submillimeter-dimension CCD sensor,"王华英,熊南燕,栗军香,董昭,江夏男,范锋,耿亚光,朱巧芬",Frontiers of Physics,2016 (06),Journal,,,
+5,3,5,光谱测定中暗场光散射数据挖掘系统优化设计,"范桂龄,张玉成",激光杂志,2016(09),Journal,JGZZ201609015,CJFD,CJFD2016
+5,3,6,基于结构光照明的数字全息显微术,"袁操今,冯少彤,聂守平",中国激光,2016(06),Journal,JJZZ201606029,CJFD,CJFD2016
+5,3,7,超分辨光学显微成像光场调控方法研究,李丹翠,西安电子科技大学,2021,Thesis,1022023711.nh,CDFD,CDFDTEMP
+5,3,8,可控模式被动调Q微片激光器,钱壮林,华中科技大学,2022,Dissertation,1023474528.nh,CMFD,CMFDTEMP
+5,3,9,局域空心光束的动态调控研究,付文升,长春理工大学,2022,Dissertation,1022769847.nh,CMFD,CMFDTEMP
+5,3,10,相位奇点可调控一维涡旋阵列被动调Q微片激光器研究,汪晓灿,厦门大学,2020,Dissertation,1020060090.nh,CMFD,CMFDTEMP
+5,3,11,轴锥镜贝塞尔光束与局域空心光束的研究,杨力,昆明理工大学,2020,Dissertation,1020318412.nh,CMFD,CMFDTEMP
+5,3,12,"环形光泵浦的Yb:YAG高光学转换效率LG0,1涡旋微片激光器",彭博,厦门大学,2019,Dissertation,1019236729.nh,CMFD,CMFDTEMP
+5,3,13,双涡旋被动调Q微片激光器性能研究,潘越,厦门大学,2019,Dissertation,1019129435.nh,CMFD,CMFDTEMP
+5,3,14,环形光泵浦的连续和脉冲涡旋Nd:YAG微片激光器的研究,何宏森,厦门大学,2018,Dissertation,1018195893.nh,CMFD,CMFDTEMP
+5,3,15,基于局域空心光束照明实现数字全息显微超分辨的应用研究,张文燕,昆明理工大学,2018,Dissertation,1018867762.nh,CMFD,CMFDTEMP
+5,3,16,基于环形光瞳滤波器的超分辨数字全息显微成像理论与实验研究,张巧鸽,昆明理工大学,2017,Dissertation,1017222507.nh,CMFD,CMFD2018
+5,3,17,光学涡旋在成像中的应用研究,周意,南京师范大学,2017,Dissertation,1017285325.nh,CMFD,CMFD2018
+5,3,18,,"Porras M A,Borghi R,Santarsiero M",Journal of the Optical Society of America A Optics Image Science and Vision,2001,OtherLang,,,
+5,3,19,,"Park YongKeun,Choi Wonshik,Yaqoob Zahid,Dasari Ramachandra,Badizadegan Kamran,Feld Michael S",Optics Express,2009,OtherLang,,,
+5,3,20,,"Dubois, Frank,Grosfils, Patrick",Optics Letters,2008,OtherLang,,,
+5,3,21,,Chinese Physics,B,2012,OtherLang,,,
+5,3,22,,Opt,Express,2014,OtherLang,,,
+5,3,23,,"Born M,Wolf E",World Book Inc,2001,OtherLang,,,
+5,3,24,,Biomed,Opt,2013,OtherLang,,,
+5,4,1,部分相干离轴涡旋光束在大气湍流中的光强分布,"柯熙政,王超珍",光学学报,2017(01),Journal,GXXB201701005,CJFD,CJFD2017
+5,4,2,离轴径向偏振高斯光束的非傍轴传输特性,"倪波,郭利娜,吴泳波,唐志列",华南师范大学学报(自然科学版),2016(03),Journal,HNSF201603013,CJFD,CJFD2016
+5,4,3,金属铝表面矢量光场的反射特性研究,武士潭,长春理工大学,2023,Dissertation,1023859563.nh,CMFD,CMFDTEMP
+5,4,4,部分相干涡旋光束在大气湍流中的光强分布研究,王超珍,西安理工大学,2017,Dissertation,1017731738.nh,CMFD,CMFD2018
+5,4,5,部分相干光在湍流中传输特性及“鬼”成像研究,魏志敏,南京师范大学,2017,Dissertation,1017285323.nh,CMFD,CMFD2018
+5,4,6,,"GROSJEAN T,COURJON D",Optics Communication,2007,OtherLang,,,
+5,4,7,,Opt,Photon,2009,OtherLang,,,
+5,4,8,,"张明明,赵琦,辛熠,陈延如",,2013,OtherLang,,,
+5,4,9,,"Watanabe, Kouyou,Horiguchi, Nobuhiro,Kano, Hiroshi",Applied Optics,2007,OtherLang,,,
+5,4,10,,李会容,华东师范大学,2011,OtherLang,,,
+5,4,11,,NewJ,Phys,2004,OtherLang,,,
+5,4,12,,"Liu, Pusheng,Lü, Baida",Optics and Laser Technology,2008,OtherLang,,,
+5,4,13,,Tovar A A,Journal of the Optical Society of America,1998,OtherLang,,,
+5,4,14,,"Salamin, Yousef I",Optics Letters,2007,OtherLang,,,
+5,4,15,,"Gradshteyn IS, Ryzhik IM",New York,1980,OtherLang,,,
+5,5,1,数字全息测量系统像质改善及应用研究,席特立,西北工业大学,2019,Thesis,1022464607.nh,CDFD,CDFDTEMP
+5,5,2,基于数字全息干涉技术的Fe掺杂KTN晶体电致应变性能研究,金昕宇,哈尔滨工业大学,2021,Dissertation,1021900963.nh,CMFD,CMFDTEMP
+5,5,3,基于像面数字全息的物体动态形变测量研究,吴海钰,重庆理工大学,2020,Dissertation,1020055204.nh,CMFD,CMFDTEMP
+5,5,4,,"Picart P,Leval J",JOSAA,2008,OtherLang,,,
+5,5,5,,"Mann Christopher,Yu Lingfeng,Lo Chun-Min,Kim Myung",Optics Express,2005,OtherLang,,,
+5,5,6,,"Yamaguchi, Ichirou,Zhang, Tong",Optics Letters,1997,OtherLang,,,
+5,5,7,,"Rosen, Joseph,Brooker, Gary",Optics Letters,2007,OtherLang,,,
+5,5,8,,"Ferraro Pietro,Grilli Simonetta,Alfieri Domenico,De Nicola Sergio,Finizio Andrea,Pierattini Giovanni,Javidi Bahram,Coppola Giuseppe,Striano Valerio",Optics Express,2005,OtherLang,,,
+5,6,1,基于螺旋天线的涡旋电磁波产生与调控机理研究,刘童,电子科技大学,2022,Dissertation,1022542847.nh,CMFD,CMFDTEMP
+5,6,2,,Gbur G,Optician,2016,OtherLang,,,
+5,6,3,,"博伊尔著,艾海舟,武勃译",北京清华大学出版社,2003,OtherLang,,,
+5,6,4,,Opt,Photon,2009,OtherLang,,,
+5,6,5,,"Nie Z Q,Ding W Q,Shi G,Li D Y,Zhang X R,Wang Y X,Song Y L",Optics Express,2015,OtherLang,,,
+5,6,6,,"Weller, D,Moser, A",Magnetics IEEE Transactions on,1999,OtherLang,,,
+5,6,7,,"Wen J S,Wang L G,Yang X H,Zhang J X,Zhu S Y",Optics Express,2019,OtherLang,,,
+5,6,8,,Pitaevskii L P,Soviet Physics JETP,1961,OtherLang,,,
+5,6,9,,"Gong L P,Wang L,Zhu Z Q,Wang X L,Zhao H,Gu B",Applied Optics,2016,OtherLang,,,
+5,6,10,,"方桂娟,孙顺红,蒲继雄",物理学报,2012,OtherLang,,,
+5,6,11,,Soc,A,1959,OtherLang,,,
+5,6,12,,"Liu C X,Chew K H,Wu Y,Chen R P",Journal of the Optical Society of America A Optics Image Science and Vision,2020,OtherLang,,,
+5,6,13,,"Guo, Cheng-Shan,Yu, Ya-Nan,Hong, Zhengping",Optics Communication,2010,OtherLang,,,
+5,6,14,,"Jiang Y S,Li X P,Gu M",Optics Letters,2013,OtherLang,,,
+5,6,15,,"Zhang Y,Okuno Y,Xu X",Journal of the Optical Society of America B Optical Physics,2009,OtherLang,,,
+5,6,16,,"Xu H F,Zhang R,Sheng Z Q,Qu J",Optics Express,2019,OtherLang,,,
+5,6,17,,A-Pure Appl,Op,2004,OtherLang,,,
+5,6,18,,Phys,B,2013,OtherLang,,,
+5,6,19,,Magn,Mater,2006,OtherLang,,,
+5,6,20,,"Wang S C,Li X P,Zhou J Y,Gu M",Optics Letters,2014,OtherLang,,,
+5,6,21,,S,Physical Review,1963,OtherLang,,,
+5,6,22,,"Vetsch E,Reitz D,Sagué G,Schmidt R,Dawkins S T,Rauschenbeutel A",Physical Review,2010,OtherLang,,,
+5,6,23,,NewJ,Phys,2004,OtherLang,,,
+5,6,24,,"M,Moreno I,Yuan X",Applied Optics,2010,OtherLang,,,
+5,6,25,,"Wang S C,Li X P,Zhou J Y,Gu M",Optics Express,2015,OtherLang,,,
+5,7,1,飞秒激光在空气中成丝诱导氮荧光发射的空间分布,"张云,林爽,张云峰,张鹤,常明莹,于淼,王雅秋,蔡晓明,姜远飞,陈安民,李苏宇,金明星",物理学报,2021(13),Journal,WLXB202113018,CJFD,CJFDTEMP
+5,7,2,飞秒激光低压N2等离子体特性的实验研究,"刘小亮,孙少华,曹瑜,孙铭泽,刘情操,胡碧涛",物理学报,2013(04),Journal,WLXB201304053,CJFD,CJFD2013
+5,7,3,飞秒激光烧蚀钛的过程及其等离子体特性研究,刘栋,山东师范大学,2016,Thesis,1016089239.nh,CDFD,CDFD2017
+5,7,4,飞秒激光诱导击穿光谱增强特性的研究,刘小亮,兰州大学,2014,Thesis,1014297899.nh,CDFD,CDFD2015
+5,7,5,基于LIBS技术的钢水成分检测优化方法,肖磊,华北理工大学,2017,Dissertation,1017741995.nh,CMFD,CMFD2018
+5,7,6,半绝缘GaAs PCSS触发瞬态沿面闪络问题的研究,李晓波,西安理工大学,2016,Dissertation,1021701003.nh,CMFD,CMFDTEMP
+5,7,7,温度对飞秒激光诱导击穿光谱特性的影响,田丹,吉林大学,2016,Dissertation,1016080117.nh,CMFD,CMFD2016
+5,7,8,,"Geertsen C,Mauchien P",Kluwer,1995,OtherLang,,,
+5,7,9,,"Vadillo J M,Milan M,Laserna J J",Journal of Analytical Chemistry,1996,OtherLang,,,
+5,7,10,,Telle H H,Proceedings of SPIE the International Society for Optical Engineering,1996,OtherLang,,,
+5,7,11,,Sarger,Spectrochimica Acta Part B Atomic Spectroscopy,2004,OtherLang,,,
+5,7,12,,"Radziemski L J,Cremers D A",CRC,1989,OtherLang,,,
+5,7,13,,"Borghese A,Merola S S",Applied Optics,1998,OtherLang,,,
+5,7,14,,"Baudelet M,Guyon L,Yu J,et al",Journal of Applied Physiology,2006,OtherLang,,,
+5,7,15,,"Zhu X N,Fu R L",Proceedings of SPIE the International Society for Optical Engineering,2003,OtherLang,,,
+5,7,16,,Srinivasan-Rao,Physical Review Letters,1986,OtherLang,,,
+5,7,17,,"Crosley,et al",Applied Physics B Photophysics Laser Chemistry,1999,OtherLang,,,
+5,7,18,,"Li X F, Fan T Y",Chinese Physics Letter,1998,OtherLang,,,
