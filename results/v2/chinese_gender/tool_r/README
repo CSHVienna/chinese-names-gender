@@ -1,0 +1,21 @@
+
+CNKI_uniqueChineseNames_gender.csv: the computed result from “ChineseNames”. 
+There are other indicators in dataframe, but the gender is “NG”
+- --1~1
+- NG = (Nmale -- Nfemale) / (Nmale + Nfemale)
+  - NG ranges from --1 (completely feminine; 100% used by female) through 0 
+    (gender-neutral; half by female and half by male) to 1 (completely masculine; 100% used by male).
+
+Since this detection only cares about the given name, but it requires input fullname, 
+it actually returns surname and given name separately. So I add the “_CN” to 
+indicate the return surname and givenname from this library. But I have checked, 
+they are the same as the original “familyname” and “givenname”. 
+
+CNKI_uniqueChineseGivenNames_gender.csv: remove the duplicates, only the results with unique given names.
+
+gender.R: code in R. 
+
+https://github.com/psychbruce/ChineseNames
+https://cran.r-project.org/web/packages/ChineseNames/ChineseNames.pdf
+
+@LIU

@@ -1,0 +1,36 @@
+chunk_id,main_paper_id,order,title,authors,journal,year,kind,filename,dbcode,dbname
+7,1,1,,Tian J G et al,Applied Optics,1995,OtherLang,,,
+7,1,2,,Fleck J A et al,Applied Physics,1976,OtherLang,,,
+7,2,1,"χ （2） cascading phenomena and their applications to all-optical signal processing, mode-locking, pulse compression and solitons","G. I. Stegeman,D. J. Hagan,L. Torner.",Optical and Quantum Electronics,1996 (12),InternationalJournal,,,
+7,2,2,,"Hagan D J, Sheik-Bahae M, Wang Z et al",Optics Letters,1994,OtherLang,,,
+7,2,3,,"Desalvo R, Hagan D J, Sheik-Bahae M et al",Optics Letters,1992,OtherLang,,,
+7,2,4,,Electron,"Wang Z, Hagan D J, Vanstryland E W et al. Lett",1996,OtherLang,,,
+7,2,5,,"Stegeman G I, Sheik-Bahae M, Vanstryland E W et al",Optics Letters,1993,OtherLang,,,
+7,2,6,,"Belashenkov N R, Gagarskii S V, Inochkin M V",Opt. Spectroscopy,1989,OtherLang,,,
+7,2,7,,"Assanto G, Torelli I",Optics Communication,1995,OtherLang,,,
+7,2,8,,"Kobyakov A, Lederer F",Physical Review,1996,OtherLang,,,
+7,3,1,厚非线性介质瞬态热光非线性效应的研究,"周文远,田建国,臧维平,张春平,张光寅,王肇圻",物理学报,2002(11),Journal,WLXB200211037,cjfd,cjfd2002
+7,3,2,非傍轴光束的小尺度自聚焦研究,"文双春,范滇元",物理学报,2000(03),Journal,WLXB200003014,cjfd,cjfd2000
+7,3,3,Z扫描测量中的热致非线性效应,"贾振红,李劬,陈益新,陈英礼,周骏",光学学报,1996(05),Journal,GXXB605.013,CJFD,CJFD1996
+7,3,4,厚光学非线性介质Z扫描理论分析,臧维平，田建国，张光寅,物理学报,1994(03),Journal,WLXB403.016,CJFD,CJFD1994
+7,4,1,厚非线性介质瞬态热光非线性效应的研究,"周文远,田建国,臧维平,张春平,张光寅,王肇圻",物理学报,2002(11),Journal,WLXB200211037,cjfd,cjfd2002
+7,4,2,Ne原子1s＿5－4d＿1〃双光子吸收截面的计算与实验测定,周达君，谢汉伟,物理学报,1994(12),Journal,WLXB412.003,CJFD,CJFD1994
+7,5,1,非傍轴光束的小尺度自聚焦研究,"文双春,范滇元",物理学报,2000(03),Journal,WLXB200003014,cjfd,cjfd2000
+7,5,2,Z扫描测量中的热致非线性效应,"贾振红,李劬,陈益新,陈英礼,周骏",光学学报,1996(05),Journal,GXXB605.013,CJFD,CJFD1996
+7,5,3,厚光学非线性介质Z扫描理论分析,臧维平，田建国，张光寅,物理学报,1994(03),Journal,WLXB403.016,CJFD,CJFD1994
+7,5,4,,"LeiteRCC,PortoSPSetal",Applied Physics Letters,1967,OtherLang,,,
+7,8,1,紫外傅里叶变换光谱仪干涉图数据处理,"李志刚,王淑荣,李福田",光谱学与光谱分析,2000(02),Journal,GUAN200002016,cjfd,cjfd2000
+7,8,2,光学[M],[美]赞斯（A·Zajac） 著,[美]赫克特（E·Hecht）,1979,Books,,,
+7,9,1,,"Dini A,Hanack M,Meneghetti M",Journal of Physical Chemistry B,2005,OtherLang,,,
+7,9,2,,"Nage K M,Rao S V,Rao D N",Journal of the Optical Society of America B Optical Physics,2003,OtherLang,,,
+7,9,3,,"Byeon L C,McKerns MM,Sun WF,Nordlund T M,Lawson C M",Applied Physics Letters,2004,OtherLang,,,
+7,9,4,,"Sheikbahae M,Said A","A,Wei T.H,Hagan D.J,Stryland E.W.V. IEEE Journal of Quantum Electronics",1990,OtherLang,,,
+7,9,5,,"McLean D G,Sutherland RL,Brand MC,Brandelik D M,Fleitz P A,Pottenger T",Optics Letters,1999,OtherLang,,,
+7,9,6,,"Mckerns MM,Sun WF,Lawson C M,Gray G M",Journal of the Optical Society of America B Optical Physics,2005,OtherLang,,,
+7,9,7,,"Martin R B,Li HP,Gu L R,Kumar S,Sanders C M,Sun Y P",Optical Materials,2005,OtherLang,,,
+7,9,8,,"Li C F,Zhang L,Yang M,Wang H,Wang Y",Physical Review A Atomic Molecular and Optical Physics,1994,OtherLang,,,
+7,9,9,,"Tutt,L","W,Boggess,T.F. Prog.Quantum Electron",1993,OtherLang,,,
+7,9,10,,"Kiran,P","P,Reddy,D.R,Maiya,B.G,Dharmadhikari,A.K,Kumar,G.R,Desai,N.R. Applied Optics",2002,OtherLang,,,
+7,9,11,,"Tong R,Wu H X,Li B,et al",Physica B Condensed Matter,2005,OtherLang,,,
+7,10,1,克尔介质中瞬态热光非线性效应的作用,"周文远,田建国,臧维平,刘智波,张春平,张光寅",物理学报,2004(02),Journal,WLXB200402053,CJFD,CJFD2004
+7,10,2,8-辛烷氧基金属酞菁的皮秒三阶光学非线性与光限幅特性,"陈煜,李云静,聂玉昕,王夺元",物理学报,2002(03),Journal,WLXB200203022,cjfd,cjfd2002

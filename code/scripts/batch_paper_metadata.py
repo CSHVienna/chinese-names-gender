@@ -155,7 +155,7 @@ if __name__ == "__main__":
 
     # Add arguments
     parser.add_argument('--xls_fn', help='name_citation_test.xlsx', type=str, required=True)
-    parser.add_argument('--output_dir', help='../../results', type=str, required=True)
+    parser.add_argument('--output_dir', help='../../results/CNKI', type=str, required=True)
     parser.add_argument('--cache_dir', help='../../cache', type=str, required=True)
     parser.add_argument('--chunk_id', help='Id from 1 to 10', type=int, required=True, default=1)
     parser.add_argument('--test', help='Simple test or not', action='store_true')
