@@ -9,24 +9,6 @@ This repository contains datasets related to gender inference using the Namsor A
 
 ## Files
 
-### 0. `PD_names_gender_Namsor.csv`
-
-- **Source**: New disambiguation with Namsor for the 39712 unique names in `results/v3/names/chinese/CNKI_uniqueChineseGivenNames_CNKIpop.csv` (new disambiguation)
-- **Author**: Ana Maria Jaramillo
-- **Date**: 2025-07-21  
-- **Size**: 4.7 MB  
-- **Records**: 39,712  
-- **Columns**:  
-  - `nameSearched`
-  - `script`
-  - `id`
-  - `nameRetrieved`
-  - `likelyGender`
-  - `genderScale`
-  - `score`
-  - `probabilityCalibrated`
-- **Clarification**: `nameSearched` and `nameRetrieved` should be the same, but in case there are differences, they should be related to problems in the Namsor database. 
-
 ### 1. `CNKI_uniqueChineseGivenNames_gender.csv`
 
 - **Source**: Curated after merging `Dict_gender_all.pkl` and `results/v3/names/chinese/CNKI_uniqueChineseGivenNames_CNKIpop.csv` (new disambiguation)
