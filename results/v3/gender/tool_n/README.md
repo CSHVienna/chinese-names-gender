@@ -9,6 +9,24 @@ This repository contains datasets related to gender inference using the Namsor A
 
 ## Files
 
+### 2. `PD_names_gender_Namsor.csv`
+
+- **Source**: New disambiguation with Namsor for the 39712 unique names in `results/v3/names/chinese/CNKI_uniqueChineseGivenNames_CNKIpop.csv` (new disambiguation)
+- **Author**: Ana Maria Jaramillo
+- **Date**: 2025-07-21  
+- **Size**: 4.7 MB  
+- **Records**: 39,712  
+- **Columns**:  
+  - `nameSearched`
+  - `script`
+  - `id`
+  - `nameRetrieved`
+  - `likelyGender`
+  - `genderScale`
+  - `score`
+  - `probabilityCalibrated`
+- **Clarification**: `nameSearched` and `nameRetrieved` should be the same, but in case there are differences, they should be related to problems in the Namsor database. 
+
 ### 1. `CNKI_uniqueChineseGivenNames_gender.csv`
 
 - **Source**: Curated after merging `Dict_gender_all.pkl` and `results/v3/names/chinese/CNKI_uniqueChineseGivenNames_CNKIpop.csv` (new disambiguation)
@@ -27,7 +45,7 @@ This repository contains datasets related to gender inference using the Namsor A
   - `probabilityCalibrated`
 
 
-### 2. `Dict_gender_all.pkl`
+### 2. `Dict_gender_all.pkl` (deprecated)
 
 - **Source**: Email attachment  
 - **Author**: Ana M. Jaramillo  
@@ -67,7 +85,7 @@ This repository contains datasets related to gender inference using the Namsor A
 
 ## Namsor Reference
 
-Namsor API: [https://namsor.app/api-documentation/#genderize-chinese-name-batch](https://namsor.app/api-documentation/#genderize-chinese-name-batch)  
+Namsor API: [https://gender-guesser.com/api/#genderize-chinese-full-name-batch]([https://namsor.app/api-documentation/#genderize-chinese-name-batch](https://gender-guesser.com/api/#genderize-chinese-full-name-batch))  
 - `genderScale`: Gender scale ranging from -1 (male) to +1 (female).  
 - `score`: Higher implies a more reliable result; not normalized.  
 - `probabilityCalibrated`: Higher implies a more reliable result; ranges from 0 to 1.
