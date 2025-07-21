@@ -9,7 +9,7 @@ This repository contains datasets related to gender inference using the Namsor A
 
 ## Files
 
-### 2. `PD_names_gender_Namsor.csv`
+### 0. `PD_names_gender_Namsor.csv`
 
 - **Source**: New disambiguation with Namsor for the 39712 unique names in `results/v3/names/chinese/CNKI_uniqueChineseGivenNames_CNKIpop.csv` (new disambiguation)
 - **Author**: Ana Maria Jaramillo
