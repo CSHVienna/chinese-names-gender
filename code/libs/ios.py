@@ -7,6 +7,38 @@ import json
 FN_AGENTS = 'agents.txt'
 FN_PROXIES = 'http_proxies.txt'
 
+def listdir(path, pattern=None, ext=None):
+    """
+    Lists files in a directory with optional pattern and extension filtering.
+    
+    :param path: Directory path to list files from.
+    :param pattern: Optional regex pattern to match filenames.
+    :param ext: Optional file extension to filter by.
+    :return: List of matching file paths.
+    """
+    if not os.path.exists(path):
+        return []
+    
+    files = os.listdir(path)
+    if pattern:
+        files = [f for f in files if glob.glob(os.path.join(path, f"*{pattern}*"))]
+    
+    if ext:
+        files = [f for f in files if f.endswith(ext)]
+    
+    print(f'[INFO] Found {len(files)} files in {path}.')
+    return [os.path.join(path, f) for f in files]
+
+def path_exists(path):
+    """
+    Checks if a given path exists.
+    
+    :param path: Path to check.
+    :return: True if the path exists, False otherwise.
+    """
+    return os.path.exists(path)
+
+
 def path_join(*paths):
    return os.path.join(*paths)
 

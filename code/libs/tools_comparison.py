@@ -54,9 +54,11 @@ class ToolsComparison(object):
         self.fn_ch_gender_r = ios.path_join(self.dir_tool_r, const.FN_CH_GIVEN_NAMES_GENDER)
         self.fn_ch_gender_n = ios.path_join(self.dir_tool_n, const.FN_CH_GIVEN_NAMES_GENDER)
         
+        # @TODO: load one single character data too from tools (CNKI_uniqueChineseCharacter_gender.csv)
+
         # all authors full names
-        self.fn_full_names_gender_w = ios.path_join(self.dir_tool_w, const.FN_FULL_NAMES_GENDER)
-        self.fn_full_names_gender_r = ios.path_join(self.dir_tool_r, const.FN_FULL_NAMES_GENDER)
+        # self.fn_full_names_gender_w = ios.path_join(self.dir_tool_w, const.FN_FULL_NAMES_GENDER)
+        # self.fn_full_names_gender_r = ios.path_join(self.dir_tool_r, const.FN_FULL_NAMES_GENDER)
 
         # annotations (ground truth)
         self.fn_gt = ios.path_join(self.dir_gt, const.FN_ANNOTATIONS)
@@ -65,35 +67,45 @@ class ToolsComparison(object):
         self.df_ch_gender_r = None
         self.df_ch_gender_n = None
         self.df_ch_genders = None
-        self.df_full_names_gender_w = None
-        self.df_full_names_gender_r = None
+        # self.df_full_names_gender_w = None # @deprecated
+        # self.df_full_names_gender_r = None # @deprecated
         self.df_gt = None
         self.gt_cols = None
 
     def load_data(self):
         # unique given names
-        self.df_ch_gender_w = ios.load_csv(self.fn_ch_gender_w)
-        self.df_ch_gender_r = ios.load_csv(self.fn_ch_gender_r)
-        self.df_ch_gender_n = ios.load_csv(self.fn_ch_gender_n)
-        # all author full names
-        self.df_full_names_gender_w = ios.load_csv(self.fn_full_names_gender_w)
-        self.df_full_names_gender_r = ios.load_csv(self.fn_full_names_gender_r)
+        self.df_ch_gender_w = ios.load_csv(self.fn_ch_gender_w).sort_values('givenname')
+        self.df_ch_gender_r = ios.load_csv(self.fn_ch_gender_r).sort_values('givenname')
+        self.df_ch_gender_n = ios.load_csv(self.fn_ch_gender_n).sort_values('givenname')
+        # # all author full names 
+        # self.df_full_names_gender_w = ios.load_csv(self.fn_full_names_gender_w) # @deprecated
+        # self.df_full_names_gender_r = ios.load_csv(self.fn_full_names_gender_r) # @deprecated
         # GT
-        self.df_gt = ios.load_excel(self.fn_gt).pivot_table(columns='Timestamp')
-        self.df_gt.columns = range(self.df_gt.shape[1])
-        self.df_gt.index.name = 'givenname'
+        if not ios.path_exists(self.fn_gt):
+            assert ToolsComparison.prepare_ground_truth(fn_gt=self.fn_gt)
+        ### >>> @deprecated
+        # self.df_gt = ios.load_excel(self.fn_gt).pivot_table(columns='Timestamp') 
+        # self.df_gt.columns = range(self.df_gt.shape[1])
+        # self.df_gt.index.name = 'givenname'
+        ### @deprecated <<<
+        self.df_gt = ios.load_csv(self.fn_gt)
         self.df_gt.loc[:,'gt'] = True
 
     def compare_unique_chinese_given_names(self):
         
         assert self.df_ch_gender_r.shape[0] == self.df_ch_gender_w.shape[0], 'Different number of names.'
         assert self.df_ch_gender_r.shape[0] == self.df_ch_gender_n.shape[0], 'Different number of names.'
+        
+        _tmpn = [g for g in self.df_gt.givenname if g not in self.df_ch_gender_n.givenname]
+        print('not in N: ',len(_tmpn),  _tmpn)
+        print('not in R: ', [g for g in self.df_gt.givenname if g not in self.df_ch_gender_r.givenname])
+        print('not in W: ', [g for g in self.df_gt.givenname if g not in self.df_ch_gender_w.givenname])
 
         # merging w and r
         # NG ranges from –1 (completely feminine; 100% used by female) through 0 (gender-neutral; half by female and half by male) to 1 (completely masculine; 100% used by male).
         self.df_ch_genders = pd.merge(self.df_ch_gender_r[['givenname','NG']], self.df_ch_gender_w[['givenname','gender']], on='givenname', suffixes=('_r', '_w'))
-        self.df_ch_genders = self.df_ch_genders.set_index('givenname').join(self.df_gt, how='left')
-        
+        self.df_ch_genders = self.df_ch_genders.set_index('givenname').join(self.df_gt.set_index('givenname'), how='left')
+              
         # renaming columns
         self.df_ch_genders.rename(columns={'gender':'gender_w', 'NG':'ngender_r'}, inplace=True)
         
@@ -113,12 +125,13 @@ class ToolsComparison(object):
         self.df_ch_genders.loc[:,'ngender_n'] = self.df_ch_genders.ngender_n.apply(lambda v: scale_minus1_to_1_to_0_to_1(v))
 
         # metrics
-        index = self.df_ch_genders.dropna().index
+        index_gt = self.df_gt.givenname
+        cols_gt = [c for c in self.df_gt.columns if c not in ['givenname', 'single_char', 'source']]
         self.gt_cols = [col for col in self.df_gt.columns if col not in ['NG', 'gender_r', 'gender_w', 'gender_n', 'ngender_w', 'ngender_r', 'ngender_n', 'givenname','gt']]
         for metric in [np.mean, np.median, np.std, _mode]:
             metric_name = metric.__name__.replace("_",'')
             # GT
-            self.df_ch_genders.loc[index,metric_name] = self.df_ch_genders.loc[index,:].apply(lambda row: scale_1_to_5_to_0_to_1(metric(row[self.gt_cols])), axis=1)
+            self.df_ch_genders.loc[index_gt,metric_name] = self.df_ch_genders.loc[index_gt,:].apply(lambda row: scale_1_to_5_to_0_to_1(metric(row[cols_gt].dropna())), axis=1) # @TODO: remove dropna once all GT is finalized
             # TOOLS
             self.df_ch_genders.loc[:,f'{metric_name}_ngender_rnw'] = self.df_ch_genders.apply(lambda row: metric([row['ngender_r'], row['ngender_n'], row['ngender_w']]), axis=1)
             self.df_ch_genders.loc[:,f'{metric_name}_ngender_rn'] = self.df_ch_genders.apply(lambda row: metric([row['ngender_r'], row['ngender_n']]), axis=1)
@@ -139,6 +152,55 @@ class ToolsComparison(object):
             raise ValueError('Path and filename must be provided.')
         fn = ios.path_join(path, fn)
         ios.to_csv(self.df_ch_genders, fn)
+
+    @staticmethod
+    def prepare_ground_truth(dir_gt=None, fn_gt=None):
+        if dir_gt is None:
+            raise ValueError('Directory for ground truth must be provided.')
+    
+        try:
+            df_result = pd.DataFrame()
+            files = ios.listdir(dir_gt, pattern='(Responses)', ext='.xlsx')
+            
+            for fn in files:
+                ios.printf(f'Reading {fn}')
+                df = ios.load_excel(fn).pivot_table(columns='Timestamp')
+                print(f'[INFO] {fn} has {df.shape[1]} columns and {df.shape[0]} rows.')
+
+                # changing timestamp to sequential number (annotator id)
+                df.rename(columns={c:f'a{id+1}' for id,c in enumerate(df.columns) if c != 'Timestamp'}, inplace=True)
+
+                # renaming columns
+                df.index.name = 'givenname'
+                df.columns.name = 'annotator'
+                df.reset_index(inplace=True)
+
+                # add single character column (bool)
+                df.loc[:,'single_char'] = df.givenname.apply(lambda v: len(v) == 1)
+                df.loc[:,'source'] = fn.split('/')[-1]
+                df.set_index('givenname', inplace=True)
+                
+                # info
+                print(f"[INFO] {df.single_char.value_counts()}")
+
+                # concatenating files
+                df_result = pd.concat([df_result, df], ignore_index=False)
+                
+            # Summary
+            print(f'[INFO] Merging {len(files)} files into one dataframe with {df_result.shape[0]} rows and {df_result.shape[1]} columns.')
+            print(f"[INFO] {df_result.single_char.value_counts()}")
+
+            # Save the result
+            if fn_gt is not None:
+                df_result = df_result[[f"a{id+1}" for id in range(len(df_result.columns)-2)]+['single_char','source']]  # keep single_char at the end
+                ios.to_csv(df_result.sort_values(['single_char', 'givenname']), ios.path_join(dir_gt, fn_gt))
+
+        except Exception as e:
+            print(f'Error reading ground truth files: {e}')
+            return False
+        
+        
+        return True
         
     
 def prepare_features(data, column_name, dir_resources, cache_dir=None):
