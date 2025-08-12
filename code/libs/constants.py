@@ -23,4 +23,4 @@ FN_EN_GIVEN_NAMES = 'CNKI_uniqueEnglishGivenNames_only.csv'
 FN_FULL_NAMES_GENDER = 'CNKI_uniqueChineseNames_gender.csv'
 FN_CH_GIVEN_NAMES_GENDER = 'CNKI_uniqueChineseGivenNames_gender.csv'
 FN_EN_GIVEN_NAMES_GENDER = 'CNKI_uniqueEnglishGivenNames_gender.csv'
-FN_ANNOTATIONS = "Chinese first names gender inference (Responses).xlsx"
+FN_ANNOTATIONS = "ground_truth.csv"
