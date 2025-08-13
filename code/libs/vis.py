@@ -69,12 +69,18 @@ def plot_violin(df, x, y, title='', xlabel='', ylabel='', hue=None, figsize=(10,
     __close()
 
 
-def plot_scatter(df, x, y, title='', xlabel='', ylabel='', hue=None, hue_order=None, figsize=(10, 6), palette=None, corr=False, fit=False, rmse=False, **kwargs):
+def plot_scatter(data, x, y, title='', xlabel='', ylabel='', hue=None, hue_order=None, figsize=(10, 6), palette=None, corr=False, fit=False, rmse=False, **kwargs):
     plt.figure(figsize=figsize)
-    fg = sns.scatterplot(data=df, x=x, y=y, hue=hue, palette=palette, hue_order=hue_order)
+    fg = sns.scatterplot(data=data, x=x, y=y, hue=hue, palette=palette, hue_order=hue_order)
 
     yt = 0.01
     ys = 0.08
+
+    
+    df = data.copy().dropna(subset=[x, y])
+    diff = data.shape[0] - df.shape[0]
+    if diff > 0:
+        print(f"[Warning] Dropped {diff} rows with NaN values")
 
     # Fit linear regression
     if fit:
