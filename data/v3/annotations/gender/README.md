@@ -32,9 +32,11 @@
 - **Author**: Ana Jaramillo
 - **Date**: 2025-07-24
 - **Size**: 2 x 1
+- **Note**: [EXPLAIN CRITERIA OF SELECTION @aj]
 
-### 5. Names_test_unique_character.csv`
+### 5. `Names_test_unique_character.csv`
 - **Description**: Names with a unique character for the second round of surveys (rows correspond to `givenname`).
 - **Author**: Ana Jaramillo
 - **Date**: 2025-07-24
 - **Size**: 46 x 1
+- **Note**: [EXPLAIN CRITERIA OF SELECTION @aj]
