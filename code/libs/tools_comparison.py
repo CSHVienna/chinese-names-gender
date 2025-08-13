@@ -14,10 +14,10 @@ from categorical import _mode
 ####################################################################################################
 
 def scale_minus1_to_1_to_0_to_1(x):
-    return (x + 1) / 2
+    return None if x in const.NONE else (x + 1) / 2
 
 def scale_1_to_5_to_0_to_1(x):
-    return (x - 1) / 4
+    return None if x in const.NONE else (x - 1) / 4
 
 
 ####################################################################################################
@@ -43,23 +43,27 @@ class ToolsComparison(object):
     Groundtruth
     Scale from 1 to 5: 1.Definitely male   2.More likely male   3.Neutral  4.More likely female  5.Definitely female
 '''
-    def __init__(self, dir_tool_w, dir_tool_r, dir_tool_n, dir_gt):
+    def __init__(self, dir_tool_w, dir_tool_r, dir_tool_n, dir_gt, dir_names):
         self.dir_tool_w = dir_tool_w
         self.dir_tool_r = dir_tool_r
         self.dir_tool_n = dir_tool_n
         self.dir_gt = dir_gt
+        self.dir_names = dir_names
         
-        # unique chinese given names
-        self.fn_ch_gender_w = ios.path_join(self.dir_tool_w, const.FN_CH_GIVEN_NAMES_GENDER)
-        self.fn_ch_gender_r = ios.path_join(self.dir_tool_r, const.FN_CH_GIVEN_NAMES_GENDER)
-        self.fn_ch_gender_n = ios.path_join(self.dir_tool_n, const.FN_CH_GIVEN_NAMES_GENDER)
+        # unique chinese given names 1 char
+        self.fn_ch_gender_w_1ch = ios.path_join(self.dir_tool_w, const.FN_CH_GIVEN_NAMES_GENDER_1CH)
+        self.fn_ch_gender_r_1ch = ios.path_join(self.dir_tool_r, const.FN_CH_GIVEN_NAMES_GENDER_1CH)
+        self.fn_ch_gender_n_1ch = ios.path_join(self.dir_tool_n, const.FN_CH_GIVEN_NAMES_GENDER_1CH)
+
+        # unique chinese given names 2 chars
+        self.fn_ch_gender_w_2ch = ios.path_join(self.dir_tool_w, const.FN_CH_GIVEN_NAMES_GENDER_2CH)
+        self.fn_ch_gender_r_2ch = ios.path_join(self.dir_tool_r, const.FN_CH_GIVEN_NAMES_GENDER_2CH)
+        self.fn_ch_gender_n_2ch = ios.path_join(self.dir_tool_n, const.FN_CH_GIVEN_NAMES_GENDER_2CH)
         
-        # @TODO: load one single character data too from tools (CNKI_uniqueChineseCharacter_gender.csv)
-
-        # all authors full names
-        # self.fn_full_names_gender_w = ios.path_join(self.dir_tool_w, const.FN_FULL_NAMES_GENDER)
-        # self.fn_full_names_gender_r = ios.path_join(self.dir_tool_r, const.FN_FULL_NAMES_GENDER)
-
+        # all valid given names (two and single char)
+        self.fn_givennames_1ch = ios.path_join(self.dir_names, const.FN_GIVEN_NAMES_1CH)    
+        self.fn_givennames_2ch = ios.path_join(self.dir_names, const.FN_GIVEN_NAMES_2CH)
+    
         # annotations (ground truth)
         self.fn_gt = ios.path_join(self.dir_gt, const.FN_ANNOTATIONS)
                                    
@@ -67,71 +71,124 @@ class ToolsComparison(object):
         self.df_ch_gender_r = None
         self.df_ch_gender_n = None
         self.df_ch_genders = None
-        # self.df_full_names_gender_w = None # @deprecated
-        # self.df_full_names_gender_r = None # @deprecated
+        self.df_givennames_1ch = None
+        self.df_givennames_2ch = None
         self.df_gt = None
         self.gt_cols = None
 
     def load_data(self):
-        # unique given names
-        self.df_ch_gender_w = ios.load_csv(self.fn_ch_gender_w).sort_values('givenname')
-        self.df_ch_gender_r = ios.load_csv(self.fn_ch_gender_r).sort_values('givenname')
-        self.df_ch_gender_n = ios.load_csv(self.fn_ch_gender_n).sort_values('givenname')
-        # # all author full names 
-        # self.df_full_names_gender_w = ios.load_csv(self.fn_full_names_gender_w) # @deprecated
-        # self.df_full_names_gender_r = ios.load_csv(self.fn_full_names_gender_r) # @deprecated
+        # 1. all unique given names
+        tmp_1ch = ios.load_csv(self.fn_givennames_1ch)[['character']].sort_values('character').rename(columns={'character':'givenname'})
+        tmp_1ch.loc[:, 'single_char'] = True
+        tmp_2ch = ios.load_csv(self.fn_givennames_2ch)[['givenname']].sort_values('givenname')
+        tmp_2ch.loc[:, 'single_char'] = False
+        tmp_2ch = tmp_2ch.query("givenname.str.len() > 1", engine='python').copy() # remove 1-characters
+        self.df_givennames = pd.concat([tmp_1ch, tmp_2ch], ignore_index=True)
+
+        # gender from each tool for all unique given names 
+        def __load_tool_data(fn1, fn2, cols=None):
+            tmp_1ch = tmp_2ch = None
+
+            if fn1:
+                tmp_1ch = ios.load_csv(fn1).sort_values('character').rename(columns={'character':'givenname'})
+                if cols:
+                    tmp_1ch = tmp_1ch[cols]
+                tmp_1ch.loc[:, 'single_char'] = True
+            if fn2:
+                tmp_2ch = ios.load_csv(fn2).sort_values('givenname')
+                if cols:
+                    tmp_2ch = tmp_2ch[cols]
+                # remove 1-characters
+                tmp_2ch = tmp_2ch.query("givenname.str.len() > 1", engine='python').copy()
+                tmp_2ch.loc[:, 'single_char'] = False
+
+            if tmp_1ch is None and tmp_2ch is None:
+                raise ValueError('Both dataframes are None')
+
+            if tmp_1ch is not None and tmp_2ch is not None:
+                df = pd.concat([tmp_1ch, tmp_2ch], ignore_index=True)
+                df.sort_values(['single_char','givenname'], ascending=[False,True], inplace=True)
+                # df.drop_duplicates(subset=['givenname'],  inplace=True, keep='first') # @deprecated
+                return df
+            
+            if tmp_1ch:
+                return tmp_1ch
+            
+            return tmp_2ch
+        
+        self.df_ch_gender_w = __load_tool_data(fn1 = None, fn2 = self.fn_ch_gender_w_2ch, cols = None) # W: chinese-tools
+        self.df_ch_gender_n = __load_tool_data(fn1 = self.fn_ch_gender_n_1ch, fn2 = self.fn_ch_gender_n_2ch, cols = ['givenname', 'likelyGender', 'genderScale', 'score', 'probabilityCalibrated']) # N: namsor
+        self.df_ch_gender_r = __load_tool_data(fn1 = self.fn_ch_gender_r_1ch, fn2 = self.fn_ch_gender_r_2ch, cols = ['givenname', 'NG']) # R: r-package
+        
         # GT
         if not ios.path_exists(self.fn_gt):
             assert ToolsComparison.prepare_ground_truth(fn_gt=self.fn_gt)
-        ### >>> @deprecated
-        # self.df_gt = ios.load_excel(self.fn_gt).pivot_table(columns='Timestamp') 
-        # self.df_gt.columns = range(self.df_gt.shape[1])
-        # self.df_gt.index.name = 'givenname'
-        ### @deprecated <<<
         self.df_gt = ios.load_csv(self.fn_gt)
         self.df_gt.loc[:,'gt'] = True
 
+    def validate_givennames(self):
+        # 1. validate all given names in GT are valid
+        assert self.df_gt.givenname.isin(self.df_givennames.givenname).all(), 'Some GT names are invalid.'
+
+        # 2. validate all given names in tools are valid
+        assert self.df_ch_gender_w.givenname.isin(self.df_givennames.givenname).all(), 'Some W names are invalid.'
+        assert self.df_ch_gender_r.givenname.isin(self.df_givennames.givenname).all(), 'Some R names are invalid.'
+        assert self.df_ch_gender_n.givenname.isin(self.df_givennames.givenname).all(), 'Some N names are invalid.'
+
+        # 3. validate all GT given names are in tools
+        assert self.df_gt.query("single_char == False").givenname.isin(self.df_ch_gender_w.givenname).all(), 'Some GT names are not in W.'
+        assert self.df_gt.givenname.isin(self.df_ch_gender_r.givenname).all(), 'Some GT names are not in R.'
+        assert self.df_gt.givenname.isin(self.df_ch_gender_n.givenname).all(), 'Some GT names are not in N.'
+
+        # 4. validate number of names across tools
+        assert self.df_ch_gender_r.shape[0] == self.df_ch_gender_n.shape[0], 'Different number of names between R and N.'
+        assert self.df_ch_gender_r.query("single_char == True").shape[0] == self.df_ch_gender_n.query("single_char == True").shape[0], 'Different number of names between R and N single char.'
+        assert self.df_ch_gender_r.query("single_char == False").shape[0] == self.df_ch_gender_w.shape[0], 'Different number of names between R and W.'
+        assert self.df_ch_gender_n.query("single_char == False").shape[0] == self.df_ch_gender_w.shape[0], 'Different number of names between N and W.'
+
     def compare_unique_chinese_given_names(self):
-        
-        assert self.df_ch_gender_r.shape[0] == self.df_ch_gender_w.shape[0], 'Different number of names.'
-        assert self.df_ch_gender_r.shape[0] == self.df_ch_gender_n.shape[0], 'Different number of names.'
-        
-        _tmpn = [g for g in self.df_gt.givenname if g not in self.df_ch_gender_n.givenname]
-        print('not in N: ',len(_tmpn),  _tmpn)
-        print('not in R: ', [g for g in self.df_gt.givenname if g not in self.df_ch_gender_r.givenname])
-        print('not in W: ', [g for g in self.df_gt.givenname if g not in self.df_ch_gender_w.givenname])
 
         # merging w and r
         # NG ranges from –1 (completely feminine; 100% used by female) through 0 (gender-neutral; half by female and half by male) to 1 (completely masculine; 100% used by male).
-        self.df_ch_genders = pd.merge(self.df_ch_gender_r[['givenname','NG']], self.df_ch_gender_w[['givenname','gender']], on='givenname', suffixes=('_r', '_w'))
+        # how=left because W only has 2-char givennames, while R has both 1-char and 2-char givennames.
+        self.df_ch_genders = pd.merge(self.df_ch_gender_r[['givenname','NG']], self.df_ch_gender_w[['givenname','gender']], on='givenname', suffixes=('_r', '_w'), how='left')
+
+        print(self.df_ch_genders.shape, self.df_ch_gender_r.shape, self.df_ch_gender_w.shape)
+
         self.df_ch_genders = self.df_ch_genders.set_index('givenname').join(self.df_gt.set_index('givenname'), how='left')
-              
+        self.df_ch_genders.loc[:, 'gt'] = self.df_ch_genders.loc[:,'gt'].apply(lambda v: v not in const.NONE)  # ensure gt is boolean
+
         # renaming columns
         self.df_ch_genders.rename(columns={'gender':'gender_w', 'NG':'ngender_r'}, inplace=True)
         
         # merging with n
         # scale: Gender scale ranging from -1 (male) to +1 (female).
         # prob: Higher implies a more reliable result, ranges from 0 to 1.
-        tmp = self.df_ch_gender_n.set_index('givenname').rename(columns={'likelyGender':'gender_n', 'genderScale':'ngender_n', 'score':'score_n', 'probabilityCalibrated':'prob_n'})
-        self.df_ch_genders = self.df_ch_genders.join(tmp[['gender_n','ngender_n','score_n','prob_n']], how='left')
+        tmp = self.df_ch_gender_n.rename(columns={'likelyGender':'gender_n', 'genderScale':'ngender_n', 'score':'score_n', 'probabilityCalibrated':'prob_n'})
+        tmp = tmp[['givenname', 'gender_n','ngender_n','score_n','prob_n']]
+        self.df_ch_genders = self.df_ch_genders.join(tmp.set_index('givenname'), how='left')
 
         # normalizing values (Same scales)
         # r: -1 feminine, 0 neutral, 1 masculine
         # n: -1 male, 1 feminine
         # ---------------------------------------
         # new: 0 male, 1 feminine
-        self.df_ch_genders.loc[:,'ngender_w'] = self.df_ch_genders.gender_w.apply(lambda v: 0. if v=='male' else 1.0)
+        self.df_ch_genders.loc[:,'ngender_w'] = self.df_ch_genders.gender_w.apply(lambda v: 0. if v=='male' else 1.0 if v=='female' else None)
         self.df_ch_genders.loc[:,'ngender_r'] = self.df_ch_genders.ngender_r.apply(lambda v: scale_minus1_to_1_to_0_to_1(v*-1))
         self.df_ch_genders.loc[:,'ngender_n'] = self.df_ch_genders.ngender_n.apply(lambda v: scale_minus1_to_1_to_0_to_1(v))
 
+        
+
         # metrics
-        index_gt = self.df_gt.givenname
-        cols_gt = [c for c in self.df_gt.columns if c not in ['givenname', 'single_char', 'source']]
-        self.gt_cols = [col for col in self.df_gt.columns if col not in ['NG', 'gender_r', 'gender_w', 'gender_n', 'ngender_w', 'ngender_r', 'ngender_n', 'givenname','gt']]
+        index_gt = self.df_gt.givenname.unique()
+        self.gt_cols = [col for col in self.df_gt.columns if col not in ['NG', 'gender_r', 'gender_w', 'gender_n', 'ngender_w', 'ngender_r', 'ngender_n', 'givenname','gt','single_char', 'source']]
+        
+        print(len(index_gt))
+
         for metric in [np.mean, np.median, np.std, _mode]:
             metric_name = metric.__name__.replace("_",'')
             # GT
-            self.df_ch_genders.loc[index_gt,metric_name] = self.df_ch_genders.loc[index_gt,:].apply(lambda row: scale_1_to_5_to_0_to_1(metric(row[cols_gt].dropna())), axis=1) # @TODO: remove dropna once all GT is finalized
+            self.df_ch_genders.loc[index_gt,metric_name] = self.df_ch_genders.loc[index_gt,:].apply(lambda row: scale_1_to_5_to_0_to_1(metric(row[self.gt_cols].dropna())), axis=1) # @TODO: remove dropna once all GT is finalized
             # TOOLS
             self.df_ch_genders.loc[:,f'{metric_name}_ngender_rnw'] = self.df_ch_genders.apply(lambda row: metric([row['ngender_r'], row['ngender_n'], row['ngender_w']]), axis=1)
             self.df_ch_genders.loc[:,f'{metric_name}_ngender_rn'] = self.df_ch_genders.apply(lambda row: metric([row['ngender_r'], row['ngender_n']]), axis=1)
@@ -150,6 +207,7 @@ class ToolsComparison(object):
     def save(self, path=None, fn=None):
         if path is None or fn is None:
             raise ValueError('Path and filename must be provided.')
+        ios.validate_path(path)
         fn = ios.path_join(path, fn)
         ios.to_csv(self.df_ch_genders, fn)
 

@@ -7,6 +7,16 @@ import json
 FN_AGENTS = 'agents.txt'
 FN_PROXIES = 'http_proxies.txt'
 
+def validate_path(path, **kwargs):
+    """
+    Validates a directory path, creating it if it doesn't exist.
+
+    :param path: The directory path to validate.
+    :param kwargs: Additional arguments to pass to os.makedirs.
+    """
+    if not os.path.exists(path):
+        os.makedirs(path, **kwargs)
+
 def listdir(path, pattern=None, ext=None):
     """
     Lists files in a directory with optional pattern and extension filtering.
