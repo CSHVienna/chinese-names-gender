@@ -1,149 +1,131 @@
-givenname,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11,single_char,source
-一葳,4.0,2.0,5.0,5.0,3.0,4.0,2.0,1.0,2.0,4.0,5.0,False,Chinese first names gender inference (Responses).xlsx
-丙辰,2.0,1.0,1.0,1.0,3.0,3.0,2.0,3.0,1.0,1.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-业俊,1.0,2.0,1.0,1.0,1.0,2.0,3.0,2.0,1.0,1.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-东霞,5.0,4.0,5.0,4.0,4.0,5.0,3.0,5.0,5.0,5.0,5.0,False,Chinese first names gender inference (Responses).xlsx
-中伦,3.0,2.0,2.0,1.0,1.0,2.0,2.0,3.0,2.0,1.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-中锐,2.0,2.0,2.0,2.0,1.0,1.0,2.0,5.0,3.0,2.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-丹雯,5.0,4.0,5.0,4.0,4.0,5.0,4.0,5.0,5.0,5.0,5.0,False,Chinese first names gender inference (Responses).xlsx
-丽姣,5.0,5.0,5.0,5.0,4.0,4.0,5.0,3.0,4.0,5.0,5.0,False,Chinese first names gender inference (Responses).xlsx
-丽存,5.0,5.0,5.0,4.0,4.0,4.0,4.0,5.0,4.0,5.0,5.0,False,Chinese first names gender inference (Responses).xlsx
-之玫,5.0,4.0,5.0,4.0,4.0,5.0,3.0,5.0,4.0,5.0,5.0,False,Chinese first names gender inference (Responses).xlsx
-亚天,3.0,1.0,2.0,1.0,4.0,3.0,2.0,1.0,1.0,1.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-仁祥,1.0,1.0,2.0,1.0,2.0,4.0,2.0,1.0,2.0,1.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-伟坪,1.0,1.0,1.0,2.0,2.0,2.0,2.0,3.0,2.0,1.0,3.0,False,Chinese first names gender inference (Responses).xlsx
-佳玉,5.0,5.0,4.0,4.0,4.0,5.0,5.0,5.0,4.0,5.0,5.0,False,Chinese first names gender inference (Responses).xlsx
-俊富,1.0,1.0,1.0,1.0,1.0,1.0,3.0,3.0,1.0,1.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-儒佳,3.0,3.0,4.0,3.0,3.0,4.0,4.0,3.0,2.0,3.0,5.0,False,Chinese first names gender inference (Responses).xlsx
-兴亚,3.0,1.0,2.0,1.0,2.0,2.0,3.0,3.0,1.0,1.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-冬艳,5.0,4.0,5.0,5.0,4.0,4.0,4.0,5.0,5.0,5.0,5.0,False,Chinese first names gender inference (Responses).xlsx
-凤良,5.0,2.0,5.0,4.0,3.0,4.0,4.0,3.0,3.0,5.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-剑炬,1.0,2.0,1.0,1.0,2.0,2.0,2.0,2.0,2.0,1.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-华振,2.0,1.0,1.0,1.0,1.0,2.0,2.0,3.0,1.0,1.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-华莲,5.0,4.0,5.0,4.0,4.0,3.0,4.0,4.0,4.0,5.0,5.0,False,Chinese first names gender inference (Responses).xlsx
-博华,1.0,1.0,3.0,2.0,2.0,2.0,3.0,1.0,1.0,2.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-台蒙,3.0,3.0,2.0,3.0,2.0,3.0,2.0,4.0,2.0,2.0,3.0,False,Chinese first names gender inference (Responses).xlsx
-喜锦,3.0,4.0,5.0,4.0,4.0,4.0,3.0,3.0,2.0,4.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-国绛,2.0,2.0,1.0,1.0,1.0,2.0,2.0,2.0,4.0,2.0,5.0,False,Chinese first names gender inference (Responses).xlsx
-国钦,2.0,1.0,1.0,2.0,1.0,2.0,2.0,3.0,2.0,1.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-培胜,1.0,1.0,1.0,1.0,1.0,2.0,2.0,1.0,2.0,1.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-大卉,4.0,3.0,5.0,3.0,4.0,4.0,4.0,4.0,2.0,5.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-婧翔,4.0,3.0,5.0,3.0,5.0,4.0,4.0,4.0,4.0,5.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-子奚,3.0,3.0,1.0,2.0,3.0,2.0,2.0,4.0,4.0,4.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-宇丹,3.0,3.0,2.0,4.0,5.0,2.0,4.0,4.0,4.0,2.0,5.0,False,Chinese first names gender inference (Responses).xlsx
-容文,3.0,3.0,3.0,3.0,4.0,3.0,4.0,3.0,4.0,3.0,3.0,False,Chinese first names gender inference (Responses).xlsx
-帮美,4.0,4.0,5.0,4.0,4.0,4.0,4.0,5.0,5.0,3.0,5.0,False,Chinese first names gender inference (Responses).xlsx
-年满,3.0,3.0,3.0,2.0,2.0,2.0,3.0,3.0,2.0,3.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-康德,2.0,2.0,2.0,1.0,1.0,1.0,2.0,3.0,2.0,1.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-建兰,5.0,4.0,5.0,4.0,4.0,3.0,4.0,5.0,4.0,5.0,3.0,False,Chinese first names gender inference (Responses).xlsx
-建和,1.0,1.0,2.0,1.0,2.0,2.0,1.0,1.0,1.0,1.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-彦喆,2.0,1.0,1.0,1.0,1.0,4.0,2.0,3.0,5.0,1.0,5.0,False,Chinese first names gender inference (Responses).xlsx
-彩凤,5.0,5.0,5.0,4.0,5.0,5.0,4.0,5.0,5.0,5.0,5.0,False,Chinese first names gender inference (Responses).xlsx
-德珍,5.0,5.0,4.0,3.0,4.0,4.0,4.0,4.0,4.0,4.0,5.0,False,Chinese first names gender inference (Responses).xlsx
-怀珂,4.0,4.0,5.0,2.0,4.0,3.0,3.0,3.0,2.0,5.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-思思,5.0,4.0,5.0,5.0,5.0,4.0,4.0,5.0,5.0,4.0,5.0,False,Chinese first names gender inference (Responses).xlsx
-文涵,4.0,3.0,5.0,5.0,2.0,5.0,3.0,3.0,5.0,2.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-斐楠,4.0,3.0,3.0,5.0,3.0,4.0,4.0,5.0,4.0,3.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-新娣,5.0,4.0,5.0,4.0,4.0,5.0,4.0,5.0,4.0,5.0,3.0,False,Chinese first names gender inference (Responses).xlsx
-新敏,4.0,4.0,5.0,4.0,4.0,5.0,2.0,5.0,4.0,5.0,4.0,False,Chinese first names gender inference (Responses) - round 2.xlsx
-旭炜,1.0,1.0,1.0,2.0,1.0,1.0,2.0,1.0,1.0,1.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-春宝,3.0,3.0,4.0,2.0,3.0,2.0,4.0,3.0,2.0,5.0,3.0,False,Chinese first names gender inference (Responses).xlsx
-春芳,5.0,5.0,5.0,4.0,5.0,4.0,5.0,5.0,5.0,5.0,5.0,False,Chinese first names gender inference (Responses).xlsx
-晓珍,5.0,5.0,5.0,4.0,5.0,5.0,5.0,5.0,4.0,5.0,5.0,False,Chinese first names gender inference (Responses).xlsx
-曰文,3.0,2.0,1.0,2.0,3.0,3.0,3.0,2.0,2.0,3.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-曼仪,5.0,5.0,5.0,4.0,4.0,5.0,4.0,5.0,5.0,5.0,5.0,False,Chinese first names gender inference (Responses).xlsx
-曾辉,1.0,2.0,1.0,1.0,1.0,2.0,2.0,1.0,1.0,2.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-有来,2.0,1.0,2.0,2.0,2.0,2.0,2.0,3.0,1.0,3.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-果香,3.0,4.0,4.0,4.0,4.0,4.0,3.0,3.0,4.0,4.0,5.0,False,Chinese first names gender inference (Responses).xlsx
-梅影,5.0,4.0,5.0,5.0,4.0,4.0,4.0,5.0,4.0,5.0,5.0,False,Chinese first names gender inference (Responses).xlsx
-楚丹,5.0,2.0,3.0,3.0,4.0,4.0,4.0,4.0,5.0,4.0,3.0,False,Chinese first names gender inference (Responses).xlsx
-永津,2.0,1.0,3.0,1.0,2.0,2.0,2.0,3.0,2.0,2.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-治秀,5.0,4.0,4.0,3.0,4.0,2.0,4.0,3.0,5.0,2.0,5.0,False,Chinese first names gender inference (Responses).xlsx
-法新,2.0,2.0,3.0,2.0,3.0,2.0,2.0,2.0,1.0,2.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-泽慧,5.0,4.0,5.0,5.0,5.0,4.0,4.0,5.0,5.0,5.0,3.0,False,Chinese first names gender inference (Responses).xlsx
-浩琛,1.0,1.0,1.0,1.0,1.0,2.0,2.0,3.0,2.0,1.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-海安,2.0,1.0,2.0,2.0,2.0,2.0,2.0,3.0,2.0,1.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-清东,1.0,1.0,2.0,1.0,2.0,1.0,1.0,1.0,1.0,2.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-滟滪,5.0,4.0,4.0,5.0,4.0,4.0,4.0,5.0,5.0,5.0,5.0,False,Chinese first names gender inference (Responses).xlsx
-焕泉,2.0,2.0,3.0,1.0,2.0,2.0,2.0,3.0,2.0,2.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-然存,3.0,3.0,2.0,2.0,1.0,3.0,3.0,3.0,2.0,3.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-照锦,3.0,4.0,3.0,3.0,1.0,2.0,4.0,4.0,1.0,4.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-燕南,3.0,1.0,4.0,3.0,4.0,2.0,4.0,3.0,2.0,2.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-玉芯,4.0,4.0,4.0,4.0,5.0,4.0,5.0,5.0,4.0,5.0,5.0,False,Chinese first names gender inference (Responses).xlsx
-王敏,5.0,5.0,4.0,3.0,5.0,3.0,3.0,5.0,5.0,5.0,3.0,False,Chinese first names gender inference (Responses).xlsx
-瑛珍,5.0,5.0,5.0,5.0,5.0,5.0,4.0,4.0,4.0,5.0,5.0,False,Chinese first names gender inference (Responses).xlsx
-瑞芸,5.0,4.0,5.0,5.0,4.0,4.0,4.0,5.0,4.0,5.0,5.0,False,Chinese first names gender inference (Responses).xlsx
-璋琦,4.0,4.0,5.0,2.0,3.0,4.0,2.0,2.0,4.0,3.0,5.0,False,Chinese first names gender inference (Responses).xlsx
-登霞,4.0,4.0,5.0,4.0,4.0,5.0,4.0,5.0,5.0,5.0,5.0,False,Chinese first names gender inference (Responses) - round 2.xlsx
-硕涵,3.0,2.0,2.0,4.0,3.0,4.0,3.0,4.0,5.0,1.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-祖应,2.0,2.0,2.0,2.0,1.0,2.0,2.0,3.0,3.0,1.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-秀岩,3.0,3.0,5.0,2.0,4.0,3.0,4.0,4.0,5.0,1.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-秉慧,5.0,4.0,5.0,4.0,4.0,4.0,3.0,5.0,5.0,4.0,3.0,False,Chinese first names gender inference (Responses).xlsx
-秦怀,3.0,2.0,2.0,1.0,3.0,3.0,2.0,3.0,4.0,2.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-维海,2.0,1.0,2.0,1.0,2.0,2.0,2.0,2.0,1.0,1.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-维纮,1.0,2.0,2.0,3.0,2.0,2.0,2.0,3.0,2.0,1.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-羽茜,5.0,5.0,5.0,5.0,5.0,4.0,4.0,4.0,5.0,5.0,5.0,False,Chinese first names gender inference (Responses).xlsx
-育红,5.0,4.0,5.0,3.0,5.0,3.0,4.0,5.0,4.0,5.0,5.0,False,Chinese first names gender inference (Responses).xlsx
-能韫,2.0,2.0,2.0,1.0,2.0,2.0,2.0,3.0,3.0,1.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-至欣,4.0,4.0,5.0,4.0,4.0,3.0,3.0,4.0,5.0,5.0,3.0,False,Chinese first names gender inference (Responses).xlsx
-舒会,5.0,2.0,4.0,4.0,3.0,3.0,2.0,4.0,4.0,4.0,5.0,False,Chinese first names gender inference (Responses).xlsx
-苗苗,5.0,5.0,5.0,5.0,5.0,5.0,5.0,4.0,5.0,5.0,5.0,False,Chinese first names gender inference (Responses).xlsx
-贤江,1.0,2.0,2.0,2.0,2.0,2.0,2.0,3.0,1.0,1.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-鉴荣,3.0,2.0,3.0,2.0,2.0,2.0,3.0,3.0,1.0,1.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-锡群,3.0,2.0,1.0,2.0,2.0,2.0,2.0,1.0,1.0,1.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-雍律,1.0,2.0,1.0,2.0,2.0,2.0,1.0,4.0,2.0,1.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-雪天,3.0,4.0,4.0,3.0,3.0,4.0,4.0,4.0,4.0,3.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-静平,3.0,3.0,4.0,2.0,4.0,4.0,3.0,4.0,1.0,5.0,1.0,False,Chinese first names gender inference (Responses).xlsx
-颖伶,5.0,4.0,5.0,5.0,4.0,5.0,4.0,4.0,5.0,5.0,5.0,False,Chinese first names gender inference (Responses).xlsx
-颖弢,4.0,3.0,2.0,4.0,4.0,2.0,4.0,3.0,5.0,5.0,5.0,False,Chinese first names gender inference (Responses).xlsx
-馨心,5.0,5.0,5.0,5.0,5.0,5.0,5.0,4.0,5.0,5.0,5.0,False,Chinese first names gender inference (Responses).xlsx
-东,2.0,2.0,1.0,1.0,1.0,2.0,3.0,1.0,3.0,1.0,1.0,True,Chinese first names gender inference (Responses) - round 2.xlsx
-习,3.0,2.0,2.0,1.0,2.0,2.0,2.0,2.0,3.0,3.0,3.0,True,Chinese first names gender inference (Responses) - round 2.xlsx
-仅,3.0,3.0,2.0,3.0,3.0,3.0,3.0,3.0,3.0,3.0,3.0,True,Chinese first names gender inference (Responses) - round 2.xlsx
-县,3.0,3.0,1.0,2.0,3.0,3.0,3.0,2.0,3.0,1.0,3.0,True,Chinese first names gender inference (Responses) - round 2.xlsx
-园,4.0,4.0,3.0,4.0,3.0,4.0,3.0,4.0,3.0,3.0,5.0,True,Chinese first names gender inference (Responses) - round 2.xlsx
-均,2.0,2.0,2.0,1.0,3.0,2.0,3.0,4.0,2.0,2.0,1.0,True,Chinese first names gender inference (Responses).xlsx
-夜,3.0,3.0,2.0,3.0,3.0,4.0,3.0,2.0,3.0,4.0,2.0,True,Chinese first names gender inference (Responses) - round 2.xlsx
-奎,2.0,2.0,1.0,2.0,2.0,2.0,2.0,2.0,2.0,3.0,1.0,True,Chinese first names gender inference (Responses) - round 2.xlsx
-小,3.0,3.0,4.0,3.0,3.0,5.0,3.0,3.0,3.0,3.0,3.0,True,Chinese first names gender inference (Responses).xlsx
-巡,2.0,2.0,1.0,2.0,3.0,3.0,2.0,1.0,2.0,2.0,2.0,True,Chinese first names gender inference (Responses) - round 2.xlsx
-帆,3.0,3.0,2.0,4.0,3.0,3.0,2.0,3.0,2.0,3.0,4.0,True,Chinese first names gender inference (Responses) - round 2.xlsx
-方,3.0,3.0,3.0,2.0,3.0,3.0,3.0,2.0,3.0,1.0,3.0,True,Chinese first names gender inference (Responses) - round 2.xlsx
-杞,2.0,1.0,3.0,5.0,2.0,4.0,4.0,3.0,3.0,3.0,3.0,True,Chinese first names gender inference (Responses) - round 2.xlsx
-杼,5.0,2.0,4.0,4.0,4.0,4.0,5.0,4.0,3.0,4.0,3.0,True,Chinese first names gender inference (Responses) - round 2.xlsx
-桐,4.0,4.0,2.0,5.0,3.0,2.0,4.0,3.0,3.0,3.0,4.0,True,Chinese first names gender inference (Responses) - round 2.xlsx
-桓,3.0,2.0,2.0,1.0,2.0,2.0,2.0,1.0,1.0,3.0,1.0,True,Chinese first names gender inference (Responses) - round 2.xlsx
-洞,3.0,2.0,2.0,3.0,3.0,2.0,2.0,2.0,2.0,1.0,2.0,True,Chinese first names gender inference (Responses) - round 2.xlsx
-润,4.0,3.0,2.0,2.0,3.0,4.0,3.0,2.0,3.0,3.0,3.0,True,Chinese first names gender inference (Responses) - round 2.xlsx
-潭,4.0,2.0,1.0,3.0,2.0,2.0,3.0,3.0,3.0,3.0,3.0,True,Chinese first names gender inference (Responses) - round 2.xlsx
-琼,4.0,4.0,5.0,4.0,4.0,5.0,4.0,5.0,5.0,4.0,5.0,True,Chinese first names gender inference (Responses) - round 2.xlsx
-瑚,4.0,4.0,5.0,4.0,3.0,4.0,4.0,4.0,5.0,5.0,5.0,True,Chinese first names gender inference (Responses) - round 2.xlsx
-璟,3.0,2.0,5.0,2.0,3.0,3.0,3.0,1.0,2.0,3.0,3.0,True,Chinese first names gender inference (Responses).xlsx
-甄,4.0,5.0,1.0,4.0,3.0,3.0,4.0,4.0,3.0,5.0,3.0,True,Chinese first names gender inference (Responses) - round 2.xlsx
-硕,3.0,2.0,1.0,2.0,3.0,2.0,3.0,1.0,2.0,3.0,3.0,True,Chinese first names gender inference (Responses) - round 2.xlsx
-禾,3.0,4.0,4.0,3.0,3.0,4.0,4.0,3.0,4.0,2.0,4.0,True,Chinese first names gender inference (Responses) - round 2.xlsx
-秘,3.0,3.0,3.0,3.0,3.0,3.0,3.0,3.0,4.0,3.0,3.0,True,Chinese first names gender inference (Responses) - round 2.xlsx
-秧,4.0,2.0,3.0,2.0,3.0,4.0,3.0,4.0,3.0,3.0,3.0,True,Chinese first names gender inference (Responses) - round 2.xlsx
-童,3.0,3.0,3.0,1.0,3.0,4.0,4.0,3.0,3.0,4.0,2.0,True,Chinese first names gender inference (Responses) - round 2.xlsx
-绫,4.0,4.0,4.0,5.0,4.0,2.0,3.0,5.0,3.0,4.0,5.0,True,Chinese first names gender inference (Responses) - round 2.xlsx
-翕,2.0,2.0,1.0,3.0,3.0,4.0,3.0,2.0,3.0,2.0,3.0,True,Chinese first names gender inference (Responses) - round 2.xlsx
-耔,4.0,3.0,3.0,4.0,3.0,5.0,2.0,2.0,3.0,3.0,3.0,True,Chinese first names gender inference (Responses) - round 2.xlsx
-职,3.0,2.0,2.0,2.0,3.0,3.0,3.0,3.0,3.0,2.0,3.0,True,Chinese first names gender inference (Responses) - round 2.xlsx
-节,3.0,2.0,3.0,4.0,3.0,3.0,3.0,2.0,3.0,3.0,3.0,True,Chinese first names gender inference (Responses) - round 2.xlsx
-萌,4.0,4.0,4.0,5.0,4.0,5.0,4.0,5.0,5.0,3.0,5.0,True,Chinese first names gender inference (Responses) - round 2.xlsx
-著,3.0,2.0,2.0,3.0,3.0,3.0,2.0,3.0,3.0,3.0,3.0,True,Chinese first names gender inference (Responses) - round 2.xlsx
-蔚,4.0,4.0,2.0,4.0,4.0,4.0,2.0,5.0,3.0,3.0,4.0,True,Chinese first names gender inference (Responses) - round 2.xlsx
-认,3.0,3.0,2.0,2.0,3.0,2.0,3.0,2.0,3.0,3.0,3.0,True,Chinese first names gender inference (Responses) - round 2.xlsx
-铉,2.0,2.0,1.0,2.0,3.0,3.0,4.0,2.0,2.0,2.0,2.0,True,Chinese first names gender inference (Responses) - round 2.xlsx
-闫,3.0,2.0,1.0,1.0,3.0,2.0,3.0,1.0,4.0,4.0,2.0,True,Chinese first names gender inference (Responses) - round 2.xlsx
-骄,3.0,3.0,4.0,4.0,3.0,3.0,4.0,2.0,4.0,2.0,3.0,True,Chinese first names gender inference (Responses).xlsx
-𬒗,2.0,2.0,1.0,1.0,3.0,3.0,3.0,2.0,3.0,3.0,2.0,True,Chinese first names gender inference (Responses) - round 2.xlsx
-𬕂,2.0,2.0,2.0,2.0,3.0,2.0,3.0,3.0,3.0,3.0,3.0,True,Chinese first names gender inference (Responses) - round 2.xlsx
-𬘬,3.0,5.0,4.0,5.0,4.0,3.0,4.0,5.0,4.0,4.0,5.0,True,Chinese first names gender inference (Responses) - round 2.xlsx
-𬘭,4.0,5.0,5.0,5.0,3.0,5.0,4.0,4.0,5.0,5.0,5.0,True,Chinese first names gender inference (Responses) - round 2.xlsx
-𬬹,2.0,1.0,2.0,2.0,3.0,2.0,3.0,1.0,2.0,2.0,2.0,True,Chinese first names gender inference (Responses) - round 2.xlsx
-𬬻,3.0,2.0,2.0,3.0,2.0,1.0,1.0,2.0,2.0,2.0,2.0,True,Chinese first names gender inference (Responses) - round 2.xlsx
-𬭬,4.0,4.0,2.0,1.0,4.0,2.0,4.0,4.0,3.0,3.0,2.0,True,Chinese first names gender inference (Responses) - round 2.xlsx
-𬯎,3.0,2.0,2.0,2.0,3.0,4.0,3.0,2.0,2.0,3.0,2.0,True,Chinese first names gender inference (Responses) - round 2.xlsx
-𬳵,3.0,1.0,2.0,3.0,3.0,2.0,2.0,2.0,2.0,3.0,3.0,True,Chinese first names gender inference (Responses) - round 2.xlsx
-𬺓,3.0,2.0,1.0,4.0,3.0,2.0,3.0,3.0,3.0,2.0,3.0,True,Chinese first names gender inference (Responses) - round 2.xlsx
+givenname,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11,single_char,round
+一葳,4.0,2.0,5.0,5.0,3.0,4.0,2.0,1.0,2.0,4.0,5.0,False,1
+丙辰,2.0,1.0,1.0,1.0,3.0,3.0,2.0,3.0,1.0,1.0,1.0,False,1
+东业,1.0,1.0,1.0,1.0,1.0,2.0,1.0,1.0,1.0,2.0,1.0,False,3
+丽姣,5.0,5.0,5.0,5.0,4.0,4.0,5.0,3.0,4.0,5.0,5.0,False,1
+之玫,5.0,4.0,5.0,4.0,4.0,5.0,3.0,5.0,4.0,5.0,5.0,False,1
+亚天,3.0,1.0,2.0,1.0,4.0,3.0,2.0,1.0,1.0,1.0,1.0,False,1
+亚平,3.0,1.0,3.0,3.0,2.0,4.0,3.0,2.0,4.0,2.0,1.0,False,3
+仁祥,1.0,1.0,2.0,1.0,2.0,4.0,2.0,1.0,2.0,1.0,1.0,False,1
+佳玉,5.0,5.0,4.0,4.0,4.0,5.0,5.0,5.0,4.0,5.0,5.0,False,1
+兴亚,3.0,1.0,2.0,1.0,2.0,2.0,3.0,3.0,1.0,1.0,1.0,False,1
+凤良,5.0,2.0,5.0,4.0,3.0,4.0,4.0,3.0,3.0,5.0,1.0,False,1
+剑炬,1.0,2.0,1.0,1.0,2.0,2.0,2.0,2.0,2.0,1.0,1.0,False,1
+博华,1.0,1.0,3.0,2.0,2.0,2.0,3.0,1.0,1.0,2.0,1.0,False,1
+台蒙,3.0,3.0,2.0,3.0,2.0,3.0,2.0,4.0,2.0,2.0,3.0,False,1
+喜锦,3.0,4.0,5.0,4.0,4.0,4.0,3.0,3.0,2.0,4.0,1.0,False,1
+国绛,2.0,2.0,1.0,1.0,1.0,2.0,2.0,2.0,4.0,2.0,5.0,False,1
+国钦,2.0,1.0,1.0,2.0,1.0,2.0,2.0,3.0,2.0,1.0,1.0,False,1
+奕初,2.0,4.0,4.0,5.0,2.0,2.0,4.0,1.0,4.0,4.0,2.0,False,3
+婧翔,4.0,3.0,5.0,3.0,5.0,4.0,4.0,4.0,4.0,5.0,1.0,False,1
+婷贤,4.0,5.0,5.0,5.0,3.0,4.0,4.0,4.0,4.0,4.0,5.0,False,3
+子奚,3.0,3.0,1.0,2.0,3.0,2.0,2.0,4.0,4.0,4.0,1.0,False,1
+容文,3.0,3.0,3.0,3.0,4.0,3.0,4.0,3.0,4.0,3.0,3.0,False,1
+年满,3.0,3.0,3.0,2.0,2.0,2.0,3.0,3.0,2.0,3.0,1.0,False,1
+建兰,5.0,4.0,5.0,4.0,4.0,3.0,4.0,5.0,4.0,5.0,3.0,False,1
+建和,1.0,1.0,2.0,1.0,2.0,2.0,1.0,1.0,1.0,1.0,1.0,False,1
+彦喆,2.0,1.0,1.0,1.0,1.0,4.0,2.0,3.0,5.0,1.0,5.0,False,1
+德珍,5.0,5.0,4.0,3.0,4.0,4.0,4.0,4.0,4.0,4.0,5.0,False,1
+怀珂,4.0,4.0,5.0,2.0,4.0,3.0,3.0,3.0,2.0,5.0,1.0,False,1
+思思,5.0,4.0,5.0,5.0,5.0,4.0,4.0,5.0,5.0,4.0,5.0,False,1
+文德,2.0,1.0,2.0,3.0,1.0,3.0,2.0,2.0,3.0,2.0,2.0,False,3
+文涵,4.0,3.0,5.0,5.0,2.0,5.0,3.0,3.0,5.0,2.0,1.0,False,1
+斐楠,4.0,3.0,3.0,5.0,3.0,4.0,4.0,5.0,4.0,3.0,1.0,False,1
+新娣,5.0,4.0,5.0,4.0,4.0,5.0,4.0,5.0,4.0,5.0,3.0,False,1
+新敏,4.0,4.0,5.0,4.0,4.0,5.0,2.0,5.0,4.0,5.0,4.0,False,2
+晓珍,5.0,5.0,5.0,4.0,5.0,5.0,5.0,5.0,4.0,5.0,5.0,False,1
+晓舫,4.0,2.0,5.0,4.0,4.0,4.0,3.0,4.0,4.0,2.0,4.0,False,3
+曾辉,1.0,2.0,1.0,1.0,1.0,2.0,2.0,1.0,1.0,2.0,1.0,False,1
+有来,2.0,1.0,2.0,2.0,2.0,2.0,2.0,3.0,1.0,3.0,1.0,False,1
+榕璟,4.0,2.0,4.0,5.0,1.0,4.0,4.0,4.0,4.0,4.0,4.0,False,3
+永津,2.0,1.0,3.0,1.0,2.0,2.0,2.0,3.0,2.0,2.0,1.0,False,1
+治秀,5.0,4.0,4.0,3.0,4.0,2.0,4.0,3.0,5.0,2.0,5.0,False,1
+法新,2.0,2.0,3.0,2.0,3.0,2.0,2.0,2.0,1.0,2.0,1.0,False,1
+泽慧,5.0,4.0,5.0,5.0,5.0,4.0,4.0,5.0,5.0,5.0,3.0,False,1
+清东,1.0,1.0,2.0,1.0,2.0,1.0,1.0,1.0,1.0,2.0,1.0,False,1
+滟滪,5.0,4.0,4.0,5.0,4.0,4.0,4.0,5.0,5.0,5.0,5.0,False,1
+煊华,2.0,3.0,2.0,3.0,1.0,2.0,3.0,2.0,2.0,2.0,2.0,False,3
+燕南,3.0,1.0,4.0,3.0,4.0,2.0,4.0,3.0,2.0,2.0,1.0,False,1
+爱明,2.0,1.0,2.0,2.0,1.0,2.0,2.0,2.0,2.0,2.0,3.0,False,3
+玉芯,4.0,4.0,4.0,4.0,5.0,4.0,5.0,5.0,4.0,5.0,5.0,False,1
+王敏,5.0,5.0,4.0,3.0,5.0,3.0,3.0,5.0,5.0,5.0,3.0,False,1
+瑞芸,5.0,4.0,5.0,5.0,4.0,4.0,4.0,5.0,4.0,5.0,5.0,False,1
+璋琦,4.0,4.0,5.0,2.0,3.0,4.0,2.0,2.0,4.0,3.0,5.0,False,1
+登霞,4.0,4.0,5.0,4.0,4.0,5.0,4.0,5.0,5.0,5.0,5.0,False,2
+相锴,2.0,1.0,1.0,1.0,1.0,2.0,2.0,2.0,2.0,3.0,2.0,False,3
+硕涵,3.0,2.0,2.0,4.0,3.0,4.0,3.0,4.0,5.0,1.0,1.0,False,1
+祥旭,2.0,1.0,1.0,2.0,1.0,3.0,2.0,1.0,2.0,2.0,2.0,False,3
+秀岩,3.0,3.0,5.0,2.0,4.0,3.0,4.0,4.0,5.0,1.0,1.0,False,1
+秀能,2.0,3.0,4.0,4.0,2.0,4.0,3.0,4.0,4.0,2.0,3.0,False,3
+秦怀,3.0,2.0,2.0,1.0,3.0,3.0,2.0,3.0,4.0,2.0,1.0,False,1
+程华,3.0,2.0,3.0,4.0,3.0,2.0,3.0,1.0,3.0,2.0,2.0,False,3
+维海,2.0,1.0,2.0,1.0,2.0,2.0,2.0,2.0,1.0,1.0,1.0,False,1
+维纮,1.0,2.0,2.0,3.0,2.0,2.0,2.0,3.0,2.0,1.0,1.0,False,1
+羽茜,5.0,5.0,5.0,5.0,5.0,4.0,4.0,4.0,5.0,5.0,5.0,False,1
+育红,5.0,4.0,5.0,3.0,5.0,3.0,4.0,5.0,4.0,5.0,5.0,False,1
+舒会,5.0,2.0,4.0,4.0,3.0,3.0,2.0,4.0,4.0,4.0,5.0,False,1
+苗苗,5.0,5.0,5.0,5.0,5.0,5.0,5.0,4.0,5.0,5.0,5.0,False,1
+英雄,1.0,1.0,1.0,1.0,1.0,2.0,2.0,2.0,1.0,2.0,2.0,False,3
+虹明,4.0,1.0,3.0,4.0,1.0,4.0,4.0,2.0,2.0,3.0,3.0,False,3
+训臻,1.0,1.0,2.0,2.0,2.0,3.0,4.0,2.0,3.0,4.0,2.0,False,3
+贤江,1.0,2.0,2.0,2.0,2.0,2.0,2.0,3.0,1.0,1.0,1.0,False,1
+述武,1.0,1.0,1.0,2.0,1.0,2.0,2.0,1.0,1.0,2.0,1.0,False,3
+鉴荣,3.0,2.0,3.0,2.0,2.0,2.0,3.0,3.0,1.0,1.0,1.0,False,1
+锡群,3.0,2.0,1.0,2.0,2.0,2.0,2.0,1.0,1.0,1.0,1.0,False,1
+雍律,1.0,2.0,1.0,2.0,2.0,2.0,1.0,4.0,2.0,1.0,1.0,False,1
+雪天,3.0,4.0,4.0,3.0,3.0,4.0,4.0,4.0,4.0,3.0,1.0,False,1
+静平,3.0,3.0,4.0,2.0,4.0,4.0,3.0,4.0,1.0,5.0,1.0,False,1
+颖伶,5.0,4.0,5.0,5.0,4.0,5.0,4.0,4.0,5.0,5.0,5.0,False,1
+颖弢,4.0,3.0,2.0,4.0,4.0,2.0,4.0,3.0,5.0,5.0,5.0,False,1
+馨心,5.0,5.0,5.0,5.0,5.0,5.0,5.0,4.0,5.0,5.0,5.0,False,1
+高方,3.0,3.0,3.0,3.0,2.0,3.0,3.0,2.0,2.0,5.0,2.0,False,3
+东,2.0,2.0,1.0,1.0,1.0,2.0,3.0,1.0,3.0,1.0,1.0,True,2
+习,3.0,2.0,2.0,1.0,2.0,2.0,2.0,2.0,3.0,3.0,3.0,True,2
+仅,3.0,3.0,2.0,3.0,3.0,3.0,3.0,3.0,3.0,3.0,3.0,True,2
+县,3.0,3.0,1.0,2.0,3.0,3.0,3.0,2.0,3.0,1.0,3.0,True,2
+园,4.0,4.0,3.0,4.0,3.0,4.0,3.0,4.0,3.0,3.0,5.0,True,2
+均,2.0,2.0,2.0,1.0,3.0,2.0,3.0,4.0,2.0,2.0,1.0,True,1
+夜,3.0,3.0,2.0,3.0,3.0,4.0,3.0,2.0,3.0,4.0,2.0,True,2
+奎,2.0,2.0,1.0,2.0,2.0,2.0,2.0,2.0,2.0,3.0,1.0,True,2
+小,3.0,3.0,4.0,3.0,3.0,5.0,3.0,3.0,3.0,3.0,3.0,True,1
+巡,2.0,2.0,1.0,2.0,3.0,3.0,2.0,1.0,2.0,2.0,2.0,True,2
+帆,3.0,3.0,2.0,4.0,3.0,3.0,2.0,3.0,2.0,3.0,4.0,True,2
+方,3.0,3.0,3.0,2.0,3.0,3.0,3.0,2.0,3.0,1.0,3.0,True,2
+杞,2.0,1.0,3.0,5.0,2.0,4.0,4.0,3.0,3.0,3.0,3.0,True,2
+杼,5.0,2.0,4.0,4.0,4.0,4.0,5.0,4.0,3.0,4.0,3.0,True,2
+桐,4.0,4.0,2.0,5.0,3.0,2.0,4.0,3.0,3.0,3.0,4.0,True,2
+桓,3.0,2.0,2.0,1.0,2.0,2.0,2.0,1.0,1.0,3.0,1.0,True,2
+洞,3.0,2.0,2.0,3.0,3.0,2.0,2.0,2.0,2.0,1.0,2.0,True,2
+润,4.0,3.0,2.0,2.0,3.0,4.0,3.0,2.0,3.0,3.0,3.0,True,2
+潭,4.0,2.0,1.0,3.0,2.0,2.0,3.0,3.0,3.0,3.0,3.0,True,2
+琼,4.0,4.0,5.0,4.0,4.0,5.0,4.0,5.0,5.0,4.0,5.0,True,2
+瑚,4.0,4.0,5.0,4.0,3.0,4.0,4.0,4.0,5.0,5.0,5.0,True,2
+璟,3.0,2.0,5.0,2.0,3.0,3.0,3.0,1.0,2.0,3.0,3.0,True,1
+甄,4.0,5.0,1.0,4.0,3.0,3.0,4.0,4.0,3.0,5.0,3.0,True,2
+硕,3.0,2.0,1.0,2.0,3.0,2.0,3.0,1.0,2.0,3.0,3.0,True,2
+禾,3.0,4.0,4.0,3.0,3.0,4.0,4.0,3.0,4.0,2.0,4.0,True,2
+秘,3.0,3.0,3.0,3.0,3.0,3.0,3.0,3.0,4.0,3.0,3.0,True,2
+秧,4.0,2.0,3.0,2.0,3.0,4.0,3.0,4.0,3.0,3.0,3.0,True,2
+童,3.0,3.0,3.0,1.0,3.0,4.0,4.0,3.0,3.0,4.0,2.0,True,2
+绫,4.0,4.0,4.0,5.0,4.0,2.0,3.0,5.0,3.0,4.0,5.0,True,2
+翕,2.0,2.0,1.0,3.0,3.0,4.0,3.0,2.0,3.0,2.0,3.0,True,2
+耔,4.0,3.0,3.0,4.0,3.0,5.0,2.0,2.0,3.0,3.0,3.0,True,2
+职,3.0,2.0,2.0,2.0,3.0,3.0,3.0,3.0,3.0,2.0,3.0,True,2
+节,3.0,2.0,3.0,4.0,3.0,3.0,3.0,2.0,3.0,3.0,3.0,True,2
+萌,4.0,4.0,4.0,5.0,4.0,5.0,4.0,5.0,5.0,3.0,5.0,True,2
+著,3.0,2.0,2.0,3.0,3.0,3.0,2.0,3.0,3.0,3.0,3.0,True,2
+蔚,4.0,4.0,2.0,4.0,4.0,4.0,2.0,5.0,3.0,3.0,4.0,True,2
+认,3.0,3.0,2.0,2.0,3.0,2.0,3.0,2.0,3.0,3.0,3.0,True,2
+铉,2.0,2.0,1.0,2.0,3.0,3.0,4.0,2.0,2.0,2.0,2.0,True,2
+闫,3.0,2.0,1.0,1.0,3.0,2.0,3.0,1.0,4.0,4.0,2.0,True,2
+骄,3.0,3.0,4.0,4.0,3.0,3.0,4.0,2.0,4.0,2.0,3.0,True,1
+𬒗,2.0,2.0,1.0,1.0,3.0,3.0,3.0,2.0,3.0,3.0,2.0,True,2
+𬕂,2.0,2.0,2.0,2.0,3.0,2.0,3.0,3.0,3.0,3.0,3.0,True,2
+𬘬,3.0,5.0,4.0,5.0,4.0,3.0,4.0,5.0,4.0,4.0,5.0,True,2
+𬘭,4.0,5.0,5.0,5.0,3.0,5.0,4.0,4.0,5.0,5.0,5.0,True,2
+𬬹,2.0,1.0,2.0,2.0,3.0,2.0,3.0,1.0,2.0,2.0,2.0,True,2
+𬬻,3.0,2.0,2.0,3.0,2.0,1.0,1.0,2.0,2.0,2.0,2.0,True,2
+𬭬,4.0,4.0,2.0,1.0,4.0,2.0,4.0,4.0,3.0,3.0,2.0,True,2
+𬯎,3.0,2.0,2.0,2.0,3.0,4.0,3.0,2.0,2.0,3.0,2.0,True,2
+𬳵,3.0,1.0,2.0,3.0,3.0,2.0,2.0,2.0,2.0,3.0,3.0,True,2
+𬺓,3.0,2.0,1.0,4.0,3.0,2.0,3.0,3.0,3.0,2.0,3.0,True,2

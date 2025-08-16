@@ -218,12 +218,15 @@ class ToolsComparison(object):
     
         try:
             df_result = pd.DataFrame()
+
+            # 1. Read responses (all rounds)
             files = ios.listdir(dir_gt, pattern='(Responses)', ext='.xlsx')
             
             for fn in files:
                 ios.printf(f'Reading {fn}')
                 df = ios.load_excel(fn).pivot_table(columns='Timestamp')
-                print(f'[INFO] {fn} has {df.shape[1]} columns and {df.shape[0]} rows.')
+                round = int(fn.split('round')[-1].split('.')[0].strip())
+                print(f'[INFO] {fn} has {df.shape[1]} columns and {df.shape[0]} rows (round {round}).')
 
                 # changing timestamp to sequential number (annotator id)
                 df.rename(columns={c:f'a{id+1}' for id,c in enumerate(df.columns) if c != 'Timestamp'}, inplace=True)
@@ -235,7 +238,7 @@ class ToolsComparison(object):
 
                 # add single character column (bool)
                 df.loc[:,'single_char'] = df.givenname.apply(lambda v: len(v) == 1)
-                df.loc[:,'source'] = fn.split('/')[-1]
+                df.loc[:,'round'] = round
                 df.set_index('givenname', inplace=True)
                 
                 # info
@@ -248,9 +251,26 @@ class ToolsComparison(object):
             print(f'[INFO] Merging {len(files)} files into one dataframe with {df_result.shape[0]} rows and {df_result.shape[1]} columns.')
             print(f"[INFO] {df_result.single_char.value_counts()}")
 
+            
+            # 2. Remove unnecessary names
+            files = ios.listdir(dir_gt, pattern='Names_to_keep_round', ext='.csv')
+            for fn in files:
+                ios.printf(f'Reading {fn}')
+                df = ios.load_csv(fn)
+                round = int(fn.split('round')[-1].split('.')[0])
+                
+                # keep only names in the ground truth
+                to_remove = df_result.query("round == @round and givenname not in @df.givenname")
+                print(f'[INFO] {fn} has {df.shape[1]} columns and {df.shape[0]} rows (round {round}), to be removed {to_remove.shape[0]} rows.')
+                df_result = df_result[~df_result.index.isin(to_remove.index)]
+
+            # Summary
+            print(f'[INFO] Dataframe after filtering: {df_result.shape[0]} rows and {df_result.shape[1]} columns.')
+            print(f"[INFO] {df_result.single_char.value_counts()}")
+
             # Save the result
             if fn_gt is not None:
-                df_result = df_result[[f"a{id+1}" for id in range(len(df_result.columns)-2)]+['single_char','source']]  # keep single_char at the end
+                df_result = df_result[[f"a{id+1}" for id in range(len(df_result.columns)-2)]+['single_char','round']]  # keep single_char at the end
                 ios.to_csv(df_result.sort_values(['single_char', 'givenname']), ios.path_join(dir_gt, fn_gt))
 
         except Exception as e:
