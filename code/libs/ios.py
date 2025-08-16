@@ -30,14 +30,15 @@ def listdir(path, pattern=None, ext=None):
         return []
     
     files = os.listdir(path)
+
     if pattern:
-        files = [f for f in files if glob.glob(os.path.join(path, f"*{pattern}*"))]
-    
+        files = glob.glob(os.path.join(path, f"*{pattern}*"))
+  
     if ext:
         files = [f for f in files if f.endswith(ext)]
     
     print(f'[INFO] Found {len(files)} files in {path}.')
-    return [os.path.join(path, f) for f in files]
+    return files
 
 def path_exists(path):
     """
