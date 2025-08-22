@@ -244,7 +244,7 @@ class ToolsComparison(object):
             if ios.path_exists(fn):
                 self.df_ch_genders = ios.load_csv(fn)
                 # only ground truth
-                self.df_ch_genders_gt = self.df_ch_genders.query("gt == True").reset_index().copy()
+                self.df_ch_genders_gt = self.df_ch_genders.query("gt == True").reset_index(drop=True).copy()
         except Exception as e:
             raise ValueError(f'Error loading file {fn}: {e}')
             

@@ -14,8 +14,13 @@ def validate_path(path, **kwargs):
     :param path: The directory path to validate.
     :param kwargs: Additional arguments to pass to os.makedirs.
     """
-    if not os.path.exists(path):
-        os.makedirs(path, **kwargs)
+    try:
+      if not os.path.exists(path):
+          os.makedirs(path, **kwargs)
+          printf(f"[INFO] Valid path: {path}")
+    except Exception as ex:
+       printf(f"[ERROR] {ex}")
+       
 
 def listdir(path, pattern=None, ext=None):
     """
@@ -68,9 +73,9 @@ def read_json(fn):
       print(f'Error: {e}')
     return None
     
-def load_csv(fn):
+def load_csv(fn, **kwargs):
   if fn is not None and os.path.exists(fn):
-    return pd.read_csv(fn)
+    return pd.read_csv(fn, **kwargs)
   return None
 
 def to_csv(df, fn, **kwargs):
@@ -139,10 +144,13 @@ def load_json_files_to_dataframe(directory):
     """
     data_list = []
 
+    files = glob.glob(directory)
+
     # Loop through all files in the directory
-    for filename in os.listdir(directory):
-        if filename.endswith(".json"):  # Process only JSON files
-            file_path = os.path.join(directory, filename)
+    for file_path in files:
+        filename = os.path.basename(file_path)
+        if file_path.endswith(".json"):  # Process only JSON files
+            # file_path = os.path.join(directory, filename)
             with open(file_path, "r", encoding="utf-8") as file:
                 try:
                     data = json.load(file)  # Load JSON content
