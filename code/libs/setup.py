@@ -16,13 +16,14 @@ LOSS_FUNCTION_REG = 'RMSE'
 EVAL_METRIC_REG = 'RMSE'
 EARLY_STOPPING = 50
 
-LABELS = categorical.GENDER_LABELS_3 # DO NOT CHANGE (ORDER MATTERS)
-LABELS_CODE = categorical.GENDER_LABELS_3_DICT # DO NOT CHANGE (ORDER MATTERS)
+LABELS = categorical.GENDER_LABELS_3            # DO NOT CHANGE (ORDER MATTERS)
+LABELS_CODE = categorical.GENDER_LABELS_3_DICT  # DO NOT CHANGE (ORDER MATTERS)
 
-STRATEGY = {1:{'cuts':[0.445, 0.541], 'gt_agg':'mean'},
-            2:{'cuts':[0.45, 0.71], 'gt_agg':'mean'},
-            3:{'cuts':[0.3, 0.7], 'gt_agg':'median'},
-            4:{'cuts':[0.4, 0.6], 'gt_agg':'mode'},
+STRATEGY = {1:{'cuts':[0.33, 0.66], 'gt_agg':'mean'},
+            2:{'cuts':[0.32, 0.57], 'gt_agg':'mean'},
+            3:{'cuts':[0.24, 0.70], 'gt_agg':'mean'},
+            4:{'cuts':[0.30, 0.70], 'gt_agg':'median'},
+            5:{'cuts':[0.40, 0.60], 'gt_agg':'mode'},
            }
 
 GT_AGGS = ['mean', 'median', 'mode']
@@ -33,6 +34,7 @@ FEATURES = [
             'ngender_r',
             'ngender_n',
 
+            'gender_n',
             'gender_w',
             'gender_nw',
 
@@ -42,7 +44,6 @@ FEATURES = [
             'mean_ngender_rnw', 
             ]
 
-        # 'gender_n',
         # 'median_ngender_rnw',
         # 'gender_w_female', 'gender_w_male',
         # 'gender_n_female', 'gender_n_male',
