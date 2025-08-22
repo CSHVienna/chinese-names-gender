@@ -89,3 +89,7 @@ python batch_gender_prediction.py \
   5. Definitely female
 
 **Note:** For analysis, all scores from external tools and ground truth labels are rescaled to a common range between 0 (male) and 1 (female).
+
+## TODOs
+
+* 1. (lespin) re-do the ML training. Use the same train/test for all experiments (and run all experiments 3 times and report mean/std) - also change random seed for each set of experiments (not within)
