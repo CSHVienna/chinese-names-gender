@@ -29,6 +29,9 @@ def __axlines(**kwargs):
         for axvline in axvlines:
             plt.axvline(**axvline)
 
+    axdiagonal = kwargs.get('axdiagonal', None)
+    if axdiagonal:
+        plt.plot(axdiagonal.pop('x'), axdiagonal.pop('y'), **axdiagonal)
 
 def __save(**kwargs):
     filename = kwargs.get('fn', None)
@@ -52,20 +55,24 @@ def __finaltouch(**kwargs):
     if legend is not None:
         plt.legend(**legend)
 
+    ax = plt.gca()
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+
 def __close():
     plt.show()
     plt.close()
 
-def plot_violin(df, x, y, title='', xlabel='', ylabel='', hue=None, figsize=(10, 6), palette=None, **kwargs):
+def plot_violin(df, x, y, title='', xlabel='', ylabel='', hue=None, figsize=(10, 6), palette=None, kwargs_violin={}, **kwargs_plot):
     plt.figure(figsize=figsize)
-    sns.violinplot(data=df, x=x, y=y, hue=hue, palette=palette)
+    sns.violinplot(data=df, x=x, y=y, hue=hue, palette=palette, **kwargs_violin)
     plt.title(title)
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
 
     __labels(title, xlabel, ylabel)
-    __axlines(**kwargs)
-    __save(**kwargs)
+    __axlines(**kwargs_plot)
+    __save(**kwargs_plot)
     __close()
 
 
@@ -87,7 +94,7 @@ def plot_scatter(data, x, y, title='', xlabel='', ylabel='', hue=None, hue_order
         slope, intercept = np.polyfit(df[x], df[y], 1)
         print(slope, intercept)
         # Plot the regression line
-        plt.plot(df[x], intercept + slope * df[x], color='black', ls='--', lw=0.5)
+        plt.plot(df[x], intercept + slope * df[x], color='black', ls='--', lw=1.0)
                 #  label=f'y={intercept:.2f}+{slope:.2f}x')
         plt.text(0.98, yt, f'y={intercept:.2f}+{slope:.2f}x', transform=plt.gca().transAxes, ha='right', va='bottom')
         yt += ys

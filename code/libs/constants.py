@@ -28,3 +28,5 @@ FN_EN_GIVEN_NAMES_GENDER = 'CNKI_uniqueEnglishGivenNames_gender.csv'
 FN_GIVEN_NAMES_1CH = 'CNKI_uniqueChineseCharacter.csv'
 FN_GIVEN_NAMES_2CH = 'CNKI_uniqueChineseGivenNames_CNKIpop.csv'
 FN_ANNOTATIONS = "ground_truth.csv"
+
+GENDER_BINARY_ORDER = ['female', 'male'] # TODO: import from categorical and use MALE and FEMALE

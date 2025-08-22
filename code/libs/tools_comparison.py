@@ -1,3 +1,4 @@
+import re
 import pandas as pd
 import numpy as np
 from itertools import product
@@ -43,7 +44,7 @@ class ToolsComparison(object):
     Groundtruth
     Scale from 1 to 5: 1.Definitely male   2.More likely male   3.Neutral  4.More likely female  5.Definitely female
 '''
-    def __init__(self, dir_tool_w, dir_tool_r, dir_tool_n, dir_gt, dir_names):
+    def __init__(self, dir_tool_w, dir_tool_r, dir_tool_n, dir_gt, dir_names, remove_unnecesary_names):
         self.dir_tool_w = dir_tool_w
         self.dir_tool_r = dir_tool_r
         self.dir_tool_n = dir_tool_n
@@ -65,12 +66,14 @@ class ToolsComparison(object):
         self.fn_givennames_2ch = ios.path_join(self.dir_names, const.FN_GIVEN_NAMES_2CH)
     
         # annotations (ground truth)
-        self.fn_gt = ios.path_join(self.dir_gt, const.FN_ANNOTATIONS)
+        self.remove_unnecesary_names = remove_unnecesary_names
+        self.fn_gt = ToolsComparison.get_fn_gt(self.dir_gt, const.FN_ANNOTATIONS, remove_unnecesary_names=self.remove_unnecesary_names)
                                    
         self.df_ch_gender_w = None
         self.df_ch_gender_r = None
         self.df_ch_gender_n = None
         self.df_ch_genders = None
+        self.df_ch_genders_gt = None
         self.df_givennames_1ch = None
         self.df_givennames_2ch = None
         self.df_gt = None
@@ -122,7 +125,8 @@ class ToolsComparison(object):
         
         # GT
         if not ios.path_exists(self.fn_gt):
-            assert ToolsComparison.prepare_ground_truth(fn_gt=self.fn_gt)
+            assert ToolsComparison.prepare_ground_truth(fn_gt=self.fn_gt, 
+                                                        remove_unnecesary_names=self.remove_unnecesary_names)
         self.df_gt = ios.load_csv(self.fn_gt)
         self.df_gt.loc[:,'gt'] = True
 
@@ -146,8 +150,17 @@ class ToolsComparison(object):
         assert self.df_ch_gender_r.query("single_char == False").shape[0] == self.df_ch_gender_w.shape[0], 'Different number of names between R and W.'
         assert self.df_ch_gender_n.query("single_char == False").shape[0] == self.df_ch_gender_w.shape[0], 'Different number of names between N and W.'
 
-    def compare_unique_chinese_given_names(self):
+    def compare_unique_chinese_given_names(self, ignore_empty=False):
 
+        
+        def _curate_list(values, ignore_empty=False):
+            '''Compute a metric for a list of values, optionally ignoring empty values. '''
+            if ignore_empty:
+                values = [v for v in values if v not in const.NONE]
+            if not values:
+                return None
+            return values
+        
         # merging w and r
         # NG ranges from –1 (completely feminine; 100% used by female) through 0 (gender-neutral; half by female and half by male) to 1 (completely masculine; 100% used by male).
         # how=left because W only has 2-char givennames, while R has both 1-char and 2-char givennames.
@@ -177,8 +190,6 @@ class ToolsComparison(object):
         self.df_ch_genders.loc[:,'ngender_r'] = self.df_ch_genders.ngender_r.apply(lambda v: scale_minus1_to_1_to_0_to_1(v*-1))
         self.df_ch_genders.loc[:,'ngender_n'] = self.df_ch_genders.ngender_n.apply(lambda v: scale_minus1_to_1_to_0_to_1(v))
 
-        
-
         # metrics
         index_gt = self.df_gt.givenname.unique()
         self.gt_cols = [col for col in self.df_gt.columns if col not in ['NG', 'gender_r', 'gender_w', 'gender_n', 'ngender_w', 'ngender_r', 'ngender_n', 'givenname','gt','single_char', 'source']]
@@ -190,29 +201,61 @@ class ToolsComparison(object):
             # GT
             self.df_ch_genders.loc[index_gt,metric_name] = self.df_ch_genders.loc[index_gt,:].apply(lambda row: scale_1_to_5_to_0_to_1(metric(row[self.gt_cols].dropna())), axis=1) # @TODO: remove dropna once all GT is finalized
             # TOOLS
-            self.df_ch_genders.loc[:,f'{metric_name}_ngender_rnw'] = self.df_ch_genders.apply(lambda row: metric([row['ngender_r'], row['ngender_n'], row['ngender_w']]), axis=1)
-            self.df_ch_genders.loc[:,f'{metric_name}_ngender_rn'] = self.df_ch_genders.apply(lambda row: metric([row['ngender_r'], row['ngender_n']]), axis=1)
-            self.df_ch_genders.loc[:,f'{metric_name}_ngender_rw'] = self.df_ch_genders.apply(lambda row: metric([row['ngender_r'], row['ngender_w']]), axis=1)
-            self.df_ch_genders.loc[:,f'{metric_name}_ngender_nw'] = self.df_ch_genders.apply(lambda row: metric([row['ngender_n'], row['ngender_w']]), axis=1)
+            self.df_ch_genders.loc[:,f'{metric_name}_ngender_rnw'] = self.df_ch_genders.apply(lambda row: metric(_curate_list([row['ngender_r'], row['ngender_n'], row['ngender_w']], ignore_empty)), axis=1)
+            self.df_ch_genders.loc[:,f'{metric_name}_ngender_rn'] = self.df_ch_genders.apply(lambda row: metric(_curate_list([row['ngender_r'], row['ngender_n']], ignore_empty)), axis=1)
+            self.df_ch_genders.loc[:,f'{metric_name}_ngender_rw'] = self.df_ch_genders.apply(lambda row: metric(_curate_list([row['ngender_r'], row['ngender_w']], ignore_empty)), axis=1)
+            self.df_ch_genders.loc[:,f'{metric_name}_ngender_nw'] = self.df_ch_genders.apply(lambda row: metric(_curate_list([row['ngender_n'], row['ngender_w']], ignore_empty)), axis=1)
 
 
         # majority voting
-        self.df_ch_genders.loc[:,'gender_nw'] = self.df_ch_genders.apply(lambda row: categorical.NEUTRAL if row['gender_n'] != row['gender_w'] else row['gender_n'], axis=1)
+        self.df_ch_genders.loc[:,'gender_nw'] = self.df_ch_genders.apply(lambda row: 
+                                                                         categorical.UNKNOWN if row['gender_n'] in const.NONE and row['gender_w'] in const.NONE and ignore_empty else
+                                                                         row['gender_n'] if row['gender_w'] in const.NONE and ignore_empty else 
+                                                                         categorical.NEUTRAL if row['gender_n'] != row['gender_w'] else row['gender_n'], axis=1)
+
+        # Replacer None from tools (when unknown)
+        for cat_col in ['gender_n', 'gender_w']:
+            self.df_ch_genders.loc[:,cat_col] = self.df_ch_genders.loc[:,cat_col].replace(const.NONE, categorical.UNKNOWN)  
 
         # only ground truth
         self.df_ch_genders_gt = self.df_ch_genders.query("gt == True").reset_index().copy()
 
 
-
-    def save(self, path=None, fn=None):
+    @staticmethod
+    def _get_fn_tools_inference(path, fn, remove_unnecesary_names=False):
         if path is None or fn is None:
             raise ValueError('Path and filename must be provided.')
         ios.validate_path(path)
         fn = ios.path_join(path, fn)
+
+        if remove_unnecesary_names:
+            fn = fn.replace('.csv','_130GT.csv')
+
+        return fn 
+    
+    def save_tools_inference(self, path=None, fn=None):
+        fn = ToolsComparison._get_fn_tools_inference(path, fn, self.remove_unnecesary_names)
         ios.to_csv(self.df_ch_genders, fn)
 
+    def load_tools_inference(self, path=None, fn=None):
+        fn = ToolsComparison._get_fn_tools_inference(path, fn, self.remove_unnecesary_names)
+        try:
+            # all data
+            if ios.path_exists(fn):
+                self.df_ch_genders = ios.load_csv(fn)
+                # only ground truth
+                self.df_ch_genders_gt = self.df_ch_genders.query("gt == True").reset_index().copy()
+        except Exception as e:
+            raise ValueError(f'Error loading file {fn}: {e}')
+            
+
     @staticmethod
-    def prepare_ground_truth(dir_gt=None, fn_gt=None):
+    def get_fn_gt(dir_gt=None, fn_gt=None, remove_unnecesary_names=True):
+        fn = ios.path_join(dir_gt, fn_gt.replace('.csv',f'_130.csv') if remove_unnecesary_names else fn_gt)
+        return fn
+
+    @staticmethod
+    def prepare_ground_truth(dir_gt=None, fn_gt=None, remove_unnecesary_names=True):
         if dir_gt is None:
             raise ValueError('Directory for ground truth must be provided.')
     
@@ -252,26 +295,28 @@ class ToolsComparison(object):
             print(f"[INFO] {df_result.single_char.value_counts()}")
 
             
-            # 2. Remove unnecessary names
-            files = ios.listdir(dir_gt, pattern='Names_to_keep_round', ext='.csv')
-            for fn in files:
-                ios.printf(f'Reading {fn}')
-                df = ios.load_csv(fn)
-                round = int(fn.split('round')[-1].split('.')[0])
-                
-                # keep only names in the ground truth
-                to_remove = df_result.query("round == @round and givenname not in @df.givenname")
-                print(f'[INFO] {fn} has {df.shape[1]} columns and {df.shape[0]} rows (round {round}), to be removed {to_remove.shape[0]} rows.')
-                df_result = df_result[~df_result.index.isin(to_remove.index)]
+            if remove_unnecesary_names:
+                # 2. Remove unnecessary names
+                files = ios.listdir(dir_gt, pattern='Names_to_keep_round', ext='.csv')
+                for fn in files:
+                    ios.printf(f'Reading {fn}')
+                    df = ios.load_csv(fn)
+                    round = int(fn.split('round')[-1].split('.')[0])
+                    
+                    # keep only names in the ground truth
+                    to_remove = df_result.query("round == @round and givenname not in @df.givenname")
+                    print(f'[INFO] {fn} has {df.shape[1]} columns and {df.shape[0]} rows (round {round}), to be removed {to_remove.shape[0]} rows.')
+                    df_result = df_result[~df_result.index.isin(to_remove.index)]
 
-            # Summary
-            print(f'[INFO] Dataframe after filtering: {df_result.shape[0]} rows and {df_result.shape[1]} columns.')
-            print(f"[INFO] {df_result.single_char.value_counts()}")
+                # Summary
+                print(f'[INFO] Dataframe after filtering: {df_result.shape[0]} rows and {df_result.shape[1]} columns.')
+                print(f"[INFO] {df_result.single_char.value_counts()}")
 
             # Save the result
             if fn_gt is not None:
                 df_result = df_result[[f"a{id+1}" for id in range(len(df_result.columns)-2)]+['single_char','round']]  # keep single_char at the end
-                ios.to_csv(df_result.sort_values(['single_char', 'givenname']), ios.path_join(dir_gt, fn_gt))
+                fn = ToolsComparison.get_fn_gt(dir_gt, fn_gt, remove_unnecesary_names)
+                ios.to_csv(df_result.sort_values(['single_char', 'givenname']), fn)
 
         except Exception as e:
             print(f'Error reading ground truth files: {e}')

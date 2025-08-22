@@ -19,6 +19,7 @@ from sklearn.metrics import f1_score, precision_score, recall_score, roc_auc_sco
 
 import ios
 from tools_comparison import ToolsComparison
+import tools_comparison
 import categorical
 import setup
 
@@ -26,17 +27,19 @@ import setup
 # CONSTANTS
 ###############################################################################################
 
-VERSION = 2
-DATA = f'../../data/v{VERSION}/chinese_names'
-RESULTS = f'../../results/v{VERSION}/chinese_gender'
+VERSION = 3
 
-DIR_TOOL_W = ios.path_join(RESULTS, 'tool_w')
-DIR_TOOL_R = ios.path_join(RESULTS, 'tool_r')
-DIR_TOOL_N = ios.path_join(RESULTS, 'tool_n')
-DIR_GT = ios.path_join(DATA, 'annotations')
+DIR_RESULTS = f'../../results/v{VERSION}'
+DIR_TOOLS = ios.path_join(DIR_RESULTS, 'gender')
+DIR_TOOL_W = ios.path_join(DIR_TOOLS, 'tool_w')
+DIR_TOOL_R = ios.path_join(DIR_TOOLS, 'tool_r')
+DIR_TOOL_N = ios.path_join(DIR_TOOLS, 'tool_n')
+
+DIR_GT = f'../../data/v{VERSION}/annotations/gender'
+DIR_NAMES = ios.path_join(DIR_RESULTS, 'names/chinese')
+DIR_PRED = ios.path_join(DIR_TOOLS, 'predictions')
 
 FIGSIZE = (4,3)
-
 
 ###############################################################################################
 # HELPERS
@@ -54,9 +57,11 @@ def _train(X_train, y_train, X_test, y_test, cat_features, loss_function, eval_m
     test_pool = cb.Pool(X_test, label=y_test, cat_features=cat_features) 
 
     # Model
-    model = cb.CatBoostClassifier(verbose=0, 
-                                  eval_metric=eval_metric,
-                                  loss_function=loss_function) 
+    model = cb.CatBoostClassifier(verbose = 0, 
+                                  eval_metric = eval_metric,
+                                  loss_function = loss_function,
+                                  random_seed = random_seed,
+                                  ) 
 
     # Tuning
     grid_search_result = model.grid_search(setup.GRID, train_pool, cv=cv, partition_random_seed=random_seed, stratified=stratified, verbose=False)
@@ -147,18 +152,26 @@ def validate_path(path):
 ###############################################################################################
 # RUN
 ###############################################################################################
-def run(features_id, strategy_id, cuts, gt_agg, output_dir):
+def run(features_id, strategy_id, cuts, gt_agg, random_seed, output_dir):
     
     # Load data
-    tc = ToolsComparison(dir_tool_w=DIR_TOOL_W, dir_tool_r=DIR_TOOL_R, dir_tool_n=DIR_TOOL_N, dir_gt=DIR_GT)
+    tc = ToolsComparison(dir_tool_w=DIR_TOOL_W, dir_tool_r=DIR_TOOL_R, dir_tool_n=DIR_TOOL_N, dir_gt=DIR_GT, dir_names=DIR_NAMES)
+
+    # @TODO: add here to load data
+
+    
     tc.load_data()
+    tc.validate_givennames()
 
     # Ground truth
-    tc.compare_unique_chinese_given_names()
+    tc.compare_unique_chinese_given_names(ignore_empty=True)
     
+    # Save
+    tc.save(DIR_PRED, tools_comparison.const.FN_CH_GIVEN_NAMES_GENDER)
+
     # start
     data = tc.df_ch_genders_gt.copy()
-    #data = pd.get_dummies(data, columns=setup.CAT_FEATURES, dtype=int)
+    #data = pd.get_dummies(data, columns=setup.CAT_FEATURES, dtype=int) # No dummies, CatBoost takes care of cat and numerical.
     
     # labeling
     thresholds = [(-1,cuts[0]),(cuts[0],cuts[1]),(cuts[1],2)]
@@ -184,11 +197,19 @@ def run(features_id, strategy_id, cuts, gt_agg, output_dir):
     # Split dataset
     X = data[feature_names]  # Features
     y = data[[var_y_encoded]]  # Target variable
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=setup.TEST_SIZE, random_state=setup.RANDOM_STATE, stratify=y)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=setup.TEST_SIZE, random_state=random_seed, stratify=y)
     
     # Train 
-    best_model, grid_search_result = _train(X_train, y_train, X_test, y_test, cat_features, setup.LOSS_FUNCTION_CLA, setup.EVAL_METRIC_CLA)
-    
+    best_model, grid_search_result = _train(X_train, y_train, X_test, y_test, 
+                                            cat_features = cat_features, 
+                                            loss_function = setup.LOSS_FUNCTION_CLA, 
+                                            eval_metric = setup.EVAL_METRIC_CLA,
+                                            cv = setup.CV, 
+                                            stratified = True, 
+                                            early_stopping_rounds = setup.EARLY_STOPPING, 
+                                            random_seed = random_seed
+                                            )
+
     # Evaluation
     y_pred, y_pred_proba, accuracy, f1, precision, recall, auc, conf_matrix = _eval(best_model, X_test, y_test)
     all_y_pred, all_y_pred_proba, all_accuracy, all_f1, all_precision, all_recall, all_auc, all_conf_matrix = _eval(best_model, X, y)
@@ -227,7 +248,7 @@ def run(features_id, strategy_id, cuts, gt_agg, output_dir):
            'best_score': best_model.get_best_score(),
            'best_iteration': best_model.get_best_iteration(),
            'test_size': setup.TEST_SIZE,  
-           'random_state': setup.RANDOM_STATE,
+           'random_state': random_seed,
            'loss_function': setup.LOSS_FUNCTION_CLA,
            'eval_metric': setup.EVAL_METRIC_CLA,
            'train_eval': best_model.get_best_score()['learn'][setup.LOSS_FUNCTION_CLA], 
@@ -255,9 +276,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Training to predict gender (numeric).')
 
     # Add arguments
-    parser.add_argument('--features_id', help='Features combination (0, 37)', type=int, required=True, choices=range(len(setup.FEATURE_NAMES)))
+    parser.add_argument('--features_id', help='Features combination (0, 382)', type=int, required=True, choices=range(len(setup.FEATURE_NAMES)))
     parser.add_argument('--strategy_id', help='Strategy id for thresholding', type=int, required=True, choices=setup.STRATEGY.keys())
-    parser.add_argument('--output_dir', help='../../results/v2/chinese_gender/comparison/', type=str, required=True)
+    parser.add_argument('--output_dir', help='../../results/v3/gender/predictions/', type=str, required=True)
+    parser.add_argument('--seed', help='Random seed to use and to differentiate each set of runs or epoch ids', type=int, required=True, default=setup.RANDOM_STATE)
     
     # Parse the arguments
     args = parser.parse_args()
@@ -274,7 +296,7 @@ if __name__ == '__main__':
     output_dir = os.path.join(args.output_dir, f"_{gt_agg}")
     validate_path(output_dir)
 
-    run(args.features_id, args.strategy_id, cuts, gt_agg, output_dir)
+    run(args.features_id, args.strategy_id, cuts, gt_agg, args.seed, output_dir)
 
     end_time = time.time()
     print('Execution time: {:.2f} seconds'.format(end_time - start_time))
