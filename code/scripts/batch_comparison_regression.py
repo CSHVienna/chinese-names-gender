@@ -246,7 +246,7 @@ if __name__ == '__main__':
     parser.add_argument('--gt_agg', help='Dependent variable (y)', type=str, required=True, choices=setup.GT_AGGS)
     parser.add_argument('--features_id', help='Features combination (0, 382)', type=int, required=True, choices=range(len(setup.FEATURE_NAMES)))
     parser.add_argument('--output_dir', help='../../results/v3/gender/predictions/comparison/regression/', type=str, required=True)
-    parser.add_argument('--seed', help='Random seed to use and to differentiate each set of runs or epoch ids', type=int, required=True, default=setup.RANDOM_STATE)
+    parser.add_argument('--seed', help='Random seed to use and to differentiate each set of runs or epoch ids', type=int, required=True)
 
     # Parse the arguments
     args = parser.parse_args()
