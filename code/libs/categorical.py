@@ -25,11 +25,9 @@ MOSTLY_MALE = 'mostly_male'
 
 GENDER_LABELS_2 = [MALE, FEMALE]                                            # DO NOT CHANGE (ORDER MATTERS)
 GENDER_LABELS_3 = [MALE, NEUTRAL, FEMALE]                                   # DO NOT CHANGE (ORDER MATTERS)
-GENDER_LABELS_4 = [MALE, NEUTRAL, FEMALE, UNKNOWN]                          # DO NOT CHANGE (ORDER MATTERS) - not used (in future delete)
 GENDER_LABELS_5 = [MALE, 'mostly_male', NEUTRAL, 'mostly_female', FEMALE]   # DO NOT CHANGE (ORDER MATTERS)
 
 GENDER_LABELS_3_DICT = {g:i for i,g in enumerate(GENDER_LABELS_3)}
-GENDER_LABELS_4_DICT = {g:i for i,g in enumerate(GENDER_LABELS_4)} # - not used (in future delete)
 
 ##################################################################################################################
 # HELPERS

@@ -28,7 +28,7 @@ STRATEGY = {1:{'cuts':[0.33, 0.66], 'gt_agg':'mean'},
 
 GT_AGGS = ['mean', 'median', 'mode']
 
-CAT_FEATURES = ['gender_w','gender_n','gender_nw']
+CAT_FEATURES = ['gender_w','gender_n','gender_nw','single_char']
 
 FEATURES = [
             'ngender_r',
@@ -37,6 +37,7 @@ FEATURES = [
             'gender_n',
             'gender_w',
             'gender_nw',
+            'single_char', 
 
             'mean_ngender_rn', 
             'mean_ngender_rw', 
