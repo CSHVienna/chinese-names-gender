@@ -58,8 +58,9 @@ def get_all_feature_combinations():
         for r in range(1, len(items) + 1):
                 for comb in combinations(items, r):
                         # Exclude combinations that contain both "item 8" and "item 10"
-                        if not ("ngender_n" in comb and "gender_n" in comb):
-                                all_combinations.append(list(comb))
+                        # if not ("ngender_n" in comb and "gender_n" in comb):
+                        #         all_combinations.append(list(comb))
+                        all_combinations.append(list(comb))
 
         # Print the number of combinations
         print("Total combinations of features:", len(all_combinations))

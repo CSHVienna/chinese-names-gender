@@ -26,11 +26,12 @@ python batch_paper_metadata.py
 Classifies names into three categories: **male**, **neutral**, and **female**, based on selected features and a thresholding strategy.
 
 ```bash
-parallel -j 5 python batch_comparison_classification.py \
-    --features_id {1} \
-    --strategy_id {2} \
-    --output_dir /path/to/results/ \
-    ::: $(seq 0 254) ::: 1 2 3 4
+parallel -j 50 python batch_comparison_classification.py \
+  --seed {1} \
+  --features_id {2} \
+  --strategy_id {3} \
+  --output_dir ../../results/v3/gender/predictions/comparison \
+  ::: $(seq 1 3) ::: $(seq 0 766) ::: $(seq 1 5)
 ```
 
 ### Rule-Based Gender Regression
@@ -40,10 +41,12 @@ Assigns a continuous gender score:
 - **1.0** = mostly female
 
 ```bash
-parallel -j 5 python batch_comparison_regression.py \
-    --features_id {1} \
-    --output_dir /path/to/results/ \
-    ::: $(seq 0 254)
+parallel -j 50 python batch_comparison_regression.py \
+    --seed {1} \
+    --gt_agg {2} \
+    --features_id {3} \
+    --output_dir ../../results/v3/gender/predictions/comparison/ \
+    :::  $(seq 1 3) ::: mean median mode ::: $(seq 0 766)
 ```
 
 ### Machine Learning-Based Gender Prediction

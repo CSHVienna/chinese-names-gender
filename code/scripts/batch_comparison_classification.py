@@ -22,6 +22,7 @@ from tools_comparison import ToolsComparison
 import tools_comparison
 import categorical
 import setup
+import constants
 
 ###############################################################################################
 # CONSTANTS
@@ -57,14 +58,16 @@ def _train(X_train, y_train, X_test, y_test, cat_features, loss_function, eval_m
     test_pool = cb.Pool(X_test, label=y_test, cat_features=cat_features) 
 
     # Model
-    model = cb.CatBoostClassifier(verbose = 0, 
+    model = cb.CatBoostClassifier(verbose = False, 
+                                  cat_features = cat_features,
                                   eval_metric = eval_metric,
                                   loss_function = loss_function,
-                                  random_seed = random_seed,
-                                  ) 
+                                  random_seed = random_seed) 
 
     # Tuning
-    grid_search_result = model.grid_search(setup.GRID, train_pool, cv=cv, partition_random_seed=random_seed, stratified=stratified, verbose=False)
+    grid_search_result = model.grid_search(setup.GRID, train_pool, cv=cv,
+                                            partition_random_seed=random_seed, 
+                                            stratified=stratified, verbose=False)
 
     # best model
     best_model = model.fit(train_pool, eval_set=test_pool, early_stopping_rounds=early_stopping_rounds)
@@ -81,9 +84,9 @@ def _eval(model, X_test, y_test):
     y_pred_labels = np.vectorize(lambda x: setup.LABELS[x])(y_pred) # Keep original if not in dict
     y_test_labels = np.vectorize(lambda x: setup.LABELS[x])(y_test) # Keep original if not in dict
 
-    print("y_pred_proba: ", y_pred_proba)
-    print('y_pred_labels', y_pred_labels)
-    print('y_test_labels', y_test_labels)
+    # print("y_pred_proba: ", y_pred_proba)
+    # print('y_pred_labels', y_pred_labels)
+    # print('y_test_labels', y_test_labels)
 
     # Compute Accuracy
     accuracy = accuracy_score(y_test_labels, y_pred_labels)
@@ -150,16 +153,17 @@ def validate_path(path):
 ###############################################################################################
 # RUN
 ###############################################################################################
-def run(features_id, strategy_id, random_seed, output_dir):
+def run(features_id, strategy_id, random_seed, results_dir):
     
     # 1. Read params (strategy, features)
     cuts = setup.STRATEGY[strategy_id]['cuts']
     gt_agg = setup.STRATEGY[strategy_id]['gt_agg']
-    output_dir = os.path.join(output_dir, f"_{gt_agg}") ### @TODO: update this (make function to create path and update here and in sample, prediciotns notebooks, etc)
+    output_dir = tools_comparison.get_path_comparison(results_dir, random_seed, strategy_id=strategy_id)
     validate_path(output_dir)
 
     # 2. Read GT (train/test sets)
-    data = None ### @TODO: load ground truth based on seed and strategy
+    fn_gt = os.path.join(output_dir, constants.FN_GT_TRAN_TEST_SAMPLE)
+    data = ios.load_csv(fn_gt)
 
     # 3. Encode target variales
     var_y = f'gender_{gt_agg}'
@@ -170,18 +174,22 @@ def run(features_id, strategy_id, random_seed, output_dir):
     feature_names = setup.FEATURE_NAMES[features_id]
     cat_features = [c for c in feature_names if c in setup.CAT_FEATURES]
 
+    ios.printf(f"[INFO] y variable: {var_y}")
+    ios.printf(f"[INFO] features: {feature_names}")
+    ios.printf(f"[INFO] cat_features: {cat_features}")
+
     # 4. train/test sets
     df_train = data.query("ml_sample == 'train'").drop(columns=['ml_sample'])
     df_test = data.query("ml_sample == 'test'").drop(columns=['ml_sample'])
     # train
-    X_train = df_train[feature_names].values    # Features
-    y_train = df_train[[var_y_encoded]].values  # Target variable
+    X_train = df_train[feature_names]    # Features
+    y_train = df_train[[var_y_encoded]]  # Target variable
     # test
-    X_test = df_test[feature_names].values    # Features
-    y_test = df_test[[var_y_encoded]].values  # Target variable
+    X_test = df_test[feature_names]    # Features
+    y_test = df_test[[var_y_encoded]]  # Target variable
     # all 
-    X = data[feature_names].values    # Features
-    y = data[[var_y_encoded]].values  # Target variable
+    X = data[feature_names]    # Features
+    y = data[[var_y_encoded]]  # Target variable
 
     # Training model
     best_model, grid_search_result = _train(X_train, y_train, X_test, y_test, 
@@ -249,9 +257,10 @@ def run(features_id, strategy_id, random_seed, output_dir):
            'all_recall': all_recall,
            'all_auc': all_auc,
            'f_name':f_name,
-           'y_test': y_test,
-           'y_pred': y_pred,
-           'y_pred_proba': y_pred_proba
+           'labels': setup.LABELS,
+           'y_test': y_test.values.squeeze().tolist(),
+           'y_pred': y_pred.squeeze().tolist(),
+           'y_pred_proba': y_pred_proba.squeeze().tolist()
            }
     fn = os.path.join(output_dir, f"{f_name}.json")
     save_json(obj, fn)
@@ -267,7 +276,7 @@ if __name__ == '__main__':
     # Add arguments
     parser.add_argument('--features_id', help='Features combination (0, 382)', type=int, required=True, choices=range(len(setup.FEATURE_NAMES)))
     parser.add_argument('--strategy_id', help='Strategy id for thresholding', type=int, required=True, choices=setup.STRATEGY.keys())
-    parser.add_argument('--output_dir', help='../../results/v3/gender/predictions/', type=str, required=True)
+    parser.add_argument('--output_dir', help='../../results/v3/gender/predictions/comparison', type=str, required=True)
     parser.add_argument('--seed', help='Random seed to use and to differentiate each set of runs or epoch ids', type=int, required=True)
     
     # Parse the arguments
