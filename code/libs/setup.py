@@ -24,6 +24,8 @@ STRATEGY = {1:{'cuts':[0.33, 0.66], 'gt_agg':'mean'},
             3:{'cuts':[0.24, 0.70], 'gt_agg':'mean'},
             4:{'cuts':[0.30, 0.70], 'gt_agg':'median'},
             5:{'cuts':[0.40, 0.60], 'gt_agg':'mode'},
+            6:{'cuts':[0.4, 0.6], 'gt_agg':'mean'},
+            7:{'cuts':[0.2, 0.8], 'gt_agg':'mean'},
            }
 
 GT_AGGS = ['mean', 'median', 'mode']
