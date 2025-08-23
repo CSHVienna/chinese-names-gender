@@ -1,4 +1,5 @@
 import re
+import os
 import pandas as pd
 import numpy as np
 from itertools import product
@@ -6,12 +7,13 @@ from itertools import combinations
 from collections import Counter
 
 import ios
+import setup
 import constants as const
 import categorical
 from categorical import _mode
 
 ####################################################################################################
-# Functions
+# Helpers
 ####################################################################################################
 
 def scale_minus1_to_1_to_0_to_1(x):
@@ -20,6 +22,14 @@ def scale_minus1_to_1_to_0_to_1(x):
 def scale_1_to_5_to_0_to_1(x):
     return None if x in const.NONE else (x - 1) / 4
 
+def get_path_comparison(results_dir, random_seed, strategy_id=None, gt_agg=None):
+    # Reconstruct output dir based on type
+    if strategy_id is not None:
+        gt_agg = setup.STRATEGY[strategy_id]['gt_agg']
+        output_dir = os.path.join(results_dir, f'rs{random_seed}', 'classification', f"_{gt_agg}", f"cut_{strategy_id}")
+    else:
+        output_dir = os.path.join(results_dir, f'rs{random_seed}', 'regression',  f"_{gt_agg}")
+    return output_dir
 
 ####################################################################################################
 # Main
@@ -326,7 +336,15 @@ class ToolsComparison(object):
         return True
         
     
+
+################################################################################################################
+# Functions
+################################################################################################################
+
 def prepare_features(data, column_name, dir_resources, cache_dir=None):
+    '''
+    Given a dataframe with given names a predictions from tools, prepares the features for the ML model.
+    '''
 
     df = data.copy()
     

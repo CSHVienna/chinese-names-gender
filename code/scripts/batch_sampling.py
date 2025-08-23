@@ -18,6 +18,7 @@ from tools_comparison import ToolsComparison
 import setup
 import tools_comparison
 import categorical
+import constants
 
 ###############################################################################################
 # CONSTANTS
@@ -61,17 +62,13 @@ def validation(test_fct, strategy_id=None, gt_agg=None):
 ###############################################################################################
 # RUN
 ###############################################################################################
-def run(strategy_id, gt_agg, test_fct, remove_unnecesary_names, random_seed, output_dir):
+def run(strategy_id, gt_agg, test_fct, remove_unnecesary_names, random_seed, results_dir):
     
     # Validate Type 
     validation(test_fct, strategy_id, gt_agg)
 
     # Reconstruct output dir based on type
-    if strategy_id is not None:
-        gt_agg = setup.STRATEGY[strategy_id]['gt_agg']
-        output_dir = os.path.join(output_dir, f'rs{random_seed}', 'classification', f"_{gt_agg}", f"cut_{strategy_id}")
-    else:
-        output_dir = os.path.join(output_dir, f'rs{random_seed}', 'regression',  f"_{gt_agg}")
+    output_dir = tools_comparison.get_path_comparison(results_dir, random_seed, strategy_id=strategy_id, gt_agg=gt_agg)
     ios.validate_path(output_dir)
 
     # Load GT
@@ -135,7 +132,7 @@ def run(strategy_id, gt_agg, test_fct, remove_unnecesary_names, random_seed, out
     print(data.head(2))
 
     # Storage
-    fn = os.path.join(output_dir, f"ground_truth_MLsampled.csv")
+    fn = os.path.join(output_dir, constants.FN_GT_TRAN_TEST_SAMPLE)
     ios.to_csv(data, fn, index=False)
     ios.printf(f"[INFO] sample saved in {fn}")
 
