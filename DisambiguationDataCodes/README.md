@@ -6,26 +6,6 @@ The pipeline is modular: each step is implemented both as a **Python script (.py
 
 ---
 
-## 📂 Repository Structure
-
-
-DisambiguationCodes/
-├ 1_GetAuthorship.ipynb             # Step 1: Build authorship datasets (Chinese & English)
-├ 2_SimilarityChineseEnglish.ipynb  # Step 2: Compare Chinese-English abstract similarity
-├ 3_ChineseDisambiguation.ipynb     # Step 3: Name disambiguation on Chinese dataset
-├ 4_Englishdisambiguation.ipynb     # Step 4: Name disambiguation on English dataset
-├ 5_Estimation.ipynb                # Step 5: Evaluate disambiguation methods
-│
-├ DetectTranslateCNKILanguage.py    # Functions for language detection and translation
-├ BuildChineseAuthorship.py         # Functions for building & cleaning authorship data
-├ AuthorshipTranslation.py          # Functions for translating authorship into English
-├ EvaluateDisambiguation.py         # Functions for evaluating name disambiguation methods
-│
-├ __pycache__/                      # Python cache files
-└ README.md                         # Project documentation
-
----
-
 ## 🚀 Workflow
 
 ### **Step 1. Get Authorship**
