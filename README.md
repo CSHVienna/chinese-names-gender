@@ -19,6 +19,17 @@ Extract metadata and citation information for each paper (based on title):
 python batch_paper_metadata.py
 ```
 
+## Sampling
+
+```bash
+parallel -j 10 python batch_sampling.py \
+    --gt_agg {1} \
+    --test_fct 0.2  \
+    --seed {2}  \
+    --output_dir ../../results/v3/gender/predictions/comparison/  \
+    ::: mean median mode ::: 1 2 3
+```
+
 ## Gender Inference Methods
 
 ### Rule-Based Gender Classification
