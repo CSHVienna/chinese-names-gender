@@ -156,7 +156,7 @@ def plot_confusion_matrix(cm, labels, title='Confusion Matrix', cmap='Blues', fi
     __save(**kwargs)
     __close()
 
-def plot_distribution_and_cuts(df, col, bins, figsize, cuts):
+def plot_distribution_and_cuts(df, col, bins, figsize, cuts, **kwargs):
     ax = df[col].plot.hist(bins=bins, alpha=0.5, figsize=figsize)
 
     cummulative = 0
@@ -168,3 +168,9 @@ def plot_distribution_and_cuts(df, col, bins, figsize, cuts):
 
     s = df.query(f"{col} <= {df[col].max()}").shape[0] - cummulative
     ax.text(s=f'{s}', x=1., y=0.95, ha='right', va='top', transform=ax.transAxes)
+
+    # __labels(title, xlabel, ylabel)
+    __axlines(**kwargs)
+    __finaltouch(**kwargs)
+    __save(**kwargs)
+    __close()
