@@ -135,7 +135,7 @@ def read_txt_to_lst(filename):
     
 
 
-def load_json_files_to_dataframe(directory):
+def load_json_files_to_dataframe(directory, include_fn=False):
     """
     Reads all JSON files in a directory and converts them into a Pandas DataFrame.
 
@@ -154,6 +154,10 @@ def load_json_files_to_dataframe(directory):
             with open(file_path, "r", encoding="utf-8") as file:
                 try:
                     data = json.load(file)  # Load JSON content
+
+                    if include_fn:
+                       data.update({'fn': file_path})
+
                     if isinstance(data, dict):
                         data_list.append(data)  # Append dictionary data
                     elif isinstance(data, list):

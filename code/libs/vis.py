@@ -8,6 +8,9 @@ from sklearn.metrics import root_mean_squared_error
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from pdf2image import convert_from_path
+
+import setup
 
 
 def __axlines(**kwargs):
@@ -174,3 +177,65 @@ def plot_distribution_and_cuts(df, col, bins, figsize, cuts, **kwargs):
     __finaltouch(**kwargs)
     __save(**kwargs)
     __close()
+
+
+
+### PLOTS FOR PREDICTIONS
+def plot_confusion_matrix(fn):
+    images = convert_from_path(fn)
+    plt.imshow(images[0])
+    plt.axis("off")  # Hide axes
+    plt.show()
+    plt.close()
+    
+def plot_scatter(fn):
+    # predictions
+    images = convert_from_path(fn)
+    plt.imshow(images[0])
+    plt.axis("off")  # Hide axes
+    plt.show()
+    plt.close()
+
+def plot_importance(fn):
+    images = convert_from_path(fn)
+    plt.imshow(images[0])
+    plt.axis("off")  # Hide axes
+    plt.show()
+    plt.close()
+
+def plot_shap(fn):
+    images = convert_from_path(fn)
+    plt.imshow(images[0])
+    plt.axis("off")  # Hide axes
+    plt.show()
+    plt.close()
+
+def replot_importance(f_name, regressor=False):
+    from catboost import CatBoostRegressor
+    from catboost import CatBoostClassifier
+
+    # Loading model
+    fn_model = f"{f_name}.cbm"
+    model = CatBoostRegressor() if regressor else CatBoostClassifier()
+    model.load_model(fn_model, format="cbm")
+
+    # Loading feature importance
+    feature_importance_dict = {}
+    for fn, fi in zip(*(model.feature_names_,model.get_feature_importance())):
+        feature_importance_dict[fn] = fi
+    feature_importance_df = pd.DataFrame(feature_importance_dict, index=['features'])
+
+    # Plotting enhance version
+    width = 6
+    height = 2 + (len(model.feature_names_) - 0) * (12 - 2) / (len(setup.FEATURE_NAMES) - 0)
+
+    ax = feature_importance_df.T.sort_values('features').plot.barh(figsize=(width, height))
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+
+    fn = f"{f_name}_feature_importance_enhanced.pdf"
+    # print(fn)
+
+    plt.savefig(fn, dpi=300, bbox_inches="tight")
+    plt.show()
+    plt.close()
