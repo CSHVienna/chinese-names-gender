@@ -1,4 +1,5 @@
 from collections import Counter
+from re import sub
 from tkinter import NE
 import numpy as np
 import pandas as pd
@@ -19,6 +20,8 @@ MALE = 'male'
 FEMALE = 'female'
 NEUTRAL = 'neutral'
 UNKNOWN = 'unknown'
+MOSTLY_FEMALE = 'mostly_female'
+MOSTLY_MALE = 'mostly_male'
 
 GENDER_LABELS_2 = [MALE, FEMALE]                                            # DO NOT CHANGE (ORDER MATTERS)
 GENDER_LABELS_3 = [MALE, NEUTRAL, FEMALE]                                   # DO NOT CHANGE (ORDER MATTERS)
@@ -44,11 +47,16 @@ def majority_voting(df: pd.DataFrame) -> pd.Series:
 # EVALUTAION / PERFORMANCE
 ##################################################################################################################
 
-def comparison_metrics(df, col_true, cols_pred, labels):
-    index = ['precision', 'recall', 'f1', 'auc', 'accuracy'] + [f'n_{label}' for label in labels]
+def comparison_metrics(data, col_true, cols_pred, labels):
+    index = ['precision', 'recall', 'f1', 'auc', 'accuracy', 
+             'mean_precision', 'mean_recall','mean_f1', 'mean_auc',
+             ] + [f'n_{label}' for label in labels]
     df_results = pd.DataFrame(columns=cols_pred, index=index)
     obj = {}
     d = 2 # decimal places
+
+    df = data.copy()
+    df.dropna(subset=cols_pred + [col_true], inplace=True)
 
     for col_pred in [col_true] + cols_pred:
         y_true = df[col_true]
@@ -61,12 +69,21 @@ def comparison_metrics(df, col_true, cols_pred, labels):
         accuracy = accuracy_score(y_true, y_pred)
         class_counts = Counter(y_pred)
 
-        obj[col_pred] = [precision.round(d), recall.round(d), f1.round(d), auc.round(d), round(accuracy,d)] + [class_counts[label] for label in labels]
+        obj[col_pred] = [precision.round(d),recall.round(d), f1.round(d), auc.round(d), round(accuracy,d),
+                         precision.mean().round(d),
+                         recall.mean().round(d),
+                         f1.mean().round(d),
+                         auc.mean().round(d),
+                         ] + [class_counts[label] for label in labels]
 
     df_results = pd.DataFrame(obj, index=index)
     return df_results
 
-def get_performance(df, col_true, col_pred, labels, normalize=None):
+def get_performance(data, col_true, col_pred, labels, normalize=None):
+
+    df = data.copy()
+    df.dropna(subset=[col_pred, col_true], inplace=True)
+
     y_true = df[col_true]
     y_pred = df[col_pred]
 
@@ -85,8 +102,10 @@ def get_performance(df, col_true, col_pred, labels, normalize=None):
 
 def _get_label_by_threshold(value: float, thresholds: list, labels: list) -> str:
     result = [label for (low, high), label in zip(*[thresholds,labels]) if value >= low and value < high]
-    # if len(result) == 0:
-    #     return None
+
+    if len(result) == 0:
+        return None
+
     return result[0]
     
 def _convert_numeric_to_categorical_by_thresholds(values: pd.Series, thresholds: list, labels: list) -> np.array:
@@ -109,7 +128,7 @@ def convert_numeric_to_categorical_equal_bins(values: np.array, num_bins: int, l
 # ARBITRARY THRESHOLDS
 ##################################################################################################################
 
-def convert_numeric_to_categorical_by_thresholds(df, thresholds, labels, rot_fnc, new_trhesholds_fnc=None):
+def convert_numeric_to_categorical_by_thresholds(df, thresholds, labels, rot_fnc=None, new_trhesholds_fnc=None):
     # GT
     if 'mean' in df.columns and 'mode' in df.columns and 'median' in df.columns:
         df.loc[:,'gender_mean'] = _convert_numeric_to_categorical_by_thresholds(df['mean'], thresholds, labels)
@@ -134,8 +153,8 @@ def convert_numeric_to_categorical_by_thresholds(df, thresholds, labels, rot_fnc
     df.loc[:,'gender_mv_x2'] = majority_voting(df[['gender_rn','gender_rw','gender_nw']])
     df.loc[:,'gender_mv_x1x2'] = majority_voting(df[['gender_r','gender_w','gender_n','gender_rn','gender_rw','gender_nw']])
     df.loc[:,'gender_mv_all'] = majority_voting(df[['gender_r','gender_w','gender_n','gender_rn','gender_rw','gender_nw', 'gender_rnw']])
-    df.loc[:,'gender_rot'] = majority_rule_of_thumb(df, rot_fnc)
-    
+    df.loc[:,'gender_rot'] = majority_rule_of_thumb(df, rot_fnc) if rot_fnc is not None else None
+
     return df
 
 def majority_rule_of_thumb(df: pd.DataFrame, rot_fnc) -> pd.Series:

@@ -4,7 +4,10 @@ This repository contains datasets related to gender inference using the Namsor A
 
 ## Updates
 
+- **2025-08-12**: Lisette Espin updated the header of `CNKI_uniqueChineseGivenNames_gender.csv` (keeping `script` and `id` lower case, and changing `givename` to `givenname`)
+- **2025-07-21**: Ana M. Jaramillo updated the `CNKI_uniqueChineseGivenNames_gender.csv` file with new inference from Namsor
 - **2025-07-04**: We use `CNKI_uniqueChineseGivenNames_gender.csv`
+
 
 
 ## Files
@@ -12,7 +15,7 @@ This repository contains datasets related to gender inference using the Namsor A
 ### 1. `CNKI_uniqueChineseGivenNames_gender.csv`
 
 - **Source**: Curated after merging `Dict_gender_all.pkl` and `results/v3/names/chinese/CNKI_uniqueChineseGivenNames_CNKIpop.csv` (new disambiguation)
-- **Author**: Lisette Espin
+- **Author**: Lisette Espin, Ana M. Jaramillo
 - **Date**: 2025-07-04  
 - **Size**: 4.7 MB  
 - **Records**: 39,712  
