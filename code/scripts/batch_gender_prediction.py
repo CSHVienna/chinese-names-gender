@@ -19,8 +19,8 @@ def run(input_fn, model_fn, output_dir, resources_dir, cache_dir):
     ###################
     # Load model
     ###################
-    is_classifier =  'class' in model_fn 
-    is_regressor =  'reg' in model_fn 
+    is_classifier =  'classification' in model_fn 
+    is_regressor =  'regression' in model_fn 
     model = CatBoostClassifier() if is_classifier else CatBoostRegressor() if is_regressor else None
     if model is None:
         raise ValueError('model_fn must contain either "class" or "reg"')
@@ -53,22 +53,44 @@ def run(input_fn, model_fn, output_dir, resources_dir, cache_dir):
         raise ValueError(f'Missing features in dataframe: {missing_features}')
     
     ###################
+    # Preprocessing
+    ###################
+    data = df_ch_names[['givenname']+col_features].copy()
+    print("=== BEFORE PRE-PROCESSING 'y'")
+    print(data.head(2))
+
+    # check single_char
+    data.loc[:,'single_char'] = data.givenname.apply(lambda v: len(v) == 1)
+
+    ###################
     # Predict
     ###################
-    print(df_ch_names.head(2))
     # predict and decode (from number to label)
     if is_classifier:
-        unknown_id = len(setup.LABELS)
-        df_ch_names.loc[:,'pred_code'] = df_ch_names.apply(lambda row: unknown_id if ios.pd.isna(row.ngender_r) or ios.pd.isna(row.ngender_w) else model.predict(row[col_features])[0], axis=1)
-        df_ch_names.loc[:,'pred_label'] = df_ch_names.apply(lambda row: categorical.UNKNOWN if row.pred_code == unknown_id else setup.LABELS[row.pred_code], axis=1)
+        ## @deprecated: used when the model was not working for single-char (and w was used though it was always male)
+        # unknown_id = len(setup.LABELS)
+        # data.loc[:,'pred_code'] = data.apply(lambda row: unknown_id if ios.pd.isna(row.ngender_r) or ios.pd.isna(row.ngender_w) else model.predict(row[col_features])[0], axis=1)
+        # data.loc[:,'pred_label'] = data.apply(lambda row: categorical.UNKNOWN if row.pred_code == unknown_id else setup.LABELS[row.pred_code], axis=1)
+        # <<
+
+        data.loc[:,'pred_code'] = data.apply(lambda row: model.predict(row[col_features])[0], axis=1)
+        data.loc[:,'pred_label'] = data.apply(lambda row: setup.LABELS[row.pred_code], axis=1)
     else:
-        df_ch_names.loc[:,'pred'] = df_ch_names.apply(lambda row: ios.pd.NA if ios.pd.isna(row.ngender_r) or ios.pd.isna(row.ngender_w) else model.predict(row[col_features]), axis=1)
-    print(df_ch_names.sample(2))
+        ## @deprecated: used when the model was not working for single-char (and w was used though it was always male)
+        # data.loc[:,'pred'] = data.apply(lambda row: ios.pd.NA if ios.pd.isna(row.ngender_r) or ios.pd.isna(row.ngender_w) else model.predict(row[col_features]), axis=1)
+        # <<
+
+        data.loc[:,'pred'] = data.apply(lambda row: model.predict(row[col_features]), axis=1)
+    
+    print("=== AFTER AFTER-PROCESSING 'y'")
+    print(data.sample(2))
+    
 
     # Save
-    fname = f"{'class' if is_classifier else 'reg'}_{ios.os.path.basename(model_fn).split('.')[0]}_{ios.os.path.basename(input_fn)}"
+    postfix = f"{'class' if is_classifier else 'reg'}_{ios.os.path.basename(model_fn).split('.')[0]}"
+    fname = f"{ios.os.path.basename(input_fn).replace('.csv','')}_{postfix}.csv"
     fn = ios.path_join(output_dir, fname)
-    ios.to_csv(df_ch_names, fn)
+    ios.to_csv(data, fn)
     ios.printf(f'Saved: {fn}')
 
 if __name__ == '__main__':

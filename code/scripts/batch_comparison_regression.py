@@ -20,21 +20,27 @@ from sklearn.inspection import permutation_importance
 import ios
 from tools_comparison import ToolsComparison
 import setup
+import tools_comparison
+import constants 
 
 ###############################################################################################
 # CONSTANTS
 ###############################################################################################
 
-VERSION = 2
-DATA = f'../../data/v{VERSION}/chinese_names'
-RESULTS = f'../../results/v{VERSION}/chinese_gender'
+VERSION = 3
 
-DIR_TOOL_W = ios.path_join(RESULTS, 'tool_w')
-DIR_TOOL_R = ios.path_join(RESULTS, 'tool_r')
-DIR_TOOL_N = ios.path_join(RESULTS, 'tool_n')
-DIR_GT = ios.path_join(DATA, 'annotations')
+DIR_RESULTS = f'../../results/v{VERSION}'
+DIR_TOOLS = ios.path_join(DIR_RESULTS, 'gender')
+DIR_TOOL_W = ios.path_join(DIR_TOOLS, 'tool_w')
+DIR_TOOL_R = ios.path_join(DIR_TOOLS, 'tool_r')
+DIR_TOOL_N = ios.path_join(DIR_TOOLS, 'tool_n')
 
-FIGSIZE = (4,4)
+DIR_GT = f'../../data/v{VERSION}/annotations/gender'
+DIR_NAMES = ios.path_join(DIR_RESULTS, 'names/chinese')
+DIR_PRED = ios.path_join(DIR_TOOLS, 'predictions')
+
+FIGSIZE = (4,3)
+
 
 ###############################################################################################
 # HELPERS
@@ -46,18 +52,23 @@ def validation(gt_agg, features_id):
     if features_id < 0 or features_id >= len(setup.FEATURE_NAMES):
         raise ValueError(f'Invalid features_id: {features_id} (0-{len(setup.FEATURE_NAMES)-1})')
 
-def _train(X_train, y_train, X_test, y_test, cat_features, loss_function, eval_metric, cv=setup.CV, early_stopping_rounds=setup.EARLY_STOPPING, random_seed=setup.RANDOM_STATE):
+def _train(X_train, y_train, X_test, y_test, cat_features, loss_function, eval_metric, cv=setup.CV, stratified=False, early_stopping_rounds=setup.EARLY_STOPPING, random_seed=setup.RANDOM_STATE):
     # Pools
     train_pool = cb.Pool(X_train, label=y_train, cat_features=cat_features) 
     test_pool = cb.Pool(X_test, label=y_test, cat_features=cat_features) 
 
     # Model
-    model = cb.CatBoostRegressor(verbose=0, 
-                                 eval_metric=eval_metric,
-                                 loss_function=loss_function) 
+    model = cb.CatBoostRegressor(verbose=False,   
+                                 cat_features=cat_features,
+                                 eval_metric = eval_metric,
+                                 loss_function = loss_function,
+                                 random_seed = random_seed) 
 
     # Tuning
-    grid_search_result = model.grid_search(setup.GRID, train_pool, cv=cv, partition_random_seed=random_seed, verbose=False)
+    grid_search_result = model.grid_search(setup.GRID, 
+                                           train_pool, cv=cv, 
+                                           stratified = stratified,
+                                           partition_random_seed=random_seed, verbose=False)
 
     # best model
     best_model = model.fit(train_pool, eval_set=test_pool, early_stopping_rounds=early_stopping_rounds)
@@ -129,44 +140,60 @@ def validate_path(path):
 ###############################################################################################
 # RUN
 ###############################################################################################
-def run(gt_agg, features_id, output_dir):
-    # results
-    f_name = f'{gt_agg}_{features_id}'
+def run(gt_agg, features_id, random_seed, results_dir):
 
-    # Load data
-    tc = ToolsComparison(dir_tool_w=DIR_TOOL_W, dir_tool_r=DIR_TOOL_R, dir_tool_n=DIR_TOOL_N, dir_gt=DIR_GT)
-    tc.load_data()
+    # 1. Read params (features)
+    output_dir = tools_comparison.get_path_comparison(results_dir, random_seed, gt_agg=gt_agg)
+    validate_path(output_dir)
 
-    # Ground truth
-    tc.compare_unique_chinese_given_names()
-    
-    # start
-    data = tc.df_ch_genders_gt.copy()
-    # data = pd.get_dummies(data, columns=setup.CAT_FEATURES, dtype=int)
-    
-    # X, y
+    # 2. Read GT (train/test sets)
+    fn_gt = os.path.join(output_dir, constants.FN_GT_TRAN_TEST_SAMPLE)
+    print(fn_gt)
+    data = ios.load_csv(fn_gt)
+
+    # 3. Info variables
+    var_y = f"ngender_{gt_agg}"
     feature_names = setup.FEATURE_NAMES[features_id]
-    X = data[feature_names]
-    y = data[[gt_agg]]
-
-    # categroical features
     cat_features = [c for c in feature_names if c in setup.CAT_FEATURES]
 
-    # Data
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = setup.TEST_SIZE, random_state=setup.RANDOM_STATE)
+    ios.printf(f"[INFO] y variable: {var_y}")
+    ios.printf(f"[INFO] features: {feature_names}")
+    ios.printf(f"[INFO] cat_features: {cat_features}")
+
+    # 4. train/test sets
+    df_train = data.query("ml_sample == 'train'").drop(columns=['ml_sample'])
+    df_test = data.query("ml_sample == 'test'").drop(columns=['ml_sample'])
+    # train
+    X_train = df_train[feature_names]    # Features
+    y_train = df_train[[var_y]]  # Target variable
+    # test
+    X_test = df_test[feature_names]    # Features
+    y_test = df_test[[var_y]]  # Target variable
+    # all 
+    X = data[feature_names]    # Features
+    y = data[[var_y]]  # Target variable
 
     # Train 
-    best_model, grid_search_result = _train(X_train, y_train, X_test, y_test, cat_features, setup.LOSS_FUNCTION_REG, setup.EVAL_METRIC_REG)
+    best_model, grid_search_result = _train(X_train, y_train, X_test, y_test, 
+                                            cat_features = cat_features, 
+                                            loss_function = setup.LOSS_FUNCTION_REG, 
+                                            eval_metric = setup.EVAL_METRIC_REG,
+                                            cv = setup.CV, 
+                                            stratified = True,
+                                            early_stopping_rounds = setup.EARLY_STOPPING,
+                                            random_seed = random_seed)
 
     # Evaluation
-    pred, rmse, r2 = _eval(best_model, X_test, y_test)
+    y_pred, rmse, r2 = _eval(best_model, X_test, y_test)
     all_pred, all_rmse, all_r2 = _eval(best_model, X, y)
 
     ##### Saving Plots #####
 
+    f_name = f"{gt_agg}_{features_id}"
+
     # Plot validation
     fn = os.path.join(output_dir, f'{f_name}_predictions_val.pdf')
-    plot_true_vs_pred(y_test, pred, title="Validation", fn=fn, **{'rmse': rmse, 'r2': r2})
+    plot_true_vs_pred(y_test, y_pred, title="Validation", fn=fn, **{'rmse': rmse, 'r2': r2})
 
     # Plot all data
     fn = os.path.join(output_dir, f'{f_name}_predictions_all.pdf')
@@ -192,14 +219,14 @@ def run(gt_agg, features_id, output_dir):
     # JSON
     obj = { 'y': gt_agg, 
             'features_id': features_id,
-            'features': str(feature_names), 
+            'features': feature_names, 
             'nfeatures': len(feature_names), 
             'cat_features': cat_features,
             'best_params': grid_search_result['params'],
             'best_score': best_model.get_best_score(),
             'best_iteration': best_model.get_best_iteration(),
             'test_size': setup.TEST_SIZE,
-            'random_state': setup.RANDOM_STATE,
+            'random_state': random_seed,
             'loss_function': setup.LOSS_FUNCTION_REG,
             'eval_metric': setup.EVAL_METRIC_REG,
             'train_eval': best_model.get_best_score()['learn'][setup.LOSS_FUNCTION_REG], 
@@ -208,6 +235,8 @@ def run(gt_agg, features_id, output_dir):
             'all_r2': all_r2,
             'all_rmse': all_rmse,
             'f_name':f_name,
+            'y_test': y_test.values.squeeze().tolist(),
+            'y_pred': y_pred.squeeze().tolist()
             }
     
     fn = os.path.join(output_dir, f"{f_name}.json")
@@ -223,20 +252,18 @@ if __name__ == '__main__':
 
     # Add arguments
     parser.add_argument('--gt_agg', help='Dependent variable (y)', type=str, required=True, choices=setup.GT_AGGS)
-    parser.add_argument('--features_id', help='Features combination (0, 37)', type=int, required=True, choices=range(len(setup.FEATURE_NAMES)))
-    parser.add_argument('--output_dir', help='../../results/v2/chinese_gender/comparison/', type=str, required=True)
-    
+    parser.add_argument('--features_id', help='Features combination (0, 382)', type=int, required=True, choices=range(len(setup.FEATURE_NAMES)))
+    parser.add_argument('--output_dir', help='../../results/v3/gender/predictions/comparison/', type=str, required=True)
+    parser.add_argument('--seed', help='Random seed to use and to differentiate each set of runs or epoch ids', type=int, required=True)
+
     # Parse the arguments
     args = parser.parse_args()
     for arg in vars(args):
         print("{}: {}".format(arg, getattr(args, arg)))
 
     start_time = time.time()
-
     validation(args.gt_agg, args.features_id)
-    output_dir = os.path.join(args.output_dir, f"_{args.gt_agg}")
-    validate_path(output_dir)
-    run(args.gt_agg, args.features_id, output_dir)
+    run(args.gt_agg, args.features_id, args.seed, args.output_dir)
 
     end_time = time.time()
     print('Execution time: {:.2f} seconds'.format(end_time - start_time))
