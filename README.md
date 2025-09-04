@@ -19,6 +19,17 @@ Extract metadata and citation information for each paper (based on title):
 python batch_paper_metadata.py
 ```
 
+## Sampling
+
+```bash
+parallel -j 10 python batch_sampling.py \
+    --gt_agg {1} \
+    --test_fct 0.2  \
+    --seed {2}  \
+    --output_dir ../../results/v3/gender/predictions/comparison/  \
+    ::: mean median mode ::: 1 2 3
+```
+
 ## Gender Inference Methods
 
 ### Rule-Based Gender Classification
@@ -92,7 +103,3 @@ python batch_gender_prediction.py \
   5. Definitely female
 
 **Note:** For analysis, all scores from external tools and ground truth labels are rescaled to a common range between 0 (male) and 1 (female).
-
-## TODOs
-
-* 1. (lespin) re-do the ML training. Use the same train/test for all experiments (and run all experiments 3 times and report mean/std) - also change random seed for each set of experiments (not within)

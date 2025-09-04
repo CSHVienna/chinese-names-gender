@@ -36,6 +36,10 @@
 ### Two-character given names: 116 names
 @TODO @AJ
 
+
+**NOTE:** The larger dataset containing 166 given names was used to train the models, see for more details [chinese_gender_comparison.ipynb](https://github.com/CSHVienna/chinese-names/blob/dev-leen/code/notebooks/chinese_gender_comparison.ipynb)
+
+
 ## Files 
 
 ### 1. `Chinese first names gender inference (Responses) - round 1.xlsx`
