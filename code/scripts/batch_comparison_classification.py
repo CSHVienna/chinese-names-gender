@@ -19,24 +19,28 @@ from sklearn.metrics import f1_score, precision_score, recall_score, roc_auc_sco
 
 import ios
 from tools_comparison import ToolsComparison
+import tools_comparison
 import categorical
 import setup
+import constants
 
 ###############################################################################################
 # CONSTANTS
 ###############################################################################################
 
-VERSION = 2
-DATA = f'../../data/v{VERSION}/chinese_names'
-RESULTS = f'../../results/v{VERSION}/chinese_gender'
+VERSION = 3
 
-DIR_TOOL_W = ios.path_join(RESULTS, 'tool_w')
-DIR_TOOL_R = ios.path_join(RESULTS, 'tool_r')
-DIR_TOOL_N = ios.path_join(RESULTS, 'tool_n')
-DIR_GT = ios.path_join(DATA, 'annotations')
+DIR_RESULTS = f'../../results/v{VERSION}'
+DIR_TOOLS = ios.path_join(DIR_RESULTS, 'gender')
+DIR_TOOL_W = ios.path_join(DIR_TOOLS, 'tool_w')
+DIR_TOOL_R = ios.path_join(DIR_TOOLS, 'tool_r')
+DIR_TOOL_N = ios.path_join(DIR_TOOLS, 'tool_n')
+
+DIR_GT = f'../../data/v{VERSION}/annotations/gender'
+DIR_NAMES = ios.path_join(DIR_RESULTS, 'names/chinese')
+DIR_PRED = ios.path_join(DIR_TOOLS, 'predictions')
 
 FIGSIZE = (4,3)
-
 
 ###############################################################################################
 # HELPERS
@@ -54,12 +58,16 @@ def _train(X_train, y_train, X_test, y_test, cat_features, loss_function, eval_m
     test_pool = cb.Pool(X_test, label=y_test, cat_features=cat_features) 
 
     # Model
-    model = cb.CatBoostClassifier(verbose=0, 
-                                  eval_metric=eval_metric,
-                                  loss_function=loss_function) 
+    model = cb.CatBoostClassifier(verbose = False, 
+                                  cat_features = cat_features,
+                                  eval_metric = eval_metric,
+                                  loss_function = loss_function,
+                                  random_seed = random_seed) 
 
     # Tuning
-    grid_search_result = model.grid_search(setup.GRID, train_pool, cv=cv, partition_random_seed=random_seed, stratified=stratified, verbose=False)
+    grid_search_result = model.grid_search(setup.GRID, train_pool, cv=cv,
+                                            partition_random_seed=random_seed, 
+                                            stratified=stratified, verbose=False)
 
     # best model
     best_model = model.fit(train_pool, eval_set=test_pool, early_stopping_rounds=early_stopping_rounds)
@@ -73,14 +81,12 @@ def _eval(model, X_test, y_test):
     y_pred_proba = model.predict_proba(X_test)
 
     # labels
-    # y_pred_labels = label_encoder.inverse_transform(y_pred)
-    # y_test_labels = label_encoder.inverse_transform(y_test)
     y_pred_labels = np.vectorize(lambda x: setup.LABELS[x])(y_pred) # Keep original if not in dict
     y_test_labels = np.vectorize(lambda x: setup.LABELS[x])(y_test) # Keep original if not in dict
 
-    print("y_pred_proba: ", y_pred_proba)
-    print('y_pred_labels', y_pred_labels)
-    print('y_test_labels', y_test_labels)
+    # print("y_pred_proba: ", y_pred_proba)
+    # print('y_pred_labels', y_pred_labels)
+    # print('y_test_labels', y_test_labels)
 
     # Compute Accuracy
     accuracy = accuracy_score(y_test_labels, y_pred_labels)
@@ -147,33 +153,20 @@ def validate_path(path):
 ###############################################################################################
 # RUN
 ###############################################################################################
-def run(features_id, strategy_id, cuts, gt_agg, output_dir):
+def run(features_id, strategy_id, random_seed, results_dir):
     
-    # Load data
-    tc = ToolsComparison(dir_tool_w=DIR_TOOL_W, dir_tool_r=DIR_TOOL_R, dir_tool_n=DIR_TOOL_N, dir_gt=DIR_GT)
-    tc.load_data()
+    # 1. Read params (strategy, features)
+    cuts = setup.STRATEGY[strategy_id]['cuts']
+    gt_agg = setup.STRATEGY[strategy_id]['gt_agg']
+    output_dir = tools_comparison.get_path_comparison(results_dir, random_seed, strategy_id=strategy_id)
+    validate_path(output_dir)
 
-    # Ground truth
-    tc.compare_unique_chinese_given_names()
-    
-    # start
-    data = tc.df_ch_genders_gt.copy()
-    #data = pd.get_dummies(data, columns=setup.CAT_FEATURES, dtype=int)
-    
-    # labeling
-    thresholds = [(-1,cuts[0]),(cuts[0],cuts[1]),(cuts[1],2)]
-    var_y = f"gender_{gt_agg}"
-    f_name = f'{gt_agg}_{features_id}_{strategy_id}'
+    # 2. Read GT (train/test sets)
+    fn_gt = os.path.join(output_dir, constants.FN_GT_TRAN_TEST_SAMPLE)
+    data = ios.load_csv(fn_gt)
 
-    data.loc[:,var_y] = categorical._convert_numeric_to_categorical_by_thresholds(data[gt_agg], thresholds, setup.LABELS)
-    data.loc[:,var_y] = pd.Categorical(data[var_y], categories=setup.LABELS, ordered=True)
-    data.drop(columns=setup.GT_AGGS, inplace=True)
-
-    # Encode target variable
-    # label_encoder = LabelEncoder()
-    # label_encoder.fit(setup.LABELS)
-    # var_y_encoded = f"{var_y}_encoded"
-    # data[var_y_encoded] = label_encoder.transform(data[var_y])
+    # 3. Encode target variales
+    var_y = f'gender_{gt_agg}'
     var_y_encoded = f"{var_y}_encoded"
     data[var_y_encoded] = data[var_y].replace(setup.LABELS_CODE)
 
@@ -181,19 +174,41 @@ def run(features_id, strategy_id, cuts, gt_agg, output_dir):
     feature_names = setup.FEATURE_NAMES[features_id]
     cat_features = [c for c in feature_names if c in setup.CAT_FEATURES]
 
-    # Split dataset
-    X = data[feature_names]  # Features
+    ios.printf(f"[INFO] y variable: {var_y}")
+    ios.printf(f"[INFO] features: {feature_names}")
+    ios.printf(f"[INFO] cat_features: {cat_features}")
+
+    # 4. train/test sets
+    df_train = data.query("ml_sample == 'train'").drop(columns=['ml_sample'])
+    df_test = data.query("ml_sample == 'test'").drop(columns=['ml_sample'])
+    # train
+    X_train = df_train[feature_names]    # Features
+    y_train = df_train[[var_y_encoded]]  # Target variable
+    # test
+    X_test = df_test[feature_names]    # Features
+    y_test = df_test[[var_y_encoded]]  # Target variable
+    # all 
+    X = data[feature_names]    # Features
     y = data[[var_y_encoded]]  # Target variable
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=setup.TEST_SIZE, random_state=setup.RANDOM_STATE, stratify=y)
-    
-    # Train 
-    best_model, grid_search_result = _train(X_train, y_train, X_test, y_test, cat_features, setup.LOSS_FUNCTION_CLA, setup.EVAL_METRIC_CLA)
-    
+
+    # Training model
+    best_model, grid_search_result = _train(X_train, y_train, X_test, y_test, 
+                                            cat_features = cat_features, 
+                                            loss_function = setup.LOSS_FUNCTION_CLA, 
+                                            eval_metric = setup.EVAL_METRIC_CLA,
+                                            cv = setup.CV, 
+                                            stratified = True, 
+                                            early_stopping_rounds = setup.EARLY_STOPPING, 
+                                            random_seed = random_seed
+                                            )
+
     # Evaluation
     y_pred, y_pred_proba, accuracy, f1, precision, recall, auc, conf_matrix = _eval(best_model, X_test, y_test)
     all_y_pred, all_y_pred_proba, all_accuracy, all_f1, all_precision, all_recall, all_auc, all_conf_matrix = _eval(best_model, X, y)
 
     ##### Saving Plots #####
+
+    f_name = f'{gt_agg}_{features_id}_{strategy_id}'
 
     # Plot validation
     fn = os.path.join(output_dir, f'{f_name}_confusion_val.pdf')
@@ -227,7 +242,7 @@ def run(features_id, strategy_id, cuts, gt_agg, output_dir):
            'best_score': best_model.get_best_score(),
            'best_iteration': best_model.get_best_iteration(),
            'test_size': setup.TEST_SIZE,  
-           'random_state': setup.RANDOM_STATE,
+           'random_state': random_seed,
            'loss_function': setup.LOSS_FUNCTION_CLA,
            'eval_metric': setup.EVAL_METRIC_CLA,
            'train_eval': best_model.get_best_score()['learn'][setup.LOSS_FUNCTION_CLA], 
@@ -242,6 +257,10 @@ def run(features_id, strategy_id, cuts, gt_agg, output_dir):
            'all_recall': all_recall,
            'all_auc': all_auc,
            'f_name':f_name,
+           'labels': setup.LABELS,
+           'y_test': y_test.values.squeeze().tolist(),
+           'y_pred': y_pred.squeeze().tolist(),
+           'y_pred_proba': y_pred_proba.squeeze().tolist()
            }
     fn = os.path.join(output_dir, f"{f_name}.json")
     save_json(obj, fn)
@@ -255,9 +274,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Training to predict gender (numeric).')
 
     # Add arguments
-    parser.add_argument('--features_id', help='Features combination (0, 37)', type=int, required=True, choices=range(len(setup.FEATURE_NAMES)))
+    parser.add_argument('--features_id', help='Features combination (0, 382)', type=int, required=True, choices=range(len(setup.FEATURE_NAMES)))
     parser.add_argument('--strategy_id', help='Strategy id for thresholding', type=int, required=True, choices=setup.STRATEGY.keys())
-    parser.add_argument('--output_dir', help='../../results/v2/chinese_gender/comparison/', type=str, required=True)
+    parser.add_argument('--output_dir', help='../../results/v3/gender/predictions/comparison', type=str, required=True)
+    parser.add_argument('--seed', help='Random seed to use and to differentiate each set of runs or epoch ids', type=int, required=True)
     
     # Parse the arguments
     args = parser.parse_args()
@@ -267,14 +287,7 @@ if __name__ == '__main__':
     start_time = time.time()
 
     validation(args.features_id, args.strategy_id)
-    
-    cuts = setup.STRATEGY[args.strategy_id]['cuts']
-    gt_agg = setup.STRATEGY[args.strategy_id]['gt_agg']
-
-    output_dir = os.path.join(args.output_dir, f"_{gt_agg}")
-    validate_path(output_dir)
-
-    run(args.features_id, args.strategy_id, cuts, gt_agg, output_dir)
+    run(args.features_id, args.strategy_id, args.seed, args.output_dir)
 
     end_time = time.time()
     print('Execution time: {:.2f} seconds'.format(end_time - start_time))

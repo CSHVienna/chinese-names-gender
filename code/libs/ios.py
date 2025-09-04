@@ -7,6 +7,54 @@ import json
 FN_AGENTS = 'agents.txt'
 FN_PROXIES = 'http_proxies.txt'
 
+def validate_path(path, **kwargs):
+    """
+    Validates a directory path, creating it if it doesn't exist.
+
+    :param path: The directory path to validate.
+    :param kwargs: Additional arguments to pass to os.makedirs.
+    """
+    try:
+      if not os.path.exists(path):
+          os.makedirs(path, **kwargs)
+          printf(f"[INFO] Valid path: {path}")
+    except Exception as ex:
+       printf(f"[ERROR] {ex}")
+       
+
+def listdir(path, pattern=None, ext=None):
+    """
+    Lists files in a directory with optional pattern and extension filtering.
+    
+    :param path: Directory path to list files from.
+    :param pattern: Optional regex pattern to match filenames.
+    :param ext: Optional file extension to filter by.
+    :return: List of matching file paths.
+    """
+    if not os.path.exists(path):
+        return []
+    
+    files = os.listdir(path)
+
+    if pattern:
+        files = glob.glob(os.path.join(path, f"*{pattern}*"))
+  
+    if ext:
+        files = [f for f in files if f.endswith(ext)]
+    
+    print(f'[INFO] Found {len(files)} files in {path}.')
+    return files
+
+def path_exists(path):
+    """
+    Checks if a given path exists.
+    
+    :param path: Path to check.
+    :return: True if the path exists, False otherwise.
+    """
+    return os.path.exists(path)
+
+
 def path_join(*paths):
    return os.path.join(*paths)
 
@@ -25,9 +73,9 @@ def read_json(fn):
       print(f'Error: {e}')
     return None
     
-def load_csv(fn):
+def load_csv(fn, **kwargs):
   if fn is not None and os.path.exists(fn):
-    return pd.read_csv(fn)
+    return pd.read_csv(fn, **kwargs)
   return None
 
 def to_csv(df, fn, **kwargs):
@@ -87,7 +135,7 @@ def read_txt_to_lst(filename):
     
 
 
-def load_json_files_to_dataframe(directory):
+def load_json_files_to_dataframe(directory, include_fn=False):
     """
     Reads all JSON files in a directory and converts them into a Pandas DataFrame.
 
@@ -96,13 +144,20 @@ def load_json_files_to_dataframe(directory):
     """
     data_list = []
 
+    files = glob.glob(directory)
+
     # Loop through all files in the directory
-    for filename in os.listdir(directory):
-        if filename.endswith(".json"):  # Process only JSON files
-            file_path = os.path.join(directory, filename)
+    for file_path in files:
+        filename = os.path.basename(file_path)
+        if file_path.endswith(".json"):  # Process only JSON files
+            # file_path = os.path.join(directory, filename)
             with open(file_path, "r", encoding="utf-8") as file:
                 try:
                     data = json.load(file)  # Load JSON content
+
+                    if include_fn:
+                       data.update({'fn': file_path})
+
                     if isinstance(data, dict):
                         data_list.append(data)  # Append dictionary data
                     elif isinstance(data, list):

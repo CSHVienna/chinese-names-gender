@@ -16,25 +16,30 @@ LOSS_FUNCTION_REG = 'RMSE'
 EVAL_METRIC_REG = 'RMSE'
 EARLY_STOPPING = 50
 
-LABELS = categorical.GENDER_LABELS_3 # DO NOT CHANGE (ORDER MATTERS)
-LABELS_CODE = categorical.GENDER_LABELS_3_DICT # DO NOT CHANGE (ORDER MATTERS)
+LABELS = categorical.GENDER_LABELS_3            # DO NOT CHANGE (ORDER MATTERS)
+LABELS_CODE = categorical.GENDER_LABELS_3_DICT  # DO NOT CHANGE (ORDER MATTERS)
 
-STRATEGY = {1:{'cuts':[0.445, 0.541], 'gt_agg':'mean'},
-            2:{'cuts':[0.45, 0.71], 'gt_agg':'mean'},
-            3:{'cuts':[0.3, 0.7], 'gt_agg':'median'},
-            4:{'cuts':[0.4, 0.6], 'gt_agg':'mode'},
+STRATEGY = {1:{'cuts':[0.33, 0.66], 'gt_agg':'mean'},
+            2:{'cuts':[0.32, 0.57], 'gt_agg':'mean'},
+            3:{'cuts':[0.24, 0.70], 'gt_agg':'mean'},
+            4:{'cuts':[0.30, 0.70], 'gt_agg':'median'},
+            5:{'cuts':[0.40, 0.60], 'gt_agg':'mode'},
+            6:{'cuts':[0.4, 0.6], 'gt_agg':'mean'},
+            7:{'cuts':[0.2, 0.8], 'gt_agg':'mean'},
            }
 
 GT_AGGS = ['mean', 'median', 'mode']
 
-CAT_FEATURES = ['gender_w','gender_n','gender_nw']
+CAT_FEATURES = ['gender_w','gender_n','gender_nw','single_char']
 
 FEATURES = [
             'ngender_r',
             'ngender_n',
 
+            'gender_n',
             'gender_w',
             'gender_nw',
+            'single_char', 
 
             'mean_ngender_rn', 
             'mean_ngender_rw', 
@@ -42,7 +47,6 @@ FEATURES = [
             'mean_ngender_rnw', 
             ]
 
-        # 'gender_n',
         # 'median_ngender_rnw',
         # 'gender_w_female', 'gender_w_male',
         # 'gender_n_female', 'gender_n_male',
@@ -56,8 +60,9 @@ def get_all_feature_combinations():
         for r in range(1, len(items) + 1):
                 for comb in combinations(items, r):
                         # Exclude combinations that contain both "item 8" and "item 10"
-                        if not ("ngender_n" in comb and "gender_n" in comb):
-                                all_combinations.append(list(comb))
+                        # if not ("ngender_n" in comb and "gender_n" in comb):
+                        #         all_combinations.append(list(comb))
+                        all_combinations.append(list(comb))
 
         # Print the number of combinations
         print("Total combinations of features:", len(all_combinations))
