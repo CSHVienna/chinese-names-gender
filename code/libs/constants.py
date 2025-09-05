@@ -21,6 +21,14 @@ FN_GIVEN_NAMES = 'CNKI_uniqueChineseGivenNames.csv'
 FN_CH_GIVEN_NAMES = 'CNKI_uniqueChineseGivenNames_only.csv'
 FN_EN_GIVEN_NAMES = 'CNKI_uniqueEnglishGivenNames_only.csv'
 FN_FULL_NAMES_GENDER = 'CNKI_uniqueChineseNames_gender.csv'
-FN_CH_GIVEN_NAMES_GENDER = 'CNKI_uniqueChineseGivenNames_gender.csv'
+FN_CH_GIVEN_NAMES_GENDER_1CH = 'CNKI_uniqueChineseCharacter_gender.csv'
+FN_CH_GIVEN_NAMES_GENDER_2CH = 'CNKI_uniqueChineseGivenNames_gender.csv'
+FN_CH_GIVEN_NAMES_GENDER = 'CNKI_uniqueChineseAllGivenNames_gender.csv'
 FN_EN_GIVEN_NAMES_GENDER = 'CNKI_uniqueEnglishGivenNames_gender.csv'
-FN_ANNOTATIONS = "Chinese first names gender inference (Responses).xlsx"
+FN_GIVEN_NAMES_1CH = 'CNKI_uniqueChineseCharacter.csv'
+FN_GIVEN_NAMES_2CH = 'CNKI_uniqueChineseGivenNames_CNKIpop.csv'
+FN_ANNOTATIONS = "ground_truth.csv"
+
+FN_GT_TRAN_TEST_SAMPLE = "ground_truth_MLsampled.csv"
+
+GENDER_BINARY_ORDER = ['female', 'male'] # TODO: import from categorical and use MALE and FEMALE

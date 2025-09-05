@@ -8,6 +8,9 @@ from sklearn.metrics import root_mean_squared_error
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from pdf2image import convert_from_path
+
+import setup
 
 
 def __axlines(**kwargs):
@@ -29,6 +32,9 @@ def __axlines(**kwargs):
         for axvline in axvlines:
             plt.axvline(**axvline)
 
+    axdiagonal = kwargs.get('axdiagonal', None)
+    if axdiagonal:
+        plt.plot(axdiagonal.pop('x'), axdiagonal.pop('y'), **axdiagonal)
 
 def __save(**kwargs):
     filename = kwargs.get('fn', None)
@@ -52,36 +58,46 @@ def __finaltouch(**kwargs):
     if legend is not None:
         plt.legend(**legend)
 
+    ax = plt.gca()
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+
 def __close():
     plt.show()
     plt.close()
 
-def plot_violin(df, x, y, title='', xlabel='', ylabel='', hue=None, figsize=(10, 6), palette=None, **kwargs):
+def plot_violin(df, x, y, title='', xlabel='', ylabel='', hue=None, figsize=(10, 6), palette=None, kwargs_violin={}, **kwargs_plot):
     plt.figure(figsize=figsize)
-    sns.violinplot(data=df, x=x, y=y, hue=hue, palette=palette)
+    sns.violinplot(data=df, x=x, y=y, hue=hue, palette=palette, **kwargs_violin)
     plt.title(title)
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
 
     __labels(title, xlabel, ylabel)
-    __axlines(**kwargs)
-    __save(**kwargs)
+    __axlines(**kwargs_plot)
+    __save(**kwargs_plot)
     __close()
 
 
-def plot_scatter(df, x, y, title='', xlabel='', ylabel='', hue=None, hue_order=None, figsize=(10, 6), palette=None, corr=False, fit=False, rmse=False, **kwargs):
+def plot_scatter(data, x, y, title='', xlabel='', ylabel='', hue=None, hue_order=None, figsize=(10, 6), palette=None, corr=False, fit=False, rmse=False, **kwargs):
     plt.figure(figsize=figsize)
-    fg = sns.scatterplot(data=df, x=x, y=y, hue=hue, palette=palette, hue_order=hue_order)
+    fg = sns.scatterplot(data=data, x=x, y=y, hue=hue, palette=palette, hue_order=hue_order)
 
     yt = 0.01
     ys = 0.08
+
+    
+    df = data.copy().dropna(subset=[x, y])
+    diff = data.shape[0] - df.shape[0]
+    if diff > 0:
+        print(f"[Warning] Dropped {diff} rows with NaN values")
 
     # Fit linear regression
     if fit:
         slope, intercept = np.polyfit(df[x], df[y], 1)
         print(slope, intercept)
         # Plot the regression line
-        plt.plot(df[x], intercept + slope * df[x], color='black', ls='--', lw=0.5)
+        plt.plot(df[x], intercept + slope * df[x], color='black', ls='--', lw=1.0)
                 #  label=f'y={intercept:.2f}+{slope:.2f}x')
         plt.text(0.98, yt, f'y={intercept:.2f}+{slope:.2f}x', transform=plt.gca().transAxes, ha='right', va='bottom')
         yt += ys
@@ -143,7 +159,7 @@ def plot_confusion_matrix(cm, labels, title='Confusion Matrix', cmap='Blues', fi
     __save(**kwargs)
     __close()
 
-def plot_distribution_and_cuts(df, col, bins, figsize, cuts):
+def plot_distribution_and_cuts(df, col, bins, figsize, cuts, **kwargs):
     ax = df[col].plot.hist(bins=bins, alpha=0.5, figsize=figsize)
 
     cummulative = 0
@@ -155,3 +171,71 @@ def plot_distribution_and_cuts(df, col, bins, figsize, cuts):
 
     s = df.query(f"{col} <= {df[col].max()}").shape[0] - cummulative
     ax.text(s=f'{s}', x=1., y=0.95, ha='right', va='top', transform=ax.transAxes)
+
+    # __labels(title, xlabel, ylabel)
+    __axlines(**kwargs)
+    __finaltouch(**kwargs)
+    __save(**kwargs)
+    __close()
+
+
+
+### PLOTS FOR PREDICTIONS
+def plot_confusion_matrix(fn):
+    images = convert_from_path(fn)
+    plt.imshow(images[0])
+    plt.axis("off")  # Hide axes
+    plt.show()
+    plt.close()
+    
+def plot_scatter(fn):
+    # predictions
+    images = convert_from_path(fn)
+    plt.imshow(images[0])
+    plt.axis("off")  # Hide axes
+    plt.show()
+    plt.close()
+
+def plot_importance(fn):
+    images = convert_from_path(fn)
+    plt.imshow(images[0])
+    plt.axis("off")  # Hide axes
+    plt.show()
+    plt.close()
+
+def plot_shap(fn):
+    images = convert_from_path(fn)
+    plt.imshow(images[0])
+    plt.axis("off")  # Hide axes
+    plt.show()
+    plt.close()
+
+def replot_importance(f_name, regressor=False):
+    from catboost import CatBoostRegressor
+    from catboost import CatBoostClassifier
+
+    # Loading model
+    fn_model = f"{f_name}.cbm"
+    model = CatBoostRegressor() if regressor else CatBoostClassifier()
+    model.load_model(fn_model, format="cbm")
+
+    # Loading feature importance
+    feature_importance_dict = {}
+    for fn, fi in zip(*(model.feature_names_,model.get_feature_importance())):
+        feature_importance_dict[fn] = fi
+    feature_importance_df = pd.DataFrame(feature_importance_dict, index=['features'])
+
+    # Plotting enhance version
+    width = 6
+    height = 2 + (len(model.feature_names_) - 0) * (12 - 2) / (len(setup.FEATURE_NAMES) - 0)
+
+    ax = feature_importance_df.T.sort_values('features').plot.barh(figsize=(width, height))
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+
+    fn = f"{f_name}_feature_importance_enhanced.pdf"
+    # print(fn)
+
+    plt.savefig(fn, dpi=300, bbox_inches="tight")
+    plt.show()
+    plt.close()
