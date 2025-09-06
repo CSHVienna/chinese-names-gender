@@ -58,6 +58,9 @@ def path_exists(path):
 def path_join(*paths):
    return os.path.join(*paths)
 
+def get_path(fn):
+   return os.path.dirname(fn)
+
 def save_json(obj, fn):
     try:
       with open(fn, 'w') as f:

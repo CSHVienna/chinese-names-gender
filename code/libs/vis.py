@@ -9,8 +9,34 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from pdf2image import convert_from_path
+from sklearn.metrics import r2_score
+from matplotlib import rc
 
-import setup
+####################################################################################################
+# VISUAL HANDLERS
+####################################################################################################
+
+def sns_reset():
+  sns.reset_orig()
+  #matplotlib.use('agg')
+
+def sns_paper_style():
+  sns.set_context("paper", font_scale=1.5) #rc={"font.size":8,"axes.titlesize":8,"axes.labelsize":5}) 
+  rc('font', family = 'serif')
+  
+def set_style(font_scale=1.5):
+    sns.reset_orig()
+    sns.set_context("poster", font_scale=font_scale) #rc={"font.size":8,"axes.titlesize":8,"axes.labelsize":5}) 
+    rc('font', family = 'serif')
+    
+def set_latex():
+  # rc('text', usetex=True)
+  matplotlib.rcParams['text.latex.preamble'] = [r'\usepackage{amsmath}']
+
+
+####################################################################################################
+# PLOT HANDLERS
+####################################################################################################
 
 
 def __axlines(**kwargs):
@@ -79,12 +105,18 @@ def plot_violin(df, x, y, title='', xlabel='', ylabel='', hue=None, figsize=(10,
     __close()
 
 
-def plot_scatter(data, x, y, title='', xlabel='', ylabel='', hue=None, hue_order=None, figsize=(10, 6), palette=None, corr=False, fit=False, rmse=False, **kwargs):
+def plot_scatter(data, x, y, title='', xlabel='', ylabel='', 
+                 hue=None, hue_order=None, style=None, style_order=None, figsize=(10, 6), 
+                 markersize=6,
+                 palette=None, corr=False, fit=False, rmse=False, r2=False, diagonal=False, **kwargs):
+    
     plt.figure(figsize=figsize)
-    fg = sns.scatterplot(data=data, x=x, y=y, hue=hue, palette=palette, hue_order=hue_order)
+    fg = sns.scatterplot(data=data, x=x, y=y, hue=hue, 
+                         s=markersize,
+                         palette=palette, hue_order=hue_order, style=style, style_order=style_order)
 
     yt = 0.01
-    ys = 0.08
+    ys = 0.09
 
     
     df = data.copy().dropna(subset=[x, y])
@@ -105,7 +137,7 @@ def plot_scatter(data, x, y, title='', xlabel='', ylabel='', hue=None, hue_order
     # Pearson correlation
     if corr:
         corr, _ = pearsonr(df[x], df[y])
-        plt.text(0.98, yt, f'Pearson correlation: {corr:.2f}', transform=plt.gca().transAxes, ha='right', va='bottom')
+        plt.text(0.98, yt, r"Pearson $\rho$: " + f"{corr:.2f}", transform=plt.gca().transAxes, ha='right', va='bottom')
         yt += ys
 
     # root mean squared error
@@ -114,7 +146,24 @@ def plot_scatter(data, x, y, title='', xlabel='', ylabel='', hue=None, hue_order
         plt.text(0.98, yt, f'RMSE: {v:.2f}', transform=plt.gca().transAxes, ha='right', va='bottom')
         yt += ys
 
+    # R2
+    if r2: 
+        v = r2_score(df[x], df[y])
+        plt.text(0.98, yt, f'$R^2$: {v:.2f}', transform=plt.gca().transAxes, ha='right', va='bottom')
+        yt += ys
+
+    # diagonal
+    if diagonal:
+        plt.plot([0,1], [0,1], ls='--', color='grey', lw=1)
     
+    if hue and style:
+        legend_handles, legend_labels = fg.get_legend_handles_labels()
+        plt.legend(legend_handles, legend_labels, ncol=2, 
+                   loc="lower center",           # anchor point relative to bbox
+                    bbox_to_anchor=(0.45, 1.02),   # (x, y) = center top, slightly above
+                    borderaxespad=0,              # remove extra padding
+                    )
+
     __labels(title, xlabel, ylabel)
     __axlines(**kwargs)
     __finaltouch(**kwargs)
@@ -181,14 +230,14 @@ def plot_distribution_and_cuts(df, col, bins, figsize, cuts, **kwargs):
 
 
 ### PLOTS FOR PREDICTIONS
-def plot_confusion_matrix(fn):
+def plot_confusion_matrix_from_file(fn):
     images = convert_from_path(fn)
     plt.imshow(images[0])
     plt.axis("off")  # Hide axes
     plt.show()
     plt.close()
     
-def plot_scatter(fn):
+def plot_scatter_from_file(fn):
     # predictions
     images = convert_from_path(fn)
     plt.imshow(images[0])
@@ -196,46 +245,149 @@ def plot_scatter(fn):
     plt.show()
     plt.close()
 
-def plot_importance(fn):
+def plot_importance_from_file(fn):
     images = convert_from_path(fn)
     plt.imshow(images[0])
     plt.axis("off")  # Hide axes
     plt.show()
     plt.close()
 
-def plot_shap(fn):
+def plot_shap_from_file(fn):
     images = convert_from_path(fn)
     plt.imshow(images[0])
     plt.axis("off")  # Hide axes
     plt.show()
     plt.close()
 
-def replot_importance(f_name, regressor=False):
+def replot_importance(f_name, regressor=False, **kwargs):
     from catboost import CatBoostRegressor
     from catboost import CatBoostClassifier
+    import setup
 
     # Loading model
     fn_model = f"{f_name}.cbm"
     model = CatBoostRegressor() if regressor else CatBoostClassifier()
     model.load_model(fn_model, format="cbm")
+    col_features = model.feature_names_
 
     # Loading feature importance
     feature_importance_dict = {}
-    for fn, fi in zip(*(model.feature_names_,model.get_feature_importance())):
+    for fn, fi in zip(*(col_features,model.get_feature_importance())):
         feature_importance_dict[fn] = fi
     feature_importance_df = pd.DataFrame(feature_importance_dict, index=['features'])
 
-    # Plotting enhance version
-    width = 6
-    height = 2 + (len(model.feature_names_) - 0) * (12 - 2) / (len(setup.FEATURE_NAMES) - 0)
 
-    ax = feature_importance_df.T.sort_values('features').plot.barh(figsize=(width, height))
-    ax.spines['top'].set_visible(False)
-    ax.spines['right'].set_visible(False)
+    # Plotting enhance version
+    width = kwargs.pop('figure_width', 4)
+    #height = 2 + (len(model.feature_names_) - 0) * (12 - 2) / (len(setup.FEATURE_NAMES) - 0)
+    height = len(col_features) * 0.3 + 1.1
+    height = kwargs.pop('figure_height', height)
+    figsize = (width, height)
+
+    f, ax = plt.subplots(figsize=figsize)
+    data = pd.DataFrame(feature_importance_df.T).reset_index().rename(columns={'features':'Importance', 'index':'Features'}).sort_values('Importance', ascending=False)
+    sns.barplot(data=data, x='Importance', y='Features', color='tab:green', width=0.9, ax=ax)
+
+    ax.set_xlabel("Importance (%)")
 
     fn = f"{f_name}_feature_importance_enhanced.pdf"
-    # print(fn)
 
-    plt.savefig(fn, dpi=300, bbox_inches="tight")
-    plt.show()
-    plt.close()
+    __axlines()
+    __finaltouch()
+    __save(fn=fn)
+    __close()
+
+
+def replot_scatter(f_name, regressor=True):
+    from catboost import CatBoostRegressor
+    from catboost import CatBoostClassifier
+    import setup
+    import ios
+    import categorical
+
+    # Loading data
+    fn_sample = ios.path_join(ios.get_path(f_name), "ground_truth_MLsampled.csv")
+    data = ios.load_csv(fn_sample)
+    
+    # Loading model
+    fn_model = f"{f_name}.cbm"
+    model = CatBoostRegressor() if regressor else CatBoostClassifier()
+    model.load_model(fn_model, format="cbm")
+    col_features = model.feature_names_
+
+    # Loading model summary
+    fn_summary = f"{f_name}.json"
+    obj = ios.read_json(fn_summary)
+    y_var = "ngender" if regressor else 'gender'
+    y_var = f"{y_var}_{obj['y']}"
+
+    # predict
+    if not regressor:
+        data.loc[:,'pred_code'] = data.apply(lambda row: model.predict(row[col_features])[0], axis=1)
+        data.loc[:,'pred_label'] = data.apply(lambda row: setup.LABELS[row.pred_code], axis=1)
+    else:
+        data.loc[:,'pred'] = data.apply(lambda row: model.predict(row[col_features]), axis=1)
+    
+    unknown_feature_col = f'{categorical.UNKNOWN}_features'
+    data.loc[:,unknown_feature_col] = data.apply(lambda row: not pd.notna(row['ngender_r']) and not pd.notna(row['ngender_n']), axis=1)
+
+    # plot test
+    for key, df in {'val':data.query("ml_sample == 'test'"), 'all':data}.items():
+        fn = f"{f_name}_predictions_{key}_enhanced.pdf"
+        
+        plot_scatter(df, 
+                    x=y_var, y='pred',  
+                    xlabel='True values', ylabel='Predictions',
+                    markersize=50,
+                    title='',  
+                    hue='single_char', 
+                    hue_order=[False, True], 
+                    style = unknown_feature_col,
+                    style_order = [False, True],
+                    figsize=(4, 3), 
+                    palette=None, 
+                    corr=True, fit=False, rmse=True, r2=True, diagonal=True,
+                    fn=fn
+                    )
+
+def replot_shap(f_name, regressor=True, **kwargs):
+    from catboost import CatBoostRegressor
+    from catboost import CatBoostClassifier
+    import shap
+    import setup
+    import ios
+
+    # Loading data
+    fn_sample = ios.path_join(ios.get_path(f_name), "ground_truth_MLsampled.csv")
+    data = ios.load_csv(fn_sample)
+    
+    # model
+    # Loading model
+    fn_model = f"{f_name}.cbm"
+    model = CatBoostRegressor() if regressor else CatBoostClassifier()
+    model.load_model(fn_model, format="cbm")
+    col_features = model.feature_names_
+    
+    # SHAP
+    X_test = data.query("ml_sample == 'test'")[col_features]
+    explainer = shap.TreeExplainer(model)
+    shap_values = explainer.shap_values(X_test)
+
+    # figure
+    width = kwargs.pop('figure_width', 4)
+    height = len(col_features) * 0.3 + 1.
+    height = kwargs.pop('figure_height', height)
+    figsize = (width, height)
+
+
+    # plot_shap_beeswarm(shap_values.data, shap_values, model.feature_names_, xlabel='SHAP value', figsize=figsize)
+
+    shap.summary_plot(shap_values=shap_values, features=X_test, feature_names=col_features, 
+                      plot_size=figsize,
+                      show=False)
+    
+    plt.gca().set_xlabel('SHAP value')
+    fn = f"{f_name}_shap_enhanced.pdf"
+    
+    __save(fn=fn)
+    __close()

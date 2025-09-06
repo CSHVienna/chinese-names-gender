@@ -207,7 +207,7 @@ def run(gt_agg, features_id, random_seed, results_dir):
 
     # Plot SHAP
     fn = os.path.join(output_dir, f'{f_name}_shap.pdf')
-    plot_shap(best_model, X_test, sorted_feature_names, fn=fn)
+    plot_shap(best_model, X_test, feature_names, fn=fn)
 
     ##### Saving Model #####
     
