@@ -27,7 +27,7 @@ This repository contains datasets related to gender inference using the ChineseN
 ### 2. `CNKI_uniqueChineseGivenNames_withGNU.csv`
 
 - **Source**: Google Drive (`CNKI_dataset_cleaned/v2/CNKI unique names/v2`)
-- **Author**: Liuhuang Yang
+- **Author**: Liuhuaying Yang
 - **Date**: 2025-02-26  
 - **Size**: 965 K
 - **Records**: 39,712
