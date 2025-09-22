@@ -50,7 +50,7 @@
 - **Date**: 2025-05-09
 - **Size**: 9.1 KB  
 - **Records**: 11 x 100 
-- **Note**: Sampled givennames by Ana Jaramillo, and data collection managed by Liu Yang and Mingrong She.
+- **Note**: Sampled givennames by Ana Jaramillo, and data collection managed by Liuhuaying Yang and Mingrong She.
 
 ### 2. `Chinese first names gender inference (Responses) - round 2.xlsx`
 
@@ -60,7 +60,7 @@
 - **Date**: 2025-08-12 
 - **Size**: 8.2 KB  
 - **Records**: 11 x 48 
-- **Note**: Sampled givennames by Ana Jaramillo, and data collection managed by Liu Yang, Mingrong She, and Lisette Espin.
+- **Note**: Sampled givennames by Ana Jaramillo, and data collection managed by Liuhuaying Yang, Mingrong She, and Lisette Espin.
 
 ### 3. `Chinese first names gender inference (Responses) - round 3.xlsx`
 
@@ -70,7 +70,7 @@
 - **Date**: 2025-08-16 
 - **Size**: 6.9 KB  
 - **Records**: 11 x 18 
-- **Note**: Sampled givennames by Ana Jaramillo, and data collection managed by Liu Yang, Mingrong She, and Lisette Espin.
+- **Note**: Sampled givennames by Ana Jaramillo, and data collection managed by Liuhuaying Yang, Mingrong She, and Lisette Espin.
 
 ### 4. `ground_truth.csv` 
 - **Description**: Merge responses from all survey rounds. Rows correspond to all givennames used in the annotations, and columns the annotators plus two columns `single_char` (bool) and `round` (round of data collection: 1, 2, or 3). Source code in `prepare_ground_truth()` under `code/libs/tools_comparison.py`.
