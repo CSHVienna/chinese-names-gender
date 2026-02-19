@@ -54,9 +54,24 @@ print(is_pinyin_name('yang', 'liuhuaying'))
 
 
 ### Detect from Chinese characters
+**Return the valid Chinese names**
 
-To be added
+Valid criteria: the name must use only characters from the commonly used character list, and the given name must contain no more than 2 characters.
+
+```
+from characternames_handler import split_names, pinyinname
+
+print(split_names("诸葛亮,任茜,杨柳桦樱"))
+# Example output: ['诸葛 亮', '任 茜'] (a list of valid Chinese character names in format of 'surname givenname')
+```
 
 ## Translate Chinese names
+Some Chinese characters have multiple pronunciations or special pronunciations when used in names. Here, only the most common pronunciation for names is considered.
 
-To be added
+**Return the pinyin (without tones) for Chinese names**
+```
+from characternames_handler import split_names, pinyinname
+
+print(pinyinname(['诸葛 亮', '任 茜']))
+# Example output: ['zhuge liang', 'ren xi'] (a list of pinyin names in format of 'surname givenname')
+```
