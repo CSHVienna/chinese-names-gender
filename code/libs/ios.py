@@ -7,6 +7,25 @@ import json
 FN_AGENTS = 'agents.txt'
 FN_PROXIES = 'http_proxies.txt'
 
+######################################################
+#### PATHS
+######################################################
+
+def path_exists(path):
+    """
+    Checks if a given path exists.
+    
+    :param path: Path to check.
+    :return: True if the path exists, False otherwise.
+    """
+    return os.path.exists(path)
+
+def path_join(*paths):
+   return os.path.join(*paths)
+
+def get_path(fn):
+   return os.path.dirname(fn)
+
 def validate_path(path, **kwargs):
     """
     Validates a directory path, creating it if it doesn't exist.
@@ -45,18 +64,11 @@ def listdir(path, pattern=None, ext=None):
     print(f'[INFO] Found {len(files)} files in {path}.')
     return files
 
-def path_exists(path):
-    """
-    Checks if a given path exists.
-    
-    :param path: Path to check.
-    :return: True if the path exists, False otherwise.
-    """
-    return os.path.exists(path)
 
+######################################################
+#### IO
+######################################################
 
-def path_join(*paths):
-   return os.path.join(*paths)
 
 def save_json(obj, fn):
     try:
@@ -73,47 +85,21 @@ def read_json(fn):
       print(f'Error: {e}')
     return None
     
-def load_csv(fn, **kwargs):
-  if fn is not None and os.path.exists(fn):
-    return pd.read_csv(fn, **kwargs)
-  return None
-
 def to_csv(df, fn, **kwargs):
     try:
       df.to_csv(fn, **kwargs)
     except Exception as e:
       print(f'Error: {e}')
 
+def load_csv(fn, **kwargs):
+  if fn is not None and os.path.exists(fn):
+    return pd.read_csv(fn, **kwargs)
+  return None
+
 def load_excel(fn):
     if fn is not None and os.path.exists(fn):
        return pd.read_excel(fn)
     return None
-
-def printf(message: str):
-    """
-    Prints a message with a timestamp in front.
-
-    Args:
-        message (str): The message to print.
-    """
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    print(f"[{timestamp}] {message}")
-
-def read_agents(path):
-  if path is not None:
-    return read_txt_to_lst(os.path.join(path, FN_AGENTS))
-  return None
-
-def read_proxies(path):
-  if path is not None:
-    return read_txt_to_lst(os.path.join(path, FN_PROXIES))
-  return None
-
-def merge_dataframes_from_folder(path):
-  files = glob.glob(os.path.join(path, 'chunk_*.csv'))
-  print(f'[INFO] reading {len(files)} files.')
-  df = pd.concat([pd.read_csv(fn, index_col=0) for fn in files])
-  return df
 
 def read_txt_to_lst(filename):
     """
@@ -132,8 +118,11 @@ def read_txt_to_lst(filename):
     except Exception as e:
         print(f"An error occurred: {e}")
         return []
-    
 
+
+######################################################
+#### IO-Dataframes
+######################################################
 
 def load_json_files_to_dataframe(directory, include_fn=False):
     """
@@ -167,3 +156,42 @@ def load_json_files_to_dataframe(directory, include_fn=False):
 
     # Convert list of dictionaries to DataFrame
     return pd.DataFrame(data_list)
+
+def merge_dataframes_from_folder(path):
+  files = glob.glob(os.path.join(path, 'chunk_*.csv'))
+  print(f'[INFO] reading {len(files)} files.')
+  df = pd.concat([pd.read_csv(fn, index_col=0) for fn in files])
+  return df
+
+
+######################################################
+#### STDOUT
+######################################################
+
+def printf(message: str):
+    """
+    Prints a message with a timestamp in front.
+
+    Args:
+        message (str): The message to print.
+    """
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    print(f"[{timestamp}] {message}")
+
+
+
+######################################################
+#### Others
+######################################################
+
+def read_agents(path):
+  if path is not None:
+    return read_txt_to_lst(os.path.join(path, FN_AGENTS))
+  return None
+
+def read_proxies(path):
+  if path is not None:
+    return read_txt_to_lst(os.path.join(path, FN_PROXIES))
+  return None
+
+
