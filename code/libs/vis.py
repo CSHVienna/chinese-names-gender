@@ -128,7 +128,7 @@ def plot_scatter(data, x, y, title='', xlabel='', ylabel='',
                          palette=palette, hue_order=hue_order, style=style, style_order=style_order)
 
     yt = 0.01
-    ys = 0.09
+    ys = 0.1
 
     
     df = data.copy().dropna(subset=[x, y])
@@ -169,7 +169,7 @@ def plot_scatter(data, x, y, title='', xlabel='', ylabel='',
 
     # diagonal
     if diagonal:
-        plt.plot([0,1], [0,1], ls='--', color='grey', lw=1)
+        plt.plot([0,1], [0,1], ls='--', color='grey', lw=1, zorder=0)
     
     if hue and style:
         legend_kwargs = kwargs.get('legend_kwargs', {'fontsize': 13})
@@ -280,7 +280,7 @@ def plot_shap_from_file(fn):
     plt.close()
 
 
-def replot_confusion_matrix(f_name, test_only=True, fn=None, **kwargs):
+def replot_confusion_matrix(f_name, test_only=True, **kwargs):
     
     from sklearn.metrics import confusion_matrix
 
@@ -328,10 +328,15 @@ def replot_confusion_matrix(f_name, test_only=True, fn=None, **kwargs):
                 xticklabels=labels, 
                 yticklabels=labels,
                 cbar=cbar)
-    
+    plt.yticks(rotation=90) 
+
+
     xlabel = 'Predicted'
     ylabel = 'True'
     
+    fn = f"{f_name}_confusion_{'val' if test_only else 'all'}_enhanced.pdf"
+    kwargs['fn'] = fn
+
     __labels(title, xlabel, ylabel)
     __axlines(**kwargs)
     __finaltouch(**kwargs)
@@ -340,7 +345,7 @@ def replot_confusion_matrix(f_name, test_only=True, fn=None, **kwargs):
 
 
 
-def replot_rocauc(f_name, test_only=True, fn=None, **kwargs):
+def replot_rocauc(f_name, test_only=True, **kwargs):
     from libs import setup
     from sklearn.metrics import roc_curve, auc, roc_auc_score
     from sklearn.preprocessing import label_binarize
@@ -360,7 +365,7 @@ def replot_rocauc(f_name, test_only=True, fn=None, **kwargs):
     if test_only:
         y_true = obj['y_test']
         y_true_labels = np.vectorize(lambda x: labels[x])(y_true) # Keep original if not in dict
-        y_pred_proba = obj['y_pred_proba']
+        y_pred_proba = np.array(obj['y_pred_proba'])
         y_pred = obj['y_pred']
         y_pred_labels = np.vectorize(lambda x: labels[x])(y_pred) # Keep original if not in dict
     else:
@@ -390,11 +395,6 @@ def replot_rocauc(f_name, test_only=True, fn=None, **kwargs):
     K = len(labels)
     Y = label_binarize(y_idx, classes=np.arange(K))  # (n, K)
 
-
-    figure_width = kwargs.pop('figure_width', 5.5)
-    figure_height = kwargs.pop('figure_height', 4.5)
-    figsize = (figure_width, figure_height)
-
     fig, ax = plt.subplots(1,1,figsize=figsize)
 
     # Per-class ROC
@@ -409,25 +409,31 @@ def replot_rocauc(f_name, test_only=True, fn=None, **kwargs):
     kappa_str = r"Cohen's $\kappa$"
     kappa = cohen_kappa_score(y_true_labels, y_pred_labels, labels=labels)
 
-    ax.text(0.98, 0.39, f'N: {Y.shape[0]}', transform=ax.transAxes, ha='right', va='bottom')
-    ax.text(0.98, 0.32, f'Macro-AUC: {macro_auc:.3f}', transform=ax.transAxes, ha='right', va='bottom')
-    ax.text(0.98, 0.25, f'{kappa_str}: {kappa:.3f}', transform=ax.transAxes, ha='right', va='bottom')
+    yb = 0.3
+    d = 0.07
+    ax.text(0.98, yb+(d*2), f'N: {Y.shape[0]}', transform=ax.transAxes, ha='right', va='bottom')
+    ax.text(0.98, yb+(d*1), f'Macro-AUC: {macro_auc:.3f}', transform=ax.transAxes, ha='right', va='bottom')
+    ax.text(0.98, yb, f'{kappa_str}: {kappa:.3f}', transform=ax.transAxes, ha='right', va='bottom')
 
-    ax.plot([0, 1], [0, 1], linestyle="--", linewidth=1, color='black')
+    ax.plot([0, 1], [0, 1], linestyle="--", linewidth=0.5, color='grey')
 
     xlabel = "False Positive Rate"
     ylabel = "True Positive Rate"
     title = kwargs.pop('title', None)
 
-    ax.legend(frameon=True, fontsize=9)
+    ax.legend(frameon=True, fontsize=12)
     ax.set_xlim(0, 1)
     ax.set_ylim(0, 1)
     
+    fn = f"{f_name}_rocauc_{'val' if test_only else 'all'}_enhanced.pdf"
+    kwargs['fn'] = fn
+
     __labels(title, xlabel, ylabel)
     __axlines(**kwargs)
     __finaltouch(**kwargs)
     __save(**kwargs)
     __close()
+
 
 
 
@@ -607,7 +613,7 @@ def shap_dot_summary(
 
 
     # --- vertical zero line
-    ax.axvline(0, color="#808080", linewidth=1)
+    ax.axvline(0, color="#808080", linewidth=1, zorder=1)
 
     # --- axis formatting
     ax.set_yticks(y_positions)
@@ -636,7 +642,7 @@ def shap_dot_summary(
         cb.set_label("Feature value", rotation=90)
         cb.set_ticks([vmin, vmax])
         cb.set_ticklabels(["Low", "High"], fontsize=9)
-
+        cb.outline.set_visible(False)
 
     return fig, ax, sm
 
@@ -767,6 +773,7 @@ def replot_shap(f_name, regressor=True, **kwargs):
         cb.set_label("Feature value")
         cb.set_ticks([0.0, 1.0])
         cb.set_ticklabels(["Low", "High"], fontsize=9)
+        cb.outline.set_visible(False)
 
         # Add spacing between plots
         plt.subplots_adjust(wspace=0.1)
