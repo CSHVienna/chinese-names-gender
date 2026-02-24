@@ -169,8 +169,8 @@ _old*
 resources/agents.txt
 resources/http_proxies.txt
 resources/http.txt
-keys/namsor-Ana
-keys/namsor-leespinn
+.keys/*
+!.keys/README.md
 catboost_info/
 cache/*.json
 cache/*.gz
