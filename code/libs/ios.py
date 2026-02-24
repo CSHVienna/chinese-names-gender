@@ -3,6 +3,9 @@ import glob
 import pandas as pd
 from datetime import datetime
 import json
+import zipfile
+import tarfile
+from io import StringIO
 
 FN_AGENTS = 'agents.txt'
 FN_PROXIES = 'http_proxies.txt'
@@ -118,6 +121,54 @@ def read_txt_to_lst(filename):
     except Exception as e:
         print(f"An error occurred: {e}")
         return []
+
+
+######################################################
+#### IO-Compressed files
+######################################################
+def read_csv_from_zip(path_fn, filename, **kwargs):
+    """
+    Opens a zip file at path_fn, reads the specified filename as a CSV, and returns a DataFrame.
+    Additional keyword arguments are passed to pd.read_csv.
+    """
+    with zipfile.ZipFile(path_fn) as z:
+        with z.open(filename) as f:
+            return pd.read_csv(f, **kwargs)
+        
+# def read_csv_from_tar_gz(path_fn, filename, **kwargs):
+#     """
+#     Opens a tar.gz file at path_fn, reads the specified filename as a CSV, and returns a DataFrame.
+#     Additional keyword arguments are passed to pd.read_csv.
+#     """
+#     with tarfile.open(path_fn, "r:gz") as tar:
+#         member = tar.getmember(filename)
+#         f = tar.extractfile(member)
+#         return pd.read_csv(f, **kwargs)
+
+def read_file_from_tar_gz_as_dataframe(tar_gz_path, target_file_name, **kwargs):
+    """
+    Reads a specific file inside a folder within a tar.gz archive as a pandas DataFrame.
+
+    Args:
+        tar_gz_path (str): The path to the tar.gz file.
+        target_file_name (str): The name of the file to read within the folder inside the archive.
+        **kwargs: Additional arguments to pass to pandas.read_csv().
+
+    Returns:
+        pd.DataFrame: The content of the specified file as a pandas DataFrame.
+    """
+    try:
+        with tarfile.open(tar_gz_path, 'r:gz') as tar:
+            # Locate the target file inside the folder
+            for member in tar.getmembers():
+                if member.name.endswith(f"/{target_file_name}"):
+                    with tar.extractfile(member) as file:
+                        # Read the file into a DataFrame
+                        return pd.read_csv(StringIO(file.read().decode('utf-8')), **kwargs)
+            raise FileNotFoundError(f"File '{target_file_name}' not found in the archive.")
+    except Exception as e:
+        printf(f"Error: {e}")
+        return None
 
 
 ######################################################
