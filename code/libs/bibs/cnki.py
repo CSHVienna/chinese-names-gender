@@ -8,8 +8,10 @@ from selenium.webdriver.support import expected_conditions as EC
 import time
 import itertools
 import Levenshtein
-from libs.cache import DiskCache
 from urllib.parse import urlparse, parse_qs
+
+from libs.cache import DiskCache
+
 
 NONE = ['', None]
 

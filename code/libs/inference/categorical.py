@@ -1,6 +1,4 @@
 from collections import Counter
-from re import sub
-from tkinter import NE
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import label_binarize
@@ -10,7 +8,7 @@ from sklearn.metrics import accuracy_score
 from sklearn.metrics import roc_auc_score
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import f1_score
-
+from sklearn.metrics import cohen_kappa_score
 
 ##################################################################################################################
 # CONSTANTS
@@ -38,9 +36,27 @@ def _mode(values):
 
 def majority_voting(df: pd.DataFrame) -> pd.Series:
     """
-    Perform majority voting on the columns provided.
+    Perform majority voting on the columns provided using the mode function.
     """
     return df.apply(_mode, axis=1)
+
+
+def infer_gender_by_majority_vote(male_label_count, female_label_count, neutral_label_count, threshold=0.1):
+    """
+    Infer the gender by majority vote using the ratio of male, female and neutral labels.
+    It does not use the mode function, but rather looks for the label that is majority taking into account the ratio of the other two labels.
+    It also considers the case where both female and male together are the majority, then the neutral label is inferred.
+    """
+    ratio_male = male_label_count / (male_label_count + female_label_count + neutral_label_count)
+    ratio_female = female_label_count / (male_label_count + female_label_count + neutral_label_count)
+    ratio_neutral = neutral_label_count / (male_label_count + female_label_count + neutral_label_count)
+
+    if ratio_neutral > 0.5 or (ratio_male + ratio_female > 0.5 and abs(ratio_male - ratio_female) < threshold) :
+        return 'neutral'
+    elif ratio_male > ratio_female:
+        return 'male'
+    else:
+        return 'female'
 
 
 ##################################################################################################################
@@ -87,12 +103,34 @@ def get_performance(data, col_true, col_pred, labels, normalize=None):
     y_true = df[col_true]
     y_pred = df[col_pred]
 
-    cm = confusion_matrix(y_true, y_pred, labels=labels, normalize=normalize)
-    precision = precision_score(y_true, y_pred, labels=labels, average=None)
-    recall = recall_score(y_true, y_pred, labels=labels, average=None)
-    f1 = f1_score(y_true, y_pred, labels=labels, average=None)
-    accuracy = accuracy_score(y_true, y_pred)
-    auc = roc_auc_score(label_binarize(y_true, classes=labels), label_binarize(y_pred, classes=labels), average=None, multi_class='ovr')
+    try:
+        cm = confusion_matrix(y_true, y_pred, labels=labels, normalize=normalize)
+    except ValueError:
+        cm = None
+    try:    
+        precision = precision_score(y_true, y_pred, labels=labels, average=None, zero_division=0)    
+    except ValueError:
+        precision = None
+    try:
+        recall = recall_score(y_true, y_pred, labels=labels, average=None, zero_division=0)
+    except ValueError:
+        recall = None
+    try:
+        f1 = f1_score(y_true, y_pred, labels=labels, average=None, zero_division=0)
+    except ValueError:
+        f1 = None
+    try:
+        # roc_auc requires y_scores (probabilities) not y_pred (labels)
+        # y_true_binarized = label_binarize(y_true, classes=labels)
+        # y_pred_binarized = label_binarize(y_pred, classes=labels)
+        # auc = roc_auc_score(y_true_binarized, y_pred_binarized, average=None, multi_class='ovr')
+        auc = None
+    except ValueError:
+        auc = None
+    try:
+        accuracy = accuracy_score(y_true, y_pred)
+    except ValueError:
+        accuracy = None
 
     return cm, precision, recall, f1, auc, accuracy
 
@@ -123,6 +161,194 @@ def convert_numeric_to_categorical_equal_bins(values: np.array, num_bins: int, l
     Convert numeric values to categorical values based on the number of bins provided.
     """
     return pd.cut(values, num_bins, labels=labels, include_lowest=True)
+
+
+
+##################################################################################################################
+# PAIRWISE AGREEMENT BETWEEN GENDER INFERENCE METHODS
+##################################################################################################################
+
+def agreement_rate(s1, s2):
+    """
+    Calculate the agreement rate between two series.
+    Simply the mean of the equality of the two series (accuracy)
+    """
+    return (s1 == s2).mean()
+
+def pairwise_agreement(df: pd.DataFrame, method_cols: list) -> pd.DataFrame:
+    """
+    Calculate the pairwise agreement between the columns provided.
+    Pairwise agreement rate (accuracy): proportion of rows where the two columns match
+    """
+    n = len(method_cols)
+    agreement = pd.DataFrame(index=method_cols, columns=method_cols, dtype=float)
+    for i, c1 in enumerate(method_cols):
+        for j, c2 in enumerate(method_cols):
+            agreement.loc[c1, c2] = agreement_rate(df[c1], df[c2])
+    return agreement
+
+def pairwise_kappa(df: pd.DataFrame, method_cols: list, labels: list=None) -> pd.DataFrame:
+    """
+    Calculate the pairwise kappa between the columns provided.
+    Cohen's Kappa — agreement corrected for chance (κ = (p_o - p_e) / (1 - p_e))
+    """
+    unique_values = pd.unique(df[method_cols].values.ravel())
+    unique_values = unique_values[pd.notna(unique_values)]
+
+    labels = labels if labels is not None else unique_values
+    kappa = pd.DataFrame(index=method_cols, columns=method_cols, dtype=float)
+    for i, c1 in enumerate(method_cols):
+        for j, c2 in enumerate(method_cols):
+            kappa.loc[c1, c2] = cohen_kappa_score(df[c1], df[c2], labels=labels)
+    return kappa
+
+
+
+def comparison_table_to_latex(
+    metrics_ch: dict,
+    metrics_py: dict,
+    reference_col: str,
+    *,
+    row_labels: dict | None = None,
+    row_order: list | None = None,
+    title: str = "Evaluation metrics vs. ground truth",
+    caption: str = "Agreement (accuracy) and Cohen's Kappa of each method compared to the reference ground-truth.",
+    decimal_places: int = 2,
+    group_header_labels: tuple = ("Chinese", "Pinyin"),
+) -> str:
+    """
+    Build a LaTeX table from two dicts of symmetric agreement/kappa matrices vs. a reference column.
+
+    Each dict has the form {'agreement': dataframe, 'kappa': dataframe}. For each dataframe,
+    the column given by `reference_col` is taken (values of each method vs. ground truth).
+    Rows are the index of the dataframe excluding the reference (the methods being evaluated).
+
+    Parameters
+    ----------
+    metrics_ch : dict
+        First group: {'agreement': df, 'kappa': df} (e.g. Chinese).
+        Optional key 'n': number of records to show in header (e.g. "Chinese (n=123)").
+    metrics_py : dict
+        Second group: {'agreement': df, 'kappa': df} (e.g. Pinyin).
+        Optional key 'n': number of records to show in header (e.g. "Pinyin (n=456)").
+    reference_col : str
+        Name of the ground-truth column in the matrices.
+    row_labels : dict, optional
+        Map from index (method) names to display labels for the table rows.
+    row_order : list, optional
+        Order of row names; only these rows are included, in this order.
+    title : str
+        LaTeX table title (e.g. \\caption{}).
+    caption : str
+        LaTeX table caption text.
+    decimal_places : int
+        Number of decimal places for numeric cells.
+    group_header_labels : tuple of str
+        Labels for the top-level header row (merged over 2 columns each).
+        Default ("Chinese", "Pinyin").
+
+    Returns
+    -------
+    str
+        LaTeX table as a string (including \\begin{table}, \\caption, \\label optional).
+    """
+    r_ch, a_ch, k_ch = metrics_ch["rmse"], metrics_ch["agreement"], metrics_ch["kappa"]
+    r_py, a_py, k_py = metrics_py["rmse"], metrics_py["agreement"], metrics_py["kappa"]
+
+    def col_vs_ref(df, ref):
+        s = df[ref].drop(index=ref, errors="ignore")
+        return s.reindex(index=[i for i in df.index if i != ref])
+
+    acc_ch = col_vs_ref(a_ch, reference_col)
+    kap_ch = col_vs_ref(k_ch, reference_col)
+    
+    acc_py = col_vs_ref(a_py, reference_col)
+    kap_py = col_vs_ref(k_py, reference_col)
+
+    rows = acc_ch.index.union(acc_py.index).drop_duplicates(keep="first")
+    if row_order is not None:
+        rows = [r for r in row_order if r in rows]
+    else:
+        rows = list(rows)
+
+    rmse_py = pd.Series(index=rows, data={r: None if r != 'pred' else r_py[0] for r in rows}, dtype=float)
+    rmse_ch = pd.Series(index=rows, data={r: None if r != 'pred' else r_ch for r in rows}, dtype=float)
+
+    table = pd.DataFrame(
+        {
+            "rmse ch": rmse_ch.reindex(rows),
+            "accuracy ch": acc_ch.reindex(rows),
+            "kappa ch": kap_ch.reindex(rows),
+            "rmse py": rmse_py.reindex(rows),
+            "accuracy py": acc_py.reindex(rows),
+            "kappa py": kap_py.reindex(rows),
+        },
+        index=rows,
+    )
+
+    # Format numbers and bold max per column (before renaming index)
+    fmt = f"{{:0.{decimal_places}f}}"
+    out = table.copy()
+    for c in out.columns:
+        out[c] = out[c].apply(lambda x: fmt.format(x) if pd.notna(x) else "—")
+        idx_best = table[c].idxmin() if 'rmse' in c else table[c].idxmax()
+        if pd.notna(idx_best) and table[c].notna().any():
+            val = fmt.format(table.loc[idx_best, c])
+            out.loc[idx_best, c] = "\\textbf{" + val + "}"
+
+    if row_labels:
+        out.index = out.index.map(lambda x: row_labels.get(x, x))
+
+    latex_body = out.to_latex(
+        index=True,
+        escape=False,
+        column_format="l" + "r" * len(out.columns),
+    )
+
+    # Replace single header row with two-row header: group names (with n= if provided) spanning 2 cols each, then accuracy/kappa
+    g1, g2 = group_header_labels
+    n_ch = metrics_ch.get("n")
+    n_py = metrics_py.get("n")
+    h1 = f"{g1} (n={n_ch})" if n_ch is not None else g1
+    h2 = f"{g2} (n={n_py})" if n_py is not None else g2
+    toprule = "\\toprule\n"
+    i = latex_body.find(toprule)
+    if i != -1:
+        start = i + len(toprule)
+        j = latex_body.find("\n", start)
+        if j != -1:
+            # Replace only the header line; leave \midrule and all data rows untouched
+            line_end = " \\\\\n"  # LaTeX line break: space + two backslashes + newline
+            new_header = (
+                " & \\multicolumn{3}{c}{" + h1 + "} & \\multicolumn{3}{c}{" + h2 + "}" + line_end
+                + r" & rmse$\downarrow$ & accuracy$\uparrow$ & kappa$\uparrow$ & rmse$\downarrow$ & accuracy$\uparrow$ & kappa$\uparrow$" + line_end
+            )
+            latex_body = latex_body[:start] + new_header + latex_body[j + 1:]
+
+    # Wrap with table env, title and caption (short title for list of tables, full caption for text)
+    caption_escaped = caption.replace("\\", "\\\\").replace("_", "\\_")
+    title_escaped = title.replace("\\", "\\\\").replace("_", "\\_")
+    title_escaped = "\\textbf{" + title_escaped + "}"
+    
+    full = (
+        "\\begin{table}[htbp]\n"
+        "\\centering\n"
+        f"\\caption{{"
+        + f"{title_escaped} "
+        + f"{caption_escaped} "
+        + "}\n"
+        "\\label{tab:comparison}\n"
+        + latex_body
+        + "\\end{table}"
+    )
+
+    print(f"[INFO] Pinyin aggregation: {r_py[1]}")
+    return full
+
+
+
+
+### --------------------------- FROM HERE DOWN IS THE OLD CODE --------------------------- ###
 
 ##################################################################################################################
 # ARBITRARY THRESHOLDS

@@ -63,3 +63,15 @@ def pinyinname(names):
         results.append(f"{english_surname} {english_givenname}".strip())
         
     return results
+
+
+def pinyin_givename(names):
+    results = []
+    for givenname in names:
+        english_givenname = ''.join(
+            # lookup_py_for_givenname.get(ch, ch) for ch in givenname
+            lookup_py_for_givenname.get(ch, ch).split('#')[0] for ch in givenname #only take the first py
+        )
+        results.append(english_givenname.strip())
+        
+    return results
