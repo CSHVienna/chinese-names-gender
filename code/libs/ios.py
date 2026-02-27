@@ -67,7 +67,7 @@ def listdir(path, pattern=None, ext=None):
     print(f'[INFO] Found {len(files)} files in {path}.')
     return files
 
-def is_emprty(path):
+def is_empty(path):
     files = glob.glob(path)
     return len(files) == 0
 

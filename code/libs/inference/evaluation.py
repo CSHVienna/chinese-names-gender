@@ -13,6 +13,8 @@ METRICS_SORT_ASC = {
     'test_auc': False,
 }
 
+METRIC = {'regression': 'test_rmse', 'classification': 'test_auc'}
+
 METRICS_CLASS = ['test_auc']
 
 SUB_FOLDERS = {'regression': 'rs*/regression/_<VAR_X>/*', 
@@ -26,7 +28,7 @@ class Evaluation(object):
         subpath = SUB_FOLDERS[('classification' if self.is_classifier else 'regression')]
         self.comparison_dir = ios.path_join(comparison_dir, subpath)
         
-        if ios.is_emprty(self.comparison_dir.replace('<VAR_X>', '*')):
+        if ios.is_empty(self.comparison_dir.replace('<VAR_X>', '*')):
             raise ValueError(f'Comparison directory {self.comparison_dir} is empty')
 
     def read_eval_results(self, ignore_rs: list[int] = None):
