@@ -181,5 +181,7 @@ results/v2/chinese_gender/comparison/classification/_mode/
 results/v2/chinese_gender/comparison/classification/_median/
 results/v2/chinese_gender/comparison/classification/_mean/
 results/*/gender/predictions/comparison/*
+results/*/gender/predictions_ch/comparison/*
+!results/*/gender/predictions_ch/comparison/eval_results*.csv
 .github
 _TODO*
