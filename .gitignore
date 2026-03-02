@@ -169,8 +169,8 @@ _old*
 resources/agents.txt
 resources/http_proxies.txt
 resources/http.txt
-keys/namsor-Ana
-keys/namsor-leespinn
+.keys/*
+!.keys/README.md
 catboost_info/
 cache/*.json
 cache/*.gz
@@ -181,5 +181,7 @@ results/v2/chinese_gender/comparison/classification/_mode/
 results/v2/chinese_gender/comparison/classification/_median/
 results/v2/chinese_gender/comparison/classification/_mean/
 results/*/gender/predictions/comparison/*
+results/*/gender/predictions_ch/comparison/*
+!results/*/gender/predictions_ch/comparison/eval_results*.csv
 .github
 _TODO*
