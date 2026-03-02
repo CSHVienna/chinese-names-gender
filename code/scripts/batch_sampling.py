@@ -4,21 +4,16 @@
 ###############################################################################################
 import os
 import time
-import json
 import argparse
 
-import numpy as np
 import pandas as pd
-from matplotlib import pyplot as plt
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error
 
-import ios
-from tools_comparison import ToolsComparison
-import setup
-import tools_comparison
-import categorical
-import constants
+from libs import ios
+from libs.tools_comparison import ToolsComparison
+from libs import setup
+from libs import tools_comparison
+from libs.inference import categorical
+from libs import constants
 
 ###############################################################################################
 # CONSTANTS

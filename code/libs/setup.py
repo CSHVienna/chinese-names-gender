@@ -1,6 +1,6 @@
 from itertools import combinations
 
-import categorical
+from libs.inference import categorical
 
 GRID = {'iterations': [100, 150, 200, 300],
         'learning_rate': [0.01, 0.03, 0.05, 0.1],

@@ -1,18 +1,14 @@
-# From /code/scripts:
-# export PYTHONPATH=$PYTHONPATH:../libs
+# From code/scripts (path = code/):
+# export PYTHONPATH=$PYTHONPATH:..
 # python batch_gender_prediction.py --input data/processed/df.csv --output_dir results/regression --model_fn model.cbm
 
 import argparse
-from asyncio import constants
 from catboost import CatBoostClassifier
 from catboost import CatBoostRegressor
-from sklearn.preprocessing import LabelEncoder
 
-import ios
-import categorical
-import setup
-import constants
-import tools_comparison
+from libs import ios
+from libs import setup
+from libs import tools_comparison
 
 
 def run(input_fn, model_fn, output_dir, resources_dir, cache_dir):
