@@ -138,15 +138,15 @@ def read_csv_from_zip(path_fn, filename, **kwargs):
         with z.open(filename) as f:
             return pd.read_csv(f, **kwargs)
         
-# def read_csv_from_tar_gz(path_fn, filename, **kwargs):
-#     """
-#     Opens a tar.gz file at path_fn, reads the specified filename as a CSV, and returns a DataFrame.
-#     Additional keyword arguments are passed to pd.read_csv.
-#     """
-#     with tarfile.open(path_fn, "r:gz") as tar:
-#         member = tar.getmember(filename)
-#         f = tar.extractfile(member)
-#         return pd.read_csv(f, **kwargs)
+def read_csv_from_tar_gz(path_fn, filename, **kwargs):
+    """
+    Opens a tar.gz file at path_fn, reads the specified filename as a CSV, and returns a DataFrame.
+    Additional keyword arguments are passed to pd.read_csv.
+    """
+    with tarfile.open(path_fn, "r:gz") as tar:
+        member = tar.getmember(filename)
+        f = tar.extractfile(member)
+        return pd.read_csv(f, **kwargs)
 
 def read_file_from_tar_gz_as_dataframe(tar_gz_path, target_file_name, **kwargs):
     """

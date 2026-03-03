@@ -51,12 +51,42 @@ def infer_gender_by_majority_vote(male_label_count, female_label_count, neutral_
     ratio_female = female_label_count / (male_label_count + female_label_count + neutral_label_count)
     ratio_neutral = neutral_label_count / (male_label_count + female_label_count + neutral_label_count)
 
-    if ratio_neutral > 0.5 or (ratio_male + ratio_female > 0.5 and abs(ratio_male - ratio_female) < threshold) :
+    if ratio_neutral >= 0.5 or (ratio_male + ratio_female >= 0.5 and abs(ratio_male - ratio_female) < threshold) :
         return 'neutral'
     elif ratio_male > ratio_female:
         return 'male'
     else:
         return 'female'
+
+def aggregate_gender(values):
+    """
+    Generic reducer for gender-like columns.
+    Assumes values like 'male', 'female', 'neutral', 'unknown' (plus NaN).
+    """
+    uniques = {v for v in values if pd.notna(v)}
+    if not uniques:
+        return np.nan
+
+    # Only one unique value -> return it
+    if len(uniques) == 1:
+        return next(iter(uniques))
+
+    # If multiple values, but only one is not "unknown" -> return that one
+    non_unknown = {v for v in uniques if v != "unknown" and v != 'unisex'}
+    if len(non_unknown) == 1:
+        return next(iter(non_unknown))
+
+    # If we have both male and female (with or without unknown/neutral) -> neutral
+    if "male" in uniques and "female" in uniques:
+        return "neutral"
+
+    # Fallback: if neutral is present among multiple values -> neutral
+    if "neutral" in uniques or 'unisex' in uniques:
+        return "neutral"
+
+    # Last resort: pick a stable value (sorted for determinism)
+    return sorted(uniques)[0]
+
 
 
 ##################################################################################################################
@@ -184,7 +214,8 @@ def pairwise_agreement(df: pd.DataFrame, method_cols: list) -> pd.DataFrame:
     agreement = pd.DataFrame(index=method_cols, columns=method_cols, dtype=float)
     for i, c1 in enumerate(method_cols):
         for j, c2 in enumerate(method_cols):
-            agreement.loc[c1, c2] = agreement_rate(df[c1], df[c2])
+            df_ = df.dropna(subset=[c1, c2])
+            agreement.loc[c1, c2] = agreement_rate(df_[c1], df_[c2])
     return agreement
 
 def pairwise_kappa(df: pd.DataFrame, method_cols: list, labels: list=None) -> pd.DataFrame:
@@ -199,7 +230,8 @@ def pairwise_kappa(df: pd.DataFrame, method_cols: list, labels: list=None) -> pd
     kappa = pd.DataFrame(index=method_cols, columns=method_cols, dtype=float)
     for i, c1 in enumerate(method_cols):
         for j, c2 in enumerate(method_cols):
-            kappa.loc[c1, c2] = cohen_kappa_score(df[c1], df[c2], labels=labels)
+            df_ = df.dropna(subset=[c1, c2])
+            kappa.loc[c1, c2] = cohen_kappa_score(df_[c1], df_[c2], labels=labels)
     return kappa
 
 
