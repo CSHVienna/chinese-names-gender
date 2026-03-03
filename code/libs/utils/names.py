@@ -1,6 +1,6 @@
 import re
 
-from libs.utils.chinese_names_handlers import pinyinnames_handler
+from libs.utils import pinyinnames_handler
 
 def _has_chinese(s):
     """True if string contains at least one CJK character."""

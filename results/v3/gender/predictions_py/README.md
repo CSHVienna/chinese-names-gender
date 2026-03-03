@@ -1,12 +1,9 @@
-# Gender from Pinyin
+# Inferred Gender from Pinyin
 
 Author: Liuhuaying yang
 
-## Unique Chinese given names
-Calculated gender values for unique give names, based on `/results/v3/gender/predictions/`:
-- `CNKI_uniqueChineseAllGivenNames_gender_reg_mean_224.csv`
-- `CNKI_uniqueChineseAllGivenNames_gender_class_median_251_4.csv`
-### Fields
+## Fields
+
 **Basics**:
 - `givenname`: Chinese given name in characters.
 - `pop_CNKI`: a population count in CNKI data.
@@ -30,3 +27,21 @@ Calculated gender values for unique give names, based on `/results/v3/gender/pre
 - `gender_weighted_pop_NU`: a population-weighted average `pred` value, using `pop_NU` as weights.
 - `gender_avg_all`: a simple (unweighted) average of `pred` value for all names.
 - `gender_avg_CNKI`: a simple (unweighted) average of `pred` value for only CNKI names.
+
+
+
+## Files
+
+`uniqueChineseAllGivenNames_PYgender_reg_mean_894_class_mean_607_1.csv` (best models across all runs)
+
+    Calculated gender values for unique give names, based on `/results/v3/gender/predictions_ch/best_models/rs2`:
+    - `CNKI_uniqueChineseAllGivenNames_gender_reg_mean_894.csv`
+    - `CNKI_uniqueChineseAllGivenNames_gender_class_mean_607_1.csv`
+
+
+`uniqueChineseAllGivenNames_PYgender_reg_mean_224_class_meadian_251_4.csv` (best models for rs1)
+
+    Calculated gender values for unique give names, based on `/results/v3/gender/predictions_ch/best_models/rs1`:
+    - `CNKI_uniqueChineseAllGivenNames_gender_reg_mean_224.csv`
+    - `CNKI_uniqueChineseAllGivenNames_gender_class_median_251_4.csv`
+
