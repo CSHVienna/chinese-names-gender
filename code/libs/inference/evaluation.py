@@ -149,3 +149,92 @@ class Evaluation(object):
             fn = ios.path_join(output_dir, fn_output)
             ios.to_csv(data, fn)
             ios.printf(f'Saved: {fn}')
+
+
+
+
+
+import numpy as np
+import pingouin as pg
+import pandas as pd
+
+class Consensus():
+
+    def __init__(self, X: np.ndarray):
+        self.X = X
+        self.N, self.M = X.shape
+
+    
+    def compute_cultural_consensus_theory_scores(self):
+        """
+        Computes eigenvalue ratio, variance explained, and competence
+        for metric Cultural Consensus Theory.
+        """
+        X = np.asarray(self.X, dtype=float)
+
+        # Center per annotator
+        Xc = X - X.mean(axis=1, keepdims=True)
+
+        # Inter-annotator correlation matrix
+        R = np.corrcoef(Xc)
+
+        # Eigen decomposition
+        eigvals, eigvecs = np.linalg.eigh(R)
+        idx = np.argsort(eigvals)[::-1]
+        eigvals = eigvals[idx]
+        eigvecs = eigvecs[:, idx]
+
+        ratio = eigvals[0] / eigvals[1]
+        var1 = eigvals[0] / eigvals.sum()
+
+        # Competence
+        c = eigvecs[:, 0]
+        if np.sum(c) < 0:
+            c *= -1
+
+        return ratio, var1, c
+
+
+    def bootstrap_cct(self, B=1000, random_state=42):
+        rng = np.random.default_rng(random_state)
+        X = np.asarray(self.X, dtype=float)
+
+        ratios = []
+        vars_first = []
+
+        for _ in range(B):
+            # resample columns (names) with replacement
+            idx = rng.integers(0, self.M, size=self.M)
+            Xb = X[:, idx]
+
+            tmp = Consensus(Xb)
+            ratio, var1, _ = tmp.compute_cultural_consensus_theory_scores()
+
+            ratios.append(ratio)
+            vars_first.append(var1)
+
+        ratios = np.array(ratios)
+        vars_first = np.array(vars_first)
+
+        return {
+            "ratio_median": np.median(ratios),
+            "ratio_ci_2.5": np.percentile(ratios, 2.5),
+            "ratio_ci_97.5": np.percentile(ratios, 97.5),
+            "var1_median": np.median(vars_first),
+            "var1_ci_2.5": np.percentile(vars_first, 2.5),
+            "var1_ci_97.5": np.percentile(vars_first, 97.5),
+            "ratios_all": ratios
+        }
+
+    def intraclass_correlation_coefficient(self):
+        # Convert your matrix X (11 x 166) to long format
+        df = pd.DataFrame(self.X.T)
+        df['name'] = df.index
+        df_long = df.melt(id_vars='name', var_name='rater', value_name='score')
+
+        icc = pg.intraclass_corr(data=df_long,
+                                targets='name',
+                                raters='rater',
+                                ratings='score')
+
+        return icc
