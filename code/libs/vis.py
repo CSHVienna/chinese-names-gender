@@ -70,7 +70,7 @@ def __axlines(**kwargs):
 
 def __save(**kwargs):
     filename = kwargs.get('fn', None)
-    dpi = kwargs.get('dpi', 300)
+    dpi = kwargs.get('dpi', 600)
 
     if filename is not None:
         plt.savefig(filename, bbox_inches='tight', dpi=dpi)
@@ -117,9 +117,11 @@ def plot_scatter(data, x, y, title='', xlabel='', ylabel='',
                  palette=None, corr=False, fit=False, rmse=False, r2=False, diagonal=False, **kwargs):
     
 
-    figure_width = kwargs.get('figure_width', 10)
-    figure_height = kwargs.get('figure_height', 6)
-    figsize = (figure_width, figure_height)
+    figsize = kwargs.get('figsize', None)
+    if figsize is None:
+        figure_width = kwargs.get('figure_width', 10)
+        figure_height = kwargs.get('figure_height', 6)
+        figsize = (figure_width, figure_height)
 
 
     plt.figure(figsize=figsize)
@@ -215,12 +217,17 @@ def plot_roc_auc(auc, fpr, tpr, labels, figsize, **kwargs):
 
 def plot_confusion_matrix(cm, labels, title='Confusion Matrix', cmap='Blues', figsize=(10, 6), **kwargs):
     plt.figure(figsize=figsize)
-    
+    cbar = kwargs.get('cbar', True)
+    annot_kws = kwargs.get('annot_kws', {'fontsize': 10})
+    annot = kwargs.get('annot', True)
     fmt = '.2f' if cm.dtype == np.float64 else 'd'
-    sns.heatmap(cm, annot=True, fmt=fmt, cmap='Blues', xticklabels=labels, yticklabels=labels)
+
+    sns.heatmap(cm, annot=annot, fmt=fmt, cmap='Blues', 
+                annot_kws=annot_kws,
+                xticklabels=labels, yticklabels=labels, cbar=cbar)
     
-    xlabel = 'Predicted'
-    ylabel = 'True'
+    xlabel = kwargs.get('xlabel', 'Predicted')
+    ylabel = kwargs.get('ylabel', 'True')
     
     __labels(title, xlabel, ylabel)
     __axlines(**kwargs)
@@ -796,11 +803,12 @@ def plot_gender_comparison(
     colors=None,
     use_percentages=True,
     annotate_bars=False,
-    annotate_kwargs=None,
-    legend_kwargs=None,
     title=None,
+    fn=None,
     figsize=(6, 4),
     n_annotation_kwargs=None,
+    annotate_kwargs=None,
+    legend_kwargs=None,
     **plot_kwargs,
 ):
     """
@@ -904,6 +912,9 @@ def plot_gender_comparison(
     ax.text(s=f"N={n_records}", **default_n_kw)
     ax.autoscale(axis="y")
     plt.tight_layout()
+
+    __save(fn=fn)
+
     return fig, ax
 
 
@@ -946,8 +957,7 @@ def plot_gender_distributions(df, cols, **kwargs):
     default_n_kw.update(n_annotation_kwargs)
     ax.text(s=f"N={n_records}", **default_n_kw)
     
-    if fn is not None:
-        plt.savefig(fn, dpi=600, bbox_inches='tight')
+    __save(fn=fn)
     
     plt.show()
     plt.close
@@ -959,8 +969,10 @@ def plot_regression_performance(df, col_true, col_pred, metrics, **kwargs):
     ylabel = kwargs.get('ylabel', "Predicted")
     markersize = kwargs.get('markersize', 30)
     markeralpha = kwargs.get('markeralpha', 0.5)
+    fn = kwargs.get('fn', None)
+    fig = kwargs.get('fig', None)
 
-    fig, ax = plt.subplots(1, 1, figsize=figsize)
+    fig, ax = plt.subplots(1, 1, figsize=figsize) if fig is None else fig
     ax.scatter(df[col_true], df[col_pred], s=markersize, alpha=markeralpha, zorder=1, edgecolor='white', linewidth=0.5)
     ax.plot([0, 1], [0, 1], '--', color='black', alpha=0.2, zorder=0)
     ax.text(0.05, 0.95, f"R2: {metrics.get('r2', None):.2f}", transform=ax.transAxes, ha='left', va='top', fontsize=10, zorder=2)
@@ -974,4 +986,9 @@ def plot_regression_performance(df, col_true, col_pred, metrics, **kwargs):
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
     # plt.tight_layout()
+
+
+    __save(fn=fn)
+    
+
     return fig, ax
