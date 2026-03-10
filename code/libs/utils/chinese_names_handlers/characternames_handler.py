@@ -17,6 +17,7 @@ def is_chinese_char(char):
     return 0x4E00 <= ord(char) <= 0x9FFF
 
 def convert_traditional_to_simplified(text):
+    # Ch to PY
     if pd.notna(text):  # Check if the value is not NaN
         new_text = HanziConv.toSimplified(text)
         if new_text:
