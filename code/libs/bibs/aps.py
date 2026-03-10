@@ -104,7 +104,7 @@ def clean_aps_names(df_aps):
     # 2. remove accent
     agg.loc[:, 'longest_name_clean'] = agg.longest_name_clean.str.normalize('NFKD').str.encode('ascii', errors='ignore').str.decode('utf-8')
 
-    # remove parentheses (names written in both pinyin and chinese characters)
+    # remove parentheses (names written in both pinyin and chinese characters; keep pinyin)
     agg.loc[:, 'longest_name_clean'] = agg.longest_name_clean.apply(lambda x: x.replace('(', '').replace(')', '').replace(';','').strip())
 
     return agg
@@ -114,28 +114,99 @@ def detect_pinyin_and_chinese_names(df_aps_clean):
     Detect the pinyin and chinese names
     """
 
-    # 3. split givenname and familyname
-    df_aps_clean.loc[:, 'givenname_clean'] = df_aps_clean.longest_name_clean.apply(lambda x: x.split(' ')[0])
-    df_aps_clean.loc[:, 'familyname_clean'] = df_aps_clean.longest_name_clean.apply(lambda x: x.split(' ')[-1])
 
-    # 4. evaluate if the given name (first name) is a pinyin given name
-    df_aps_clean.loc[:, 'is_pinyin_givenname'] = df_aps_clean.givenname_clean.apply(lambda x: pinyinnames_handler.is_pinyin_givenname(x))
+    def _get_ch_py_givenames(row):
 
-    # 5. evaluate if the family name is a pinyin family name
-    df_aps_clean.loc[:, 'is_pinyin_familyname'] = df_aps_clean.familyname_clean.apply(lambda x: pinyinnames_handler.is_pinyin_familyname(x))
+        py_givename = pd.NA
+        py_surname = pd.NA
+        ch_givename = pd.NA
+        ch_surname = pd.NA
+        py = pd.NA
+        ch = pd.NA
+        has_py_ch = False
 
-    # 6. evaluate if the name is a pinyin name (using both signals from given and family names)
-    df_aps_clean.loc[:, 'is_pinyin'] = df_aps_clean.apply(lambda x: x.is_pinyin_givenname != False and x.is_pinyin_familyname and len(x.longest_name_clean.split(' ')) == 2, axis=1)
+        # does it contain pinyin and chinese characters?
+        might_be_py_ch = '(' in row.longest_name and ')' in row.longest_name
 
-    # 7. evaluate if the name is a chinese name (using ch_name)
-    df_aps_clean.loc[:, 'ch_name'] = df_aps_clean.loc[:, 'longest_name'].apply(lambda x: pd.NA if '(' not in x or ')' not in x else x.split('(')[-1].split(')')[0].replace(';','').strip())
-    df_aps_clean.loc[:, "ch_splitname"] = df_aps_clean.apply(lambda row: characternames_handler.split_names(row.ch_name) if pd.notna(row.ch_name) else pd.NA, axis=1)
-    df_aps_clean.loc[:, "ch_familyname"] = df_aps_clean.ch_splitname.apply(lambda x: x[0].split(' ')[0] if isinstance(x, list) and len(x) == 1 else pd.NA)
-    df_aps_clean.loc[:, "ch_givenname"]  = df_aps_clean.ch_splitname.apply(lambda x: x[0].split(' ')[1] if isinstance(x, list) and len(x) == 1 else pd.NA)
-    
-    # 8. translate the chinese name to pinyin
-    df_aps_clean.loc[:, 'ch_translated_name_in_pinyin'] = df_aps_clean.apply(lambda row: pd.NA if pd.isna(row.ch_splitname) else characternames_handler.pinyinname(row.ch_splitname)[0], axis=1)
-    df_aps_clean.loc[:, 'ch_translated_familyname_in_pinyin'] = df_aps_clean.ch_translated_name_in_pinyin.apply(lambda x: x.split(' ')[0] if isinstance(x, str) else pd.NA)
-    df_aps_clean.loc[:, 'ch_translated_givenname_in_pinyin'] = df_aps_clean.ch_translated_name_in_pinyin.apply(lambda x: x.split(' ')[1] if isinstance(x, str) else pd.NA)
-    
-    return df_aps_clean
+        if might_be_py_ch:
+
+            py = row.longest_name_clean.strip()
+            first_py = py.split(' ')[0].strip()
+            last_py = py.split(' ')[-1].strip()
+            
+            ch = row.longest_name.split('(')[-1].split(')')[0].replace(';','').strip()
+            first_ch = ch[0].strip()
+            last_ch = ch[-1].strip()
+            tmp_ch = f"{first_ch} {last_ch}" # surname  givenname
+
+            py_tmp_ch = characternames_handler.pinyinname([tmp_ch])[0] if characternames_handler.is_chinese_char(first_ch) and characternames_handler.is_chinese_char(last_ch) else pd.NA
+            py_first_ch = py_tmp_ch.split(' ')[0] if isinstance(py_tmp_ch, str) else pd.NA # surname
+            py_last_ch = py_tmp_ch.split(' ')[1] if isinstance(py_tmp_ch, str) else pd.NA # givenname
+
+            
+            if pd.notna(py_tmp_ch):
+
+                if first_py == py_first_ch:
+                    # first part is the surname, then return the rest as givenname
+                    py_givename = py.replace(first_py, '').strip()
+                    py_surname = first_py
+                    ch_givename = ch.replace(first_ch, '').strip()
+                    ch_surname = first_ch
+                    py_ch_givename = characternames_handler.pinyin_givename([ch.replace(first_ch,'')])[0]
+                    has_py_ch = True
+
+                elif last_py == py_last_ch:
+                    # last part is the surname, then return the rest as givenname
+                    py_givename = py.replace(last_py, '').strip()
+                    py_surname = last_py
+                    ch_givename = ch.replace(last_ch, '').strip()
+                    ch_surname = last_ch
+                    py_ch_givename = characternames_handler.pinyin_givename([ch.replace(last_ch,'')])[0]
+                    has_py_ch = True
+
+                elif last_py == py_first_ch:
+                    # last part (in py) and first part (in ch) is the surname
+                    py_givename = py.replace(last_py, '').strip()
+                    py_surname = last_py
+                    ch_givename = ch.replace(first_ch, '').strip()
+                    ch_surname = first_ch
+                    py_ch_givename = characternames_handler.pinyin_givename([ch.replace(first_ch,'')])[0]
+                    has_py_ch = True
+
+                elif first_py == py_last_ch:
+                    # first part (in py) and last part (in ch) is the surname
+                    py_givename = py.replace(first_py, '').strip()
+                    py_surname = first_py
+                    ch_givename = ch.replace(last_ch, '').strip()
+                    ch_surname = last_ch
+                    py_ch_givename = characternames_handler.pinyin_givename([ch.replace(last_ch,'')])[0]
+                    has_py_ch = True
+
+                else:
+                    py_givename = pd.NA
+                    py_surname = pd.NA
+                    ch_givename = pd.NA
+                    ch_surname = pd.NA
+                    has_py_ch = False
+
+                if pd.notna(py_givename) and '-' in py_givename:
+                    py_givename = pd.NA
+                    py_surname = pd.NA
+                    ch_givename = pd.NA
+                    ch_surname = pd.NA
+                    has_py_ch = False
+
+                if pd.notna(py_givename) and '.' in py_givename:
+                    py_givename = py_ch_givename
+               
+        #print(f"py: {py}, py_givename: {py_givename}, py_surname: {py_surname} |  ch: {ch}, ch_givename: {ch_givename}, ch_surname: {ch_surname}")
+        return py_givename, py_surname, ch_givename, ch_surname, has_py_ch
+        
+    df = df_aps_clean.copy()
+    df.loc[:, 'might_be_py_ch'] = df.longest_name.apply(lambda x: '(' in x and ')' in x)
+    index = df.query('might_be_py_ch == True').index
+
+    tmp = df.loc[index,:].apply(lambda row: _get_ch_py_givenames(row), axis=1, result_type='expand')
+    tmp.rename(columns={0: 'py_givenname', 1: 'py_familyname', 2: 'ch_givenname', 3: 'ch_familyname', 4: 'has_py_ch'}, inplace=True)
+
+    return df.join(tmp, how='left').drop(columns=['might_be_py_ch'])
