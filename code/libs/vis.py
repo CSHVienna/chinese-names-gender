@@ -801,6 +801,7 @@ def plot_gender_comparison(
     method_labels=None,
     xlabel_order=None,
     colors=None,
+    hatches=None,
     use_percentages=True,
     annotate_bars=False,
     title=None,
@@ -825,8 +826,10 @@ def plot_gender_comparison(
     xlabel_order : list of str, optional
         Order of gender categories on x-axis (e.g. ["female", "male", "neutral", "unknown"]).
         Categories in data but not in this list are appended in sorted order.
-    colors : list of str, optional
-        One color per method (e.g. ["#2ecc71", "#3498db", "#e74c3c"]).
+    colors : dict, optional
+        One color per method (e.g. {"py_gender_karimi": "#2ecc71", "py_gender_saeta": "#3498db"}).
+    hatches : dict, optional
+        One hatch pattern per method (e.g. {"py_gender_karimi": None, "py_gender_saeta": "/"})
     use_percentages : bool, default True
         If True, show % within each method (each method sums to 100%); else show counts.
     annotate_bars : bool, default False
@@ -855,38 +858,39 @@ def plot_gender_comparison(
     annotate_kwargs = dict(annotate_kwargs or {})
     legend_kwargs = dict(legend_kwargs or {})
     n_annotation_kwargs = dict(n_annotation_kwargs or {})
-    colors = colors or ["#2ecc71", "#3498db", "#e74c3c"]
+    colors = colors or {"py_gender_karimi": "#2ecc71", "py_gender_saeta": "#3498db", "py_gender_buskirk": "#e74c3c", "py_gender_mv": "#95a5a6", "ch_pred_label": "#f1c40f"}
     xlabel_order = xlabel_order or ["female", "male", "neutral", "unknown"]
 
-    counts = {col: df[col].value_counts() for col in method_order}
+    counts = {col: df[col].value_counts() for col in method_order if col in df.columns}
     all_cats = set().union(*(c.index.astype(str) for c in counts.values()))
     xlabel_order = [c for c in xlabel_order if c in all_cats] + sorted(all_cats - set(xlabel_order))
     n_cats = len(xlabel_order)
-    n_methods = len(method_order)
+    n_methods = len(counts)
     width = 0.8 / n_methods
 
     if use_percentages:
-        totals = {col: counts[col].sum() for col in method_order}
+        totals = {col: counts[col].sum() for col in counts.keys()}
         data = np.array([
             [counts[col].get(cat, 0) / totals[col] * 100 for cat in xlabel_order]
-            for col in method_order
+            for col in counts.keys()
         ])
         ylabel = "Percentage (%)"
     else:
         data = np.array([
             [counts[col].get(cat, 0) for cat in xlabel_order]
-            for col in method_order
+            for col in counts.keys()
         ])
         ylabel = "Count"
 
     x = np.arange(n_cats)
     fig, ax = plt.subplots(figsize=figsize, **plot_kwargs)
-    for i, col in enumerate(method_order):
+    for i, col in enumerate(counts.keys()):
         offset = (i - (n_methods - 1) / 2) * width
         bars = ax.bar(
             x + offset, data[i], width,
             label=method_labels.get(col, col),
-            color=colors[i % len(colors)],
+            color=colors.get(col, "#000000") if colors else None,
+            hatch=hatches.get(col, None) if hatches else None,
         )
         if annotate_bars:
             default_annot = {"ha": "center", "va": "bottom", "fontsize": 8}
@@ -973,7 +977,14 @@ def plot_regression_performance(df, col_true, col_pred, metrics, **kwargs):
     fig = kwargs.get('fig', None)
 
     fig, ax = plt.subplots(1, 1, figsize=figsize) if fig is None else fig
-    ax.scatter(df[col_true], df[col_pred], s=markersize, alpha=markeralpha, zorder=1, edgecolor='white', linewidth=0.5)
+    ax.scatter(df[col_true], df[col_pred], 
+               s=markersize, 
+               alpha=markeralpha, 
+               zorder=1, 
+               edgecolor='white', 
+               linewidth=0.5,
+               rasterized=True
+               )
     ax.plot([0, 1], [0, 1], '--', color='black', alpha=0.2, zorder=0)
     ax.text(0.05, 0.95, f"R2: {metrics.get('r2', None):.2f}", transform=ax.transAxes, ha='left', va='top', fontsize=10, zorder=2)
     ax.text(0.05, 0.85, f"MAE: {metrics.get('mae', None):.3f}", transform=ax.transAxes, ha='left', va='top', fontsize=10, zorder=2)
