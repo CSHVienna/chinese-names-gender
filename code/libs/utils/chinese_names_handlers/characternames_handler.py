@@ -66,7 +66,7 @@ def pinyinname(names):
     return results
 
 
-def pinyin_givename(names):
+def pinyin_givenname(names):
     results = []
     for givenname in names:
         english_givenname = ''.join(
