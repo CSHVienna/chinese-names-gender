@@ -19,6 +19,12 @@ from libs import ios
 
 
 ####################################################################################################
+# CONSTANTS
+####################################################################################################
+
+FIG_DPI = 600
+
+####################################################################################################
 # VISUAL HANDLERS
 ####################################################################################################
 
@@ -70,7 +76,7 @@ def __axlines(**kwargs):
 
 def __save(**kwargs):
     filename = kwargs.get('fn', None)
-    dpi = kwargs.get('dpi', 600)
+    dpi = kwargs.get('dpi', FIG_DPI)
 
     if filename is not None:
         plt.savefig(filename, bbox_inches='tight', dpi=dpi)
@@ -97,6 +103,11 @@ def __finaltouch(**kwargs):
 def __close():
     plt.show()
     plt.close()
+
+
+def create_plot(nrows, ncols, figsize=(10, 6), **kwargs):
+    fig, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=figsize, **kwargs)
+    return fig, axes
 
 def plot_violin(df, x, y, title='', xlabel='', ylabel='', hue=None, figsize=(10, 6), palette=None, kwargs_violin={}, **kwargs_plot):
     plt.figure(figsize=figsize)
@@ -215,25 +226,33 @@ def plot_roc_auc(auc, fpr, tpr, labels, figsize, **kwargs):
     __save(**kwargs)
     __close()
 
-def plot_confusion_matrix(cm, labels, title='Confusion Matrix', cmap='Blues', figsize=(10, 6), **kwargs):
-    plt.figure(figsize=figsize)
+def plot_confusion_matrix(cm, labels, title='Confusion Matrix', cmap='Blues', **kwargs): 
     cbar = kwargs.get('cbar', True)
     annot_kws = kwargs.get('annot_kws', {'fontsize': 10})
     annot = kwargs.get('annot', True)
     fmt = '.2f' if cm.dtype == np.float64 else 'd'
+    vmin = kwargs.get('vmin', None)
+    vmax = kwargs.get('vmax', None)
+    ax = kwargs.get('ax', None)
+    finalize = kwargs.get('finalize', True)
 
-    sns.heatmap(cm, annot=annot, fmt=fmt, cmap='Blues', 
+    if ax is None:
+        figsize = kwargs.get('figsize', (10, 6))
+        plt.figure(figsize=figsize)
+
+    sns.heatmap(cm, annot=annot, fmt=fmt, cmap=cmap, 
                 annot_kws=annot_kws,
-                xticklabels=labels, yticklabels=labels, cbar=cbar)
+                vmin=vmin, vmax=vmax,
+                xticklabels=labels, yticklabels=labels, cbar=cbar, ax=ax)
     
-    xlabel = kwargs.get('xlabel', 'Predicted')
-    ylabel = kwargs.get('ylabel', 'True')
-    
-    __labels(title, xlabel, ylabel)
-    __axlines(**kwargs)
-    __finaltouch(**kwargs)
-    __save(**kwargs)
-    __close()
+    if finalize:
+        xlabel = kwargs.get('xlabel', 'Predicted')
+        ylabel = kwargs.get('ylabel', 'True')
+        __labels(title, xlabel, ylabel)
+        __axlines(**kwargs)
+        __finaltouch(**kwargs)    
+        __save(**kwargs)
+        __close()
 
 def plot_distribution_and_cuts(df, col, bins, figsize, cuts, **kwargs):
     ax = df[col].plot.hist(bins=bins, alpha=0.5, figsize=figsize)
