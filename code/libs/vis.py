@@ -1,3 +1,5 @@
+from curses import textpad
+
 import matplotlib
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -1002,14 +1004,35 @@ def plot_regression_performance(df, col_true, col_pred, metrics, **kwargs):
                zorder=1, 
                edgecolor='white', 
                linewidth=0.5,
-               rasterized=True
+               rasterized=True,
+               color='tab:gray',
+               label=kwargs.get('datalabel', None)
                )
+    
+    additional_data = kwargs.get('additional_data', None)
+    if additional_data is not None:
+        for ad in additional_data:
+            ax.scatter(ad.get('x'), ad.get('y'), 
+                    s=markersize, 
+                    alpha=markeralpha, 
+                    zorder=2, 
+                    edgecolor='white', 
+                    linewidth=0.5,
+                    rasterized=True,
+                    label=ad.get('label', None),
+                    color=ad.get('color', 'red')
+                    )
+    
+    ax.legend(loc="lower left", bbox_to_anchor=(0.1, -0.01), borderpad=0., frameon=False, fontsize=10, handletextpad=0.05, labelspacing=0.05)
+        
     ax.plot([0, 1], [0, 1], '--', color='black', alpha=0.2, zorder=0)
-    ax.text(0.05, 0.95, f"R2: {metrics.get('r2', None):.2f}", transform=ax.transAxes, ha='left', va='top', fontsize=10, zorder=2)
-    ax.text(0.05, 0.85, f"MAE: {metrics.get('mae', None):.3f}", transform=ax.transAxes, ha='left', va='top', fontsize=10, zorder=2)
-    ax.text(0.05, 0.75, f"MSE: {metrics.get('mse', None):.3f}", transform=ax.transAxes, ha='left', va='top', fontsize=10, zorder=2)
-    ax.text(0.05, 0.65, f"RMSE: {metrics.get('rmse', None):.3f}", transform=ax.transAxes, ha='left', va='top', fontsize=10, zorder=2)
-    ax.text(0.95, 0.05, f"N: {df.shape[0]}", transform=ax.transAxes, ha='right', va='bottom', fontsize=10, zorder=2)
+    ymax = 0.98
+    delta = 0.07
+    ax.text(0.05, ymax, f"R2: {metrics.get('r2', None):.2f}", transform=ax.transAxes, ha='left', va='top', fontsize=10, zorder=2)
+    ax.text(0.05, ymax - delta, f"MAE: {metrics.get('mae', None):.3f}", transform=ax.transAxes, ha='left', va='top', fontsize=10, zorder=2)
+    ax.text(0.05, ymax - 2 * delta, f"MSE: {metrics.get('mse', None):.3f}", transform=ax.transAxes, ha='left', va='top', fontsize=10, zorder=2)
+    ax.text(0.05, ymax - 3 * delta, f"RMSE: {metrics.get('rmse', None):.3f}", transform=ax.transAxes, ha='left', va='top', fontsize=10, zorder=2)
+    ax.text(0.95, 0.02, f"N: {df.shape[0]}", transform=ax.transAxes, ha='right', va='bottom', fontsize=10, zorder=2)
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     ax.set_title(title)
