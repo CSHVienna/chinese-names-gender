@@ -1,0 +1,56 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite both the software and the accompanying paper."
+type: software
+title: "chinese-names-gender"
+version: 1.0.0
+date-released: 2026-10-16
+# doi: 10.5281/zenodo.XXXXXXX   # uncomment once Zenodo issues the DOI
+repository-code: "https://github.com/CSHVienna/chinese-names-gender"
+license: MIT
+abstract: >-
+  This repository provides tools for analyzing Chinese given names.
+  It includes methods for inferring gender based on linguistic and statistical features, and visualizing gender distributions.
+keywords:
+  - chinese-name-gender inference
+  - hanzi-name-gender
+  - pinyin-name-gender
+authors:
+  - family-names: "Espín-Noboa"
+    given-names: "Lisette"
+    email: "espin@csh.ac.at"
+    orcid: "https://orcid.org/0000-0002-3945-2966"
+    affiliation: "Graz University of Technology and Complexity Science Hub"
+  - family-names: "She"
+    given-names: "Mingrong"
+    orcid: "https://orcid.org/0000-0002-5005-3472"
+    affiliation: "Maastricht University"
+  - family-names: "Jaramillo"
+    given-names: "Ana Maria"
+    orcid: "https://orcid.org/0000-0003-2409-3064"
+    affiliation: "Graz University of Technology and Complexity Science Hub"
+  - family-names: "Yang"
+    given-names: "Liuhuaying"
+    orcid: "https://orcid.org/0000-0003-1279-4736"
+    affiliation: "Complexity Science Hub"
+
+# The paper. Update journal/doi/year after acceptance.
+preferred-citation:
+  type: article
+  title: "Bridging the Language Gap in Scholarly Data II: Enhancing Gender Inference for Chinese Names"
+  authors:
+    - family-names: "Espín-Noboa"
+      given-names: "Lisette"
+      orcid: "https://orcid.org/0000-0002-3945-2966"
+    - family-names: "She"
+      given-names: "Mingrong"
+      orcid: "https://orcid.org/0000-0002-5005-3472"
+    - family-names: "Jaramillo"
+      given-names: "Ana Maria"
+      orcid: "https://orcid.org/0000-0003-2409-3064"
+    - family-names: "Yang"
+      given-names: "Liuhuaying"
+      orcid: "https://orcid.org/0000-0003-1279-4736"
+  journal: "TBA"
+  year: 2026
+  # doi: "10.xxxx/xxxxx"   # add after publication
+  status: submitted
