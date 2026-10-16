@@ -41,7 +41,7 @@ def majority_voting(df: pd.DataFrame) -> pd.Series:
     return df.apply(_mode, axis=1)
 
 
-def infer_gender_by_majority_vote(male_label_count, female_label_count, neutral_label_count, threshold=0.1):
+def infer_gender_by_supermajority(male_label_count, female_label_count, neutral_label_count, threshold=0.1):
     """
     Infer the gender by majority vote using the ratio of male, female and neutral labels.
     It does not use the mode function, but rather looks for the label that is majority taking into account the ratio of the other two labels.
@@ -51,12 +51,19 @@ def infer_gender_by_majority_vote(male_label_count, female_label_count, neutral_
     ratio_female = female_label_count / (male_label_count + female_label_count + neutral_label_count)
     ratio_neutral = neutral_label_count / (male_label_count + female_label_count + neutral_label_count)
 
-    if ratio_neutral >= 0.5 or (ratio_male + ratio_female >= 0.5 and abs(ratio_male - ratio_female) < threshold) :
-        return 'neutral'
-    elif ratio_male > ratio_female:
+    if ratio_male > 0.66:
         return 'male'
-    else:
+    elif ratio_female > 0.66:
         return 'female'
+    return 'neutral'
+    
+
+    # if ratio_neutral >= 0.5 or (ratio_male + ratio_female >= 0.5 and abs(ratio_male - ratio_female) < threshold) :
+    #     return 'neutral'
+    # elif ratio_male > ratio_female:
+    #     return 'male'
+    # else:
+    #     return 'female'
 
 def aggregate_gender(values):
     """
@@ -72,7 +79,7 @@ def aggregate_gender(values):
         return next(iter(uniques))
 
     # If multiple values, but only one is not "unknown" -> return that one
-    non_unknown = {v for v in uniques if v != "unknown" and v != 'unisex'}
+    non_unknown = {v for v in uniques if v != "unknown" and (v != 'unisex' or v!='neutral')}
     if len(non_unknown) == 1:
         return next(iter(non_unknown))
 
@@ -135,7 +142,8 @@ def get_performance(data, col_true, col_pred, labels, normalize=None):
 
     try:
         cm = confusion_matrix(y_true, y_pred, labels=labels, normalize=normalize)
-    except ValueError:
+    except ValueError as ex:
+        print(ex)
         cm = None
     try:    
         precision = precision_score(y_true, y_pred, labels=labels, average=None, zero_division=0)    
@@ -376,6 +384,69 @@ def comparison_table_to_latex(
 
     print(f"[INFO] Pinyin aggregation: {r_py[1]}")
     return full
+
+
+
+def normalized_entropy(labels):
+    """
+    Shannon entropy normalized to [0, 1].
+    0 = all labels identical
+    1 = perfectly balanced across male/female/neutral
+    """
+    probs = labels.value_counts(normalize=True)
+
+    # Shannon entropy
+    h = -(probs * np.log(probs)).sum()
+
+    # Normalize by maximum entropy for 3 classes
+    return h / np.log(3)
+
+
+def disagreement_rate(labels, py_label):
+    """
+    Fraction of ch_pred_label values that disagree with py_gender_mv.
+    0 = perfect agreement
+    1 = complete disagreement
+    """
+    return (labels != py_label).mean()
+
+
+def aggregate_by_py(df):
+    df_py_agg = (
+        df
+        .groupby('py_givenname')
+        .agg(
+            n_h=('ch_givenname', 'nunique'),
+
+            sc = ('NLen', lambda x: x.iloc[0] == 1), # single char or not
+
+            hat_l_h=('ch_pred_label',
+                lambda x: infer_gender_by_supermajority(
+                    x.value_counts().get('male', 0),
+                    x.value_counts().get('female', 0),
+                    x.value_counts().get('neutral', 0),
+                    threshold=0.1
+                )),
+
+            n_l_h_male = ('ch_pred_label', lambda x: x.value_counts().get('male', 0)),
+            n_l_h_neutral = ('ch_pred_label', lambda x: x.value_counts().get('neutral', 0)),
+            n_l_h_female = ('ch_pred_label', lambda x: x.value_counts().get('female', 0)),
+
+            py_gender_mv=('py_gender_mv', 'first'),
+
+            entropy=('ch_pred_label', normalized_entropy),
+
+            disagreement=('ch_pred_label',
+                        lambda x: disagreement_rate(
+                            x,
+                            df.loc[x.index, 'py_gender_mv'].iloc[0]
+                        )),
+
+            ml_sample = ('ml_sample', 'first')
+        )
+        .reset_index()
+    )
+    return df_py_agg
 
 
 

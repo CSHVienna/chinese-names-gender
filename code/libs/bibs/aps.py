@@ -225,15 +225,15 @@ def detect_pinyin_and_chinese_names(df_aps_clean):
         return py_givenname_original, py_givenname, py_surname, ch_givenname, ch_surname, has_py_ch
         
     df = df_aps_clean.copy()
-    df.loc[:, 'might_be_py_ch'] = df.longest_name.apply(lambda x: '(' in x and ')' in x)
-    index = df.query('might_be_py_ch == True').index
+    df.loc[:, 'might_be_py_hz'] = df.longest_name.apply(lambda x: '(' in x and ')' in x)
+    index = df.query('might_be_py_hz == True').index
 
     tmp = df.loc[index,:].apply(lambda row: _get_ch_py_givenname(row), axis=1, result_type='expand')
     tmp.rename(columns={0: 'py_givenname_original', 
                         1: 'py_givenname', 
                         2: 'py_familyname', 
-                        3: 'ch_givenname', 
-                        4: 'ch_familyname', 
-                        5: 'has_py_ch'}, inplace=True)
+                        3: 'hz_givenname', 
+                        4: 'hz_familyname', 
+                        5: 'has_py_hz'}, inplace=True)
 
-    return df.join(tmp, how='left').drop(columns=['might_be_py_ch'])
+    return df.join(tmp, how='left').drop(columns=['might_be_py_hz'])
