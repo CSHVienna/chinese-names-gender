@@ -138,15 +138,15 @@ def read_csv_from_zip(path_fn, filename, **kwargs):
         with z.open(filename) as f:
             return pd.read_csv(f, **kwargs)
         
-# def read_csv_from_tar_gz(path_fn, filename, **kwargs):
-#     """
-#     Opens a tar.gz file at path_fn, reads the specified filename as a CSV, and returns a DataFrame.
-#     Additional keyword arguments are passed to pd.read_csv.
-#     """
-#     with tarfile.open(path_fn, "r:gz") as tar:
-#         member = tar.getmember(filename)
-#         f = tar.extractfile(member)
-#         return pd.read_csv(f, **kwargs)
+def read_csv_from_tar_gz(path_fn, filename, **kwargs):
+    """
+    Opens a tar.gz file at path_fn, reads the specified filename as a CSV, and returns a DataFrame.
+    Additional keyword arguments are passed to pd.read_csv.
+    """
+    with tarfile.open(path_fn, "r:gz") as tar:
+        member = tar.getmember(filename)
+        f = tar.extractfile(member)
+        return pd.read_csv(f, **kwargs)
 
 def read_file_from_tar_gz_as_dataframe(tar_gz_path, target_file_name, **kwargs):
     """
@@ -173,6 +173,28 @@ def read_file_from_tar_gz_as_dataframe(tar_gz_path, target_file_name, **kwargs):
         printf(f"Error: {e}")
         return None
 
+def read_csv_files_from_list(file_list, **kwargs):
+    """
+    Reads multiple CSV files from a list of file paths and concatenates them into a single DataFrame.
+
+    Args:
+        file_list (list): A list of file paths to CSV files.
+        **kwargs: Additional arguments to pass to pandas.read_csv().
+    Returns:
+        pd.DataFrame: A concatenated DataFrame containing data from all the CSV files.
+    """
+    dataframes = []
+    for file_path in file_list:
+        try:
+            df = pd.read_csv(file_path, **kwargs)
+            dataframes.append(df)
+        except Exception as e:
+            printf(f"Error reading {file_path}: {e}")
+    if dataframes:
+        return pd.concat(dataframes, ignore_index=True)
+    else:
+        printf("No valid CSV files were read.")
+        return pd.DataFrame()  # Return an empty DataFrame if no files were read
 
 ######################################################
 #### IO-Dataframes
