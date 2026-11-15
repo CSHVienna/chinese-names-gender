@@ -27,6 +27,8 @@ GENDER_LABELS_5 = [MALE, 'mostly_male', NEUTRAL, 'mostly_female', FEMALE]   # DO
 
 GENDER_LABELS_3_DICT = {g:i for i,g in enumerate(GENDER_LABELS_3)}
 
+SUPER_MAJORITY_THRESHOLD = 0.1
+
 ##################################################################################################################
 # HELPERS
 ##################################################################################################################
@@ -52,10 +54,10 @@ def infer_gender_by_supermajority(male_label_count, female_label_count, neutral_
     ratio_neutral = neutral_label_count / (male_label_count + female_label_count + neutral_label_count)
 
     if ratio_male > 0.66:
-        return 'male'
+        return MALE
     elif ratio_female > 0.66:
-        return 'female'
-    return 'neutral'
+        return FEMALE
+    return NEUTRAL
     
 
     # if ratio_neutral >= 0.5 or (ratio_male + ratio_female >= 0.5 and abs(ratio_male - ratio_female) < threshold) :
@@ -79,17 +81,17 @@ def aggregate_gender(values):
         return next(iter(uniques))
 
     # If multiple values, but only one is not "unknown" -> return that one
-    non_unknown = {v for v in uniques if v != "unknown" and (v != 'unisex' or v!='neutral')}
+    non_unknown = {v for v in uniques if v != "unknown" and (v != 'unisex' or v!=NEUTRAL)}
     if len(non_unknown) == 1:
         return next(iter(non_unknown))
 
     # If we have both male and female (with or without unknown/neutral) -> neutral
-    if "male" in uniques and "female" in uniques:
-        return "neutral"
+    if MALE in uniques and FEMALE in uniques:
+        return NEUTRAL
 
     # Fallback: if neutral is present among multiple values -> neutral
-    if "neutral" in uniques or 'unisex' in uniques:
-        return "neutral"
+    if NEUTRAL in uniques or 'unisex' in uniques:
+        return NEUTRAL
 
     # Last resort: pick a stable value (sorted for determinism)
     return sorted(uniques)[0]
@@ -412,34 +414,39 @@ def disagreement_rate(labels, py_label):
 
 
 def aggregate_by_py(df):
+
+    def _hat_l_py(x, thr=SUPER_MAJORITY_THRESHOLD):
+        val = x.value_counts()
+        return infer_gender_by_supermajority(
+                                        val.get('male', 0),
+                                        val.get('female', 0),
+                                        val.get('neutral', 0),
+                                        threshold=thr
+                                    )
+        
     df_py_agg = (
         df
         .groupby('py_givenname')
         .agg(
-            n_h=('ch_givenname', 'nunique'),
-
             sc = ('NLen', lambda x: x.iloc[0] == 1), # single char or not
-
-            hat_l_h=('ch_pred_label',
-                lambda x: infer_gender_by_supermajority(
-                    x.value_counts().get('male', 0),
-                    x.value_counts().get('female', 0),
-                    x.value_counts().get('neutral', 0),
-                    threshold=0.1
-                )),
+            
+            n_h=('ch_givenname', 'nunique'),
 
             n_l_h_male = ('ch_pred_label', lambda x: x.value_counts().get('male', 0)),
             n_l_h_neutral = ('ch_pred_label', lambda x: x.value_counts().get('neutral', 0)),
             n_l_h_female = ('ch_pred_label', lambda x: x.value_counts().get('female', 0)),
 
-            py_gender_mv=('py_gender_mv', 'first'),
+            py_gender_mv=('py_gender_mv', 'first'), # majoriity voting deprecated
+
+            hat_l_py=('ch_pred_label', _hat_l_py),
 
             entropy=('ch_pred_label', normalized_entropy),
 
             disagreement=('ch_pred_label',
                         lambda x: disagreement_rate(
                             x,
-                            df.loc[x.index, 'py_gender_mv'].iloc[0]
+                            _hat_l_py(x)
+                            #df.loc[x.index, 'py_gender_mv'].iloc[0]
                         )),
 
             ml_sample = ('ml_sample', 'first')
